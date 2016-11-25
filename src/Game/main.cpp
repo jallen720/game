@@ -9,6 +9,7 @@
 #include "Cpp_Utils/JSON.hpp"
 
 #include "Game/Systems/Play_Button.hpp"
+#include "Game/Systems/Room_Generator.hpp"
 
 
 using std::string;
@@ -73,6 +74,13 @@ static map<string, const System_Entity_Handlers> game_system_entity_handlers
         {
             play_button_subscribe,
             play_button_unsubscribe,
+        }
+    },
+    {
+        "room_generator",
+        {
+            room_generator_subscribe,
+            room_generator_unsubscribe,
         }
     },
 };
