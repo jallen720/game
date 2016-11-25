@@ -1,0 +1,35 @@
+[
+    {
+        "path": "resources/textures/ui/button.png",
+        "format": "rgba",
+        "options":
+        {
+            "wrap_s": "repeat",
+            "wrap_t": "repeat",
+            "min_filter": "linear",
+            "mag_filter": "linear"
+        }
+    },
+    {
+        "path": "resources/textures/ui/button_hover.png",
+        "format": "rgba",
+        "options":
+        {
+            "wrap_s": "repeat",
+            "wrap_t": "repeat",
+            "min_filter": "linear",
+            "mag_filter": "linear"
+        }
+    },
+    {
+        "path": "resources/textures/ui/button_pressed.png",
+        "format": "rgba",
+        "options":
+        {
+            "wrap_s": "repeat",
+            "wrap_t": "repeat",
+            "min_filter": "linear",
+            "mag_filter": "linear"
+        }
+    }
+]

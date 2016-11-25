@@ -1,0 +1,7 @@
+[
+    {
+        "key": "escape",
+        "action": "release",
+        "handler": "exit"
+    }
+]

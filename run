@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+cpp_build && clear && ./bin/Game

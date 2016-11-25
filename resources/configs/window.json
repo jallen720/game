@@ -1,0 +1,12 @@
+{
+    "title": "Game",
+    "width": 1600,
+    "height": 900,
+    "refresh_rate": "every_update",
+    "hints":
+    {
+        "context_version_major": 2,
+        "context_version_minor": 1,
+        "resizable": 0
+    }
+}

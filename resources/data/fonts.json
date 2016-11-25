@@ -1,0 +1,10 @@
+[
+    {
+        "path": "resources/fonts/Ubuntu-L.ttf",
+        "height": 48
+    },
+    {
+        "path": "resources/fonts/UbuntuMono-R.ttf",
+        "height": 48
+    }
+]
