@@ -31,5 +31,104 @@
             "min_filter": "linear",
             "mag_filter": "linear"
         }
+    },
+    {
+        "path": "resources/textures/floor.png",
+        "format": "rgba",
+        "options":
+        {
+            "wrap_s": "clamp_to_edge",
+            "wrap_t": "clamp_to_edge",
+            "min_filter": "nearest",
+            "mag_filter": "nearest"
+        }
+    },
+    {
+        "path": "resources/textures/wall_left.png",
+        "format": "rgba",
+        "options":
+        {
+            "wrap_s": "clamp_to_edge",
+            "wrap_t": "clamp_to_edge",
+            "min_filter": "nearest",
+            "mag_filter": "nearest"
+        }
+    },
+    {
+        "path": "resources/textures/wall_top.png",
+        "format": "rgba",
+        "options":
+        {
+            "wrap_s": "clamp_to_edge",
+            "wrap_t": "clamp_to_edge",
+            "min_filter": "nearest",
+            "mag_filter": "nearest"
+        }
+    },
+    {
+        "path": "resources/textures/wall_right.png",
+        "format": "rgba",
+        "options":
+        {
+            "wrap_s": "clamp_to_edge",
+            "wrap_t": "clamp_to_edge",
+            "min_filter": "nearest",
+            "mag_filter": "nearest"
+        }
+    },
+    {
+        "path": "resources/textures/wall_bottom.png",
+        "format": "rgba",
+        "options":
+        {
+            "wrap_s": "clamp_to_edge",
+            "wrap_t": "clamp_to_edge",
+            "min_filter": "nearest",
+            "mag_filter": "nearest"
+        }
+    },
+    {
+        "path": "resources/textures/wall_top_left.png",
+        "format": "rgba",
+        "options":
+        {
+            "wrap_s": "clamp_to_edge",
+            "wrap_t": "clamp_to_edge",
+            "min_filter": "nearest",
+            "mag_filter": "nearest"
+        }
+    },
+    {
+        "path": "resources/textures/wall_top_right.png",
+        "format": "rgba",
+        "options":
+        {
+            "wrap_s": "clamp_to_edge",
+            "wrap_t": "clamp_to_edge",
+            "min_filter": "nearest",
+            "mag_filter": "nearest"
+        }
+    },
+    {
+        "path": "resources/textures/wall_bottom_right.png",
+        "format": "rgba",
+        "options":
+        {
+            "wrap_s": "clamp_to_edge",
+            "wrap_t": "clamp_to_edge",
+            "min_filter": "nearest",
+            "mag_filter": "nearest"
+        }
+    },
+    {
+        "path": "resources/textures/wall_bottom_left.png",
+        "format": "rgba",
+        "options":
+        {
+            "wrap_s": "clamp_to_edge",
+            "wrap_t": "clamp_to_edge",
+            "min_filter": "nearest",
+            "mag_filter": "nearest"
+        }
     }
 ]
