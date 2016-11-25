@@ -1,0 +1,13 @@
+# Build output directories
+build/
+bin/
+lib/
+
+# Sublime files
+*.sublime*
+
+# Misc. files
+todo
+
+# Core dump
+core
