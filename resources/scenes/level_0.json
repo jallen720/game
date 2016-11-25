@@ -1,0 +1,35 @@
+[
+    {
+        "components": {},
+        "systems":
+        [
+            "room_generator"
+        ]
+    },
+    {
+        "components":
+        {
+            "dimensions":
+            {
+                "width": 1600,
+                "height": 900,
+                "origin": { "x": 0, "y": 0 }
+            },
+            "viewport":
+            {
+                "x": 0,
+                "y": 0,
+                "z_near": -100,
+                "z_far": 100
+            },
+            "transform":
+            {
+                "scale": { "x": 3, "y": 3 }
+            }
+        },
+        "systems":
+        [
+            "camera"
+        ]
+    }
+]

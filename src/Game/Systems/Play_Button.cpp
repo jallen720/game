@@ -15,6 +15,9 @@ using Nito::get_component;
 // Nito/Components.hpp
 using Nito::Button;
 
+// Nito/APIs/Scene.hpp
+using Nito::set_scene_to_load;
+
 // Cpp_Utils/Map.hpp
 using Cpp_Utils::remove;
 
@@ -43,7 +46,7 @@ void play_button_subscribe(const Entity entity)
 
     button->click_handler = [=]() -> void
     {
-        puts("play button clicked!");
+        set_scene_to_load("level_0");
     };
 }
 
