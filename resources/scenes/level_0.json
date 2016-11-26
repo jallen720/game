@@ -31,5 +31,26 @@
         [
             "camera"
         ]
+    },
+    {
+        "components":
+        {
+            "render_layer": "world",
+            "sprite":
+            {
+                "texture_path": "resources/textures/player.png",
+                "shader_pipeline_name": "texture"
+            },
+            "dimensions": {},
+            "transform":
+            {
+                "position": { "x": 3, "y": 2, "z": -1 }
+            },
+            "speed": 1
+        },
+        "systems":
+        [
+            "controller"
+        ]
     }
 ]

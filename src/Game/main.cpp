@@ -10,6 +10,7 @@
 
 #include "Game/Systems/Play_Button.hpp"
 #include "Game/Systems/Room_Generator.hpp"
+#include "Game/Systems/Controller.hpp"
 
 
 using std::string;
@@ -54,7 +55,7 @@ namespace Game
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static vector<Update_Handler> game_update_handlers
 {
-
+    controller_update,
 };
 
 
@@ -83,12 +84,25 @@ static map<string, const System_Entity_Handlers> game_system_entity_handlers
             room_generator_unsubscribe,
         }
     },
+    {
+        "controller",
+        {
+            controller_subscribe,
+            controller_unsubscribe,
+        }
+    },
 };
 
 
 static map<string, const Component_Handlers> game_component_handlers
 {
-
+    {
+        "speed",
+        {
+            get_component_allocator<float>(),
+            get_component_deallocator<float>(),
+        }
+    },
 };
 
 
