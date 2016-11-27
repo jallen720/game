@@ -8,6 +8,7 @@
 #include "Cpp_Utils/Collection.hpp"
 #include "Cpp_Utils/JSON.hpp"
 
+#include "Game/Components.hpp"
 #include "Game/Systems/Play_Button.hpp"
 #include "Game/Systems/Room_Generator.hpp"
 #include "Game/Systems/Player_Controller.hpp"
@@ -30,6 +31,7 @@ using Nito::System_Entity_Handlers;
 // Nito/APIs/ECS.hpp
 using Nito::set_component_handlers;
 using Nito::set_system_entity_handlers;
+using Nito::Component;
 
 // Nito/APIs/Input.hpp
 using Nito::Control_Handler;
@@ -97,10 +99,17 @@ static map<string, const System_Entity_Handlers> game_system_entity_handlers
 static map<string, const Component_Handlers> game_component_handlers
 {
     {
-        "speed",
+        "player_controller",
         {
-            get_component_allocator<float>(),
-            get_component_deallocator<float>(),
+            [](const JSON & data) -> Component
+            {
+                return new Player_Controller
+                {
+                    data["speed"],
+                    data["stick_dead_zone"],
+                };
+            },
+            get_component_deallocator<Player_Controller>(),
         }
     },
 };

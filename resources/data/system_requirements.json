@@ -3,6 +3,6 @@
     [
         "transform",
         "sprite",
-        "speed"
+        "player_controller"
     ]
 }

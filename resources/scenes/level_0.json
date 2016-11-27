@@ -46,11 +46,12 @@
             {
                 "position": { "x": 3, "y": 2, "z": -1 }
             },
-            "speed": 1
+            "player_controller":
+            {
+                "speed": 1,
+                "stick_dead_zone": 0.35
+            }
         },
-        "systems":
-        [
-            "player_controller"
-        ]
+        "systems": []
     }
 ]

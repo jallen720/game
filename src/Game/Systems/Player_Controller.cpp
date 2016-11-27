@@ -10,6 +10,8 @@
 #include "Cpp_Utils/Map.hpp"
 #include "Cpp_Utils/Collection.hpp"
 
+#include "Game/Components.hpp"
+
 
 using std::map;
 
@@ -55,7 +57,7 @@ struct Entity_State
 {
     Transform * transform;
     Sprite * sprite;
-    float * speed;
+    const Player_Controller * player_controller;
 };
 
 
@@ -78,7 +80,7 @@ void player_controller_subscribe(const Entity entity)
     {
         (Transform *)get_component(entity, "transform"),
         (Sprite *)get_component(entity, "sprite"),
-        (float *)get_component(entity, "speed"),
+        (Player_Controller *)get_component(entity, "player_controller"),
     };
 }
 
@@ -93,16 +95,26 @@ void player_controller_update()
 {
     for_each(entity_states, [](const Entity /*entity*/, const Entity_State & entity_state) -> void
     {
+        const Player_Controller * player_controller = entity_state.player_controller;
+        const float stick_dead_zone = player_controller->stick_dead_zone;
+
+
         // Get move direction and modifiy entity position.
-        const vec3 move_direction(get_axis(Axes::LEFT_STICK_X), -get_axis(Axes::LEFT_STICK_Y), 0.0f);
-        entity_state.transform->position += move_direction * *entity_state.speed * get_delta_time();
+        const vec3 left_stick_direction(get_axis(Axes::LEFT_STICK_X), -get_axis(Axes::LEFT_STICK_Y), 0.0f);
+
+        const vec3 move_direction(
+            fabsf(left_stick_direction.x) > stick_dead_zone ? left_stick_direction.x : 0.0f,
+            fabsf(left_stick_direction.y) > stick_dead_zone ? left_stick_direction.y : 0.0f,
+            0.0f);
+
+        entity_state.transform->position += move_direction * player_controller->speed * get_delta_time();
 
 
         // Set texture path for entity's look direction based on right stick input if any or move direction otherwise.
         const vec3 right_stick_direction(get_axis(Axes::RIGHT_STICK_X), -get_axis(Axes::RIGHT_STICK_Y), 0.0f);
 
         const vec3 & look_direction =
-            right_stick_direction.x != 0.0f || right_stick_direction.y != 0.0f
+            fabsf(right_stick_direction.x) > stick_dead_zone || fabsf(right_stick_direction.y) > stick_dead_zone
             ? right_stick_direction
             : move_direction;
 
