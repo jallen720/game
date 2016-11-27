@@ -31,8 +31,8 @@ using Nito::Sprite;
 
 // Nito/Input.hpp
 using Nito::debug_controllers;
-using Nito::get_axis;
-using Nito::Axes;
+using Nito::get_controller_axis;
+using Nito::Controller_Axes;
 
 // Nito/Window.hpp
 using Nito::get_delta_time;
@@ -100,7 +100,10 @@ void player_controller_update()
 
 
         // Get move direction and modifiy entity position.
-        const vec3 left_stick_direction(get_axis(Axes::LEFT_STICK_X), -get_axis(Axes::LEFT_STICK_Y), 0.0f);
+        const vec3 left_stick_direction(
+            get_controller_axis(Controller_Axes::LEFT_STICK_X),
+            -get_controller_axis(Controller_Axes::LEFT_STICK_Y),
+            0.0f);
 
         const vec3 move_direction(
             fabsf(left_stick_direction.x) > stick_dead_zone ? left_stick_direction.x : 0.0f,
@@ -111,7 +114,10 @@ void player_controller_update()
 
 
         // Set texture path for entity's look direction based on right stick input if any or move direction otherwise.
-        const vec3 right_stick_direction(get_axis(Axes::RIGHT_STICK_X), -get_axis(Axes::RIGHT_STICK_Y), 0.0f);
+        const vec3 right_stick_direction(
+            get_controller_axis(Controller_Axes::RIGHT_STICK_X),
+            -get_controller_axis(Controller_Axes::RIGHT_STICK_Y),
+            0.0f);
 
         const vec3 & look_direction =
             fabsf(right_stick_direction.x) > stick_dead_zone || fabsf(right_stick_direction.y) > stick_dead_zone
