@@ -10,7 +10,7 @@
 
 #include "Game/Systems/Play_Button.hpp"
 #include "Game/Systems/Room_Generator.hpp"
-#include "Game/Systems/Controller.hpp"
+#include "Game/Systems/Player_Controller.hpp"
 
 
 using std::string;
@@ -55,7 +55,7 @@ namespace Game
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static vector<Update_Handler> game_update_handlers
 {
-    controller_update,
+    player_controller_update,
 };
 
 
@@ -85,10 +85,10 @@ static map<string, const System_Entity_Handlers> game_system_entity_handlers
         }
     },
     {
-        "controller",
+        "player_controller",
         {
-            controller_subscribe,
-            controller_unsubscribe,
+            player_controller_subscribe,
+            player_controller_unsubscribe,
         }
     },
 };

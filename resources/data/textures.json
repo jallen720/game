@@ -132,7 +132,40 @@
         }
     },
     {
-        "path": "resources/textures/player.png",
+        "path": "resources/textures/player_up.png",
+        "format": "rgba",
+        "options":
+        {
+            "wrap_s": "clamp_to_edge",
+            "wrap_t": "clamp_to_edge",
+            "min_filter": "nearest",
+            "mag_filter": "nearest"
+        }
+    },
+    {
+        "path": "resources/textures/player_right.png",
+        "format": "rgba",
+        "options":
+        {
+            "wrap_s": "clamp_to_edge",
+            "wrap_t": "clamp_to_edge",
+            "min_filter": "nearest",
+            "mag_filter": "nearest"
+        }
+    },
+    {
+        "path": "resources/textures/player_down.png",
+        "format": "rgba",
+        "options":
+        {
+            "wrap_s": "clamp_to_edge",
+            "wrap_t": "clamp_to_edge",
+            "min_filter": "nearest",
+            "mag_filter": "nearest"
+        }
+    },
+    {
+        "path": "resources/textures/player_left.png",
         "format": "rgba",
         "options":
         {

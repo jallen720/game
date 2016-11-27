@@ -1,7 +1,9 @@
-#include "Game/Systems/Controller.hpp"
+#include "Game/Systems/Player_Controller.hpp"
 
 #include <map>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <math.h>
 #include "Nito/Components.hpp"
 #include "Nito/APIs/Input.hpp"
 #include "Nito/APIs/Window.hpp"
@@ -14,15 +16,20 @@ using std::map;
 // glm/glm.hpp
 using glm::vec3;
 
+// glm/gtc/matrix_transform.hpp
+using glm::normalize;
+
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
 using Nito::get_component;
 
 // Nito/Components.hpp
 using Nito::Transform;
+using Nito::Sprite;
 
 // Nito/Input.hpp
 using Nito::debug_controllers;
+using Nito::get_axis;
 using Nito::Axes;
 
 // Nito/Window.hpp
@@ -47,6 +54,7 @@ namespace Game
 struct Entity_State
 {
     Transform * transform;
+    Sprite * sprite;
     float * speed;
 };
 
@@ -64,28 +72,58 @@ static map<Entity, Entity_State> entity_states;
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void controller_subscribe(const Entity entity)
+void player_controller_subscribe(const Entity entity)
 {
     entity_states[entity] =
     {
         (Transform *)get_component(entity, "transform"),
+        (Sprite *)get_component(entity, "sprite"),
         (float *)get_component(entity, "speed"),
     };
 }
 
 
-void controller_unsubscribe(const Entity entity)
+void player_controller_unsubscribe(const Entity entity)
 {
     remove(entity_states, entity);
 }
 
 
-void controller_update()
+void player_controller_update()
 {
     for_each(entity_states, [](const Entity /*entity*/, const Entity_State & entity_state) -> void
     {
-        vec3 direction(get_axis(Axes::LEFT_STICK_X), -get_axis(Axes::LEFT_STICK_Y), 0.0f);
-        entity_state.transform->position += direction * *entity_state.speed * get_delta_time();
+        // Get move direction and modifiy entity position.
+        const vec3 move_direction(get_axis(Axes::LEFT_STICK_X), -get_axis(Axes::LEFT_STICK_Y), 0.0f);
+        entity_state.transform->position += move_direction * *entity_state.speed * get_delta_time();
+
+
+        // Set texture path for entity's look direction based on right stick input if any or move direction otherwise.
+        const vec3 right_stick_direction(get_axis(Axes::RIGHT_STICK_X), -get_axis(Axes::RIGHT_STICK_Y), 0.0f);
+
+        const vec3 & look_direction =
+            right_stick_direction.x != 0.0f || right_stick_direction.y != 0.0f
+            ? right_stick_direction
+            : move_direction;
+
+        // Don't change texture path if look direction is (0, 0).
+        if (look_direction.x != 0.0f || look_direction.y != 0.0f)
+        {
+            if (fabsf(look_direction.x) > fabsf(look_direction.y))
+            {
+                entity_state.sprite->texture_path =
+                    look_direction.x < 0
+                    ? "resources/textures/player_left.png"
+                    : "resources/textures/player_right.png";
+            }
+            else
+            {
+                entity_state.sprite->texture_path =
+                    look_direction.y < 0
+                    ? "resources/textures/player_down.png"
+                    : "resources/textures/player_up.png";
+            }
+        }
     });
 }
 

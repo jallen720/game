@@ -38,7 +38,7 @@
             "render_layer": "world",
             "sprite":
             {
-                "texture_path": "resources/textures/player.png",
+                "texture_path": "resources/textures/player_down.png",
                 "shader_pipeline_name": "texture"
             },
             "dimensions": {},
@@ -50,7 +50,7 @@
         },
         "systems":
         [
-            "controller"
+            "player_controller"
         ]
     }
 ]
