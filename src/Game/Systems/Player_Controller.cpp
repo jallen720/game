@@ -124,6 +124,7 @@ void player_controller_update()
             ? right_stick_direction
             : move_direction;
 
+
         // Don't change texture path if look direction is (0, 0).
         if (look_direction.x != 0.0f || look_direction.y != 0.0f)
         {
