@@ -20,7 +20,6 @@ using std::map;
 
 // Nito/Engine.hpp
 using Nito::add_update_handler;
-using Nito::set_control_handler;
 using Nito::run_engine;
 using Nito::get_component_allocator;
 using Nito::get_component_deallocator;
@@ -32,9 +31,6 @@ using Nito::System_Entity_Handlers;
 using Nito::set_component_handlers;
 using Nito::set_system_entity_handlers;
 using Nito::Component;
-
-// Nito/APIs/Input.hpp
-using Nito::Control_Handler;
 
 // Nito/APIs/Window.hpp
 using Nito::close_window;
@@ -58,15 +54,6 @@ namespace Game
 static vector<Update_Handler> game_update_handlers
 {
     player_controller_update,
-};
-
-
-static map<string, const Control_Handler> game_control_handlers
-{
-    {
-        "exit",
-        close_window
-    },
 };
 
 
@@ -123,7 +110,6 @@ static map<string, const Component_Handlers> game_component_handlers
 int run()
 {
     for_each(game_update_handlers, add_update_handler);
-    for_each(game_control_handlers, set_control_handler);
 
     for_each(
         game_system_entity_handlers,
