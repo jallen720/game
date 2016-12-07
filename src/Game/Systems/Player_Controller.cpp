@@ -32,7 +32,9 @@ using Nito::Sprite;
 // Nito/Input.hpp
 using Nito::debug_controllers;
 using Nito::get_controller_axis;
+using Nito::set_controller_button_handler;
 using Nito::Controller_Axes;
+using Nito::Button_Actions;
 
 // Nito/Window.hpp
 using Nito::get_delta_time;
@@ -82,6 +84,15 @@ void player_controller_subscribe(const Entity entity)
         (Sprite *)get_component(entity, "sprite"),
         (Player_Controller *)get_component(entity, "player_controller"),
     };
+
+    set_controller_button_handler(
+        "player",
+        {
+            0,
+            5,
+            Button_Actions::PRESS,
+            []() -> void { puts("fire!"); },
+        });
 }
 
 
