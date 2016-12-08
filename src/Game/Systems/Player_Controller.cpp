@@ -1,6 +1,7 @@
 #include "Game/Systems/Player_Controller.hpp"
 
 #include <map>
+#include <string>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <math.h>
@@ -14,6 +15,7 @@
 
 
 using std::map;
+using std::string;
 
 // glm/glm.hpp
 using glm::vec3;
@@ -24,10 +26,14 @@ using glm::normalize;
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
 using Nito::get_component;
+using Nito::create_entity;
+using Nito::add_component;
+using Nito::subscribe_to_system;
 
 // Nito/Components.hpp
 using Nito::Transform;
 using Nito::Sprite;
+using Nito::Dimensions;
 
 // Nito/Input.hpp
 using Nito::debug_controllers;
@@ -60,6 +66,7 @@ struct Entity_State
     Transform * transform;
     Sprite * sprite;
     const Player_Controller * player_controller;
+    vec3 look_direction;
 };
 
 
@@ -69,6 +76,28 @@ struct Entity_State
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static map<Entity, Entity_State> entity_states;
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Utilities
+//
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+static void player_fire(const Entity entity)
+{
+    const Entity_State & entity_state = entity_states[entity];
+    const vec3 & player_position = entity_state.transform->position;
+    const vec3 projectile_position(player_position.x, player_position.y, -2.0f);
+    const Entity projectile = create_entity();
+    add_component(projectile, "transform", new Transform { projectile_position, vec3(1.0f), 0.0f });
+    add_component(projectile, "projectile", new Projectile { 3.0f, entity_state.look_direction });
+    add_component(projectile, "sprite", new Sprite { "resources/textures/projectile.png", "texture" });
+    add_component(projectile, "dimensions", new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) });
+    add_component(projectile, "render_layer", new string("world"));
+    subscribe_to_system(projectile, "projectile");
+    subscribe_to_system(projectile, "sprite_dimensions_handler");
+    subscribe_to_system(projectile, "renderer");
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,9 +112,15 @@ void player_controller_subscribe(const Entity entity)
         (Transform *)get_component(entity, "transform"),
         (Sprite *)get_component(entity, "sprite"),
         (Player_Controller *)get_component(entity, "player_controller"),
+        vec3(),
     };
 
-    set_controller_button_handler("player", 5, Button_Actions::RELEASE, []() -> void { puts("fire!"); });
+
+    // Set player fire handler to controller button 5.
+    set_controller_button_handler("player_fire", 5, Button_Actions::PRESS, [=]() -> void
+    {
+        player_fire(entity);
+    });
 }
 
 
@@ -97,10 +132,11 @@ void player_controller_unsubscribe(const Entity entity)
 
 void player_controller_update()
 {
-    for_each(entity_states, [](const Entity /*entity*/, const Entity_State & entity_state) -> void
+    for_each(entity_states, [](const Entity /*entity*/, Entity_State & entity_state) -> void
     {
         const Player_Controller * player_controller = entity_state.player_controller;
         const float stick_dead_zone = player_controller->stick_dead_zone;
+        vec3 & look_direction = entity_state.look_direction;
 
 
         // Get move direction and modifiy entity position.
@@ -123,7 +159,7 @@ void player_controller_update()
             -get_controller_axis(Controller_Axes::RIGHT_STICK_Y),
             0.0f);
 
-        const vec3 & look_direction =
+        look_direction =
             fabsf(right_stick_direction.x) > stick_dead_zone || fabsf(right_stick_direction.y) > stick_dead_zone
             ? right_stick_direction
             : move_direction;

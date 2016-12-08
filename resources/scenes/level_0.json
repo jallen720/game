@@ -41,7 +41,10 @@
                 "texture_path": "resources/textures/player_down.png",
                 "shader_pipeline_name": "texture"
             },
-            "dimensions": {},
+            "dimensions":
+            {
+                "origin": { "x": 0.5, "y": 0.5 }
+            },
             "transform":
             {
                 "position": { "x": 3, "y": 2, "z": -1 }

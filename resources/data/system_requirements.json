@@ -4,5 +4,10 @@
         "transform",
         "sprite",
         "player_controller"
+    ],
+    "projectile":
+    [
+        "projectile",
+        "transform"
     ]
 }
