@@ -64,27 +64,9 @@ static vector<Update_Handler> game_update_handlers
 
 static map<string, const System_Entity_Handlers> game_system_entity_handlers
 {
-    {
-        "play_button",
-        {
-            play_button_subscribe,
-            play_button_unsubscribe,
-        }
-    },
-    {
-        "room_generator",
-        {
-            room_generator_subscribe,
-            room_generator_unsubscribe,
-        }
-    },
-    {
-        "player_controller",
-        {
-            player_controller_subscribe,
-            player_controller_unsubscribe,
-        }
-    },
+    NITO_SYSTEM_ENTITY_HANDLERS(play_button),
+    NITO_SYSTEM_ENTITY_HANDLERS(room_generator),
+    NITO_SYSTEM_ENTITY_HANDLERS(player_controller),
 };
 
 
