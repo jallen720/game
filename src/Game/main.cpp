@@ -128,14 +128,7 @@ int run()
         set_component_handlers(type, component_handlers.allocator, component_handlers.deallocator);
     });
 
-    set_key_handler(
-        "exit",
-        {
-            Keys::ESCAPE,
-            Button_Actions::PRESS,
-            close_window,
-        });
-
+    set_key_handler("exit", Keys::ESCAPE, Button_Actions::PRESS, close_window);
     return run_engine();
 }
 

@@ -85,14 +85,7 @@ void player_controller_subscribe(const Entity entity)
         (Player_Controller *)get_component(entity, "player_controller"),
     };
 
-    set_controller_button_handler(
-        "player",
-        {
-            0,
-            5,
-            Button_Actions::PRESS,
-            []() -> void { puts("fire!"); },
-        });
+    set_controller_button_handler("player", 5, Button_Actions::RELEASE, []() -> void { puts("fire!"); });
 }
 
 
