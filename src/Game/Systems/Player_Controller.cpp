@@ -112,7 +112,7 @@ void player_controller_subscribe(const Entity entity)
         (Transform *)get_component(entity, "transform"),
         (Sprite *)get_component(entity, "sprite"),
         (Player_Controller *)get_component(entity, "player_controller"),
-        vec3(),
+        vec3(0.0f, -1.0f, 0.0f),
     };
 
 
@@ -136,7 +136,6 @@ void player_controller_update()
     {
         const Player_Controller * player_controller = entity_state.player_controller;
         const float stick_dead_zone = player_controller->stick_dead_zone;
-        vec3 & look_direction = entity_state.look_direction;
 
 
         // Get move direction and modifiy entity position.
@@ -150,7 +149,10 @@ void player_controller_update()
             fabsf(left_stick_direction.y) > stick_dead_zone ? left_stick_direction.y : 0.0f,
             0.0f);
 
-        entity_state.transform->position += move_direction * player_controller->speed * get_delta_time();
+        if (move_direction.x != 0.0f || move_direction.y != 0.0f)
+        {
+            entity_state.transform->position += normalize(move_direction) * player_controller->speed * get_delta_time();
+        }
 
 
         // Set texture path for entity's look direction based on right stick input if any or move direction otherwise.
@@ -159,7 +161,7 @@ void player_controller_update()
             -get_controller_axis(Controller_Axes::RIGHT_STICK_Y),
             0.0f);
 
-        look_direction =
+        const vec3 & look_direction =
             fabsf(right_stick_direction.x) > stick_dead_zone || fabsf(right_stick_direction.y) > stick_dead_zone
             ? right_stick_direction
             : move_direction;
@@ -168,6 +170,9 @@ void player_controller_update()
         // Don't change texture path if look direction is (0, 0).
         if (look_direction.x != 0.0f || look_direction.y != 0.0f)
         {
+            // Only update look direction if it's not (0, 0).
+            entity_state.look_direction = normalize(look_direction);
+
             if (fabsf(look_direction.x) > fabsf(look_direction.y))
             {
                 entity_state.sprite->texture_path =
