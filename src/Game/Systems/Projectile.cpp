@@ -84,14 +84,15 @@ void projectile_update()
 
     for_each(entity_states, [=](const Entity entity, const Entity_State & entity_state) -> void
     {
+        const Projectile * projectile = entity_state.projectile;
+
         // If projectile's duration has expired, flag it for deletion.
-        if (time - entity_state.creation_time > 1.0f)
+        if (time - entity_state.creation_time > projectile->duration)
         {
             flag_entity_for_deletion(entity);
             return;
         }
 
-        const Projectile * projectile = entity_state.projectile;
         entity_state.transform->position += projectile->speed * projectile->direction * delta_time;
     });
 }

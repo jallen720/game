@@ -112,6 +112,7 @@ static map<string, const Component_Handlers> game_component_handlers
                 {
                     data["speed"],
                     direction,
+                    data["duration"],
                 };
             },
             get_component_deallocator<Projectile>(),

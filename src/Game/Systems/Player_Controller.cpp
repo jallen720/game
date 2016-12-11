@@ -85,12 +85,14 @@ static map<Entity, Entity_State> entity_states;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static void player_fire(const Entity entity)
 {
+    static const float PROJECTILE_DURATION = 0.5f;
+
     const Entity_State & entity_state = entity_states[entity];
     const vec3 & player_position = entity_state.transform->position;
     const vec3 projectile_position(player_position.x, player_position.y, -2.0f);
     const Entity projectile = create_entity();
     add_component(projectile, "transform", new Transform { projectile_position, vec3(1.0f), 0.0f });
-    add_component(projectile, "projectile", new Projectile { 3.0f, entity_state.look_direction });
+    add_component(projectile, "projectile", new Projectile { 3.0f, entity_state.look_direction, PROJECTILE_DURATION });
     add_component(projectile, "sprite", new Sprite { "resources/textures/projectile.png", "texture" });
     add_component(projectile, "dimensions", new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) });
     add_component(projectile, "render_layer", new string("world"));
