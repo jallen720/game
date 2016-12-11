@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <glm/glm.hpp>
 #include "Nito/Engine.hpp"
 #include "Nito/APIs/ECS.hpp"
 #include "Nito/APIs/Input.hpp"
@@ -18,6 +19,9 @@
 using std::string;
 using std::vector;
 using std::map;
+
+// glm/glm.hpp
+using glm::vec3;
 
 // Nito/Engine.hpp
 using Nito::add_update_handler;
@@ -46,6 +50,7 @@ using Cpp_Utils::for_each;
 
 // Cpp_Utils/JSON.hpp
 using Cpp_Utils::JSON;
+using Cpp_Utils::contains_key;
 
 
 namespace Game
@@ -87,6 +92,29 @@ static map<string, const Component_Handlers> game_component_handlers
                 };
             },
             get_component_deallocator<Player_Controller>(),
+        }
+    },
+    {
+        "projectile",
+        {
+            [](const JSON & data) -> Component
+            {
+                vec3 direction;
+
+                if (contains_key(data, "direction"))
+                {
+                    const JSON & direction_data = data["direction"];
+                    direction.x = direction_data["x"];
+                    direction.y = direction_data["y"];
+                }
+
+                return new Projectile
+                {
+                    data["speed"],
+                    direction,
+                };
+            },
+            get_component_deallocator<Projectile>(),
         }
     },
 };
