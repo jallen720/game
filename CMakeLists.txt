@@ -15,7 +15,6 @@ configure_project()
 
 # App binary
 module_dependency("Cpp_Utils")
-module_dependency("GLFW3")
 module_dependency("FreeType2")
 module_dependency("Nito")
 add_bin()
