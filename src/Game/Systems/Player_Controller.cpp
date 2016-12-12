@@ -105,8 +105,7 @@ static map<Entity, Entity_State> entity_states;
 static void player_fire(const Entity entity)
 {
     static const float PROJECTILE_DURATION = 1.0f;
-    static const float LEFT_RIGHT_Y_OFFSET = 0.025f;
-    static const float UP_Y_OFFSET = 0.05f;
+    static const float VERTICAL_Y_OFFSET = 0.05f;
 
     const Entity_State & entity_state = entity_states[entity];
     const vec3 & player_position = entity_state.transform->position;
@@ -114,23 +113,27 @@ static void player_fire(const Entity entity)
 
 
     // Calculate projectile's position.
-    const float left_right_x_offset = (entity_state.dimensions->width / get_pixels_per_unit() / 2) - 0.05f;
+    const float horizontal_x_offset = (entity_state.dimensions->width / get_pixels_per_unit() / 2) - 0.05f;
     vec3 projectile_position(player_position.x, player_position.y, 0.0f);
 
-    if (orientation == Orientation::LEFT)
+    if (orientation == Orientation::RIGHT)
     {
-        projectile_position.x -= left_right_x_offset;
-        projectile_position.y += LEFT_RIGHT_Y_OFFSET;
+        projectile_position.x += horizontal_x_offset;
     }
-    else if (orientation == Orientation::RIGHT)
+    else if (orientation == Orientation::LEFT)
     {
-        projectile_position.x += left_right_x_offset;
-        projectile_position.y += LEFT_RIGHT_Y_OFFSET;
+        projectile_position.x -= horizontal_x_offset;
     }
     else if (orientation == Orientation::UP)
     {
-        projectile_position.y += UP_Y_OFFSET;
+        projectile_position.y += VERTICAL_Y_OFFSET;
     }
+    else
+    {
+        projectile_position.y -= VERTICAL_Y_OFFSET;
+    }
+
+    projectile_position.z = projectile_position.y;
 
 
     // Generate projectile entity.
@@ -143,6 +146,7 @@ static void player_fire(const Entity entity)
     subscribe_to_system(projectile, "projectile");
     subscribe_to_system(projectile, "sprite_dimensions_handler");
     subscribe_to_system(projectile, "renderer");
+    subscribe_to_system(projectile, "depth_handler");
 }
 
 

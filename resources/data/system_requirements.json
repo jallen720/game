@@ -10,5 +10,9 @@
     [
         "projectile",
         "transform"
+    ],
+    "depth_handler":
+    [
+        "transform"
     ]
 }

@@ -43,7 +43,7 @@
             },
             "dimensions":
             {
-                "origin": { "x": 0.5, "y": 0.5 }
+                "origin": { "x": 0.5, "y": 0.55 }
             },
             "transform":
             {
@@ -55,6 +55,9 @@
                 "stick_dead_zone": 0.35
             }
         },
-        "systems": []
+        "systems":
+        [
+            "depth_handler"
+        ]
     }
 ]

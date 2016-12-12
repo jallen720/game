@@ -14,6 +14,7 @@
 #include "Game/Systems/Room_Generator.hpp"
 #include "Game/Systems/Player_Controller.hpp"
 #include "Game/Systems/Projectile.hpp"
+#include "Game/Systems/Depth_Handler.hpp"
 
 
 using std::string;
@@ -66,6 +67,7 @@ static vector<Update_Handler> game_update_handlers
 {
     player_controller_update,
     projectile_update,
+    depth_handler_update,
 };
 
 
@@ -75,6 +77,7 @@ static map<string, const System_Entity_Handlers> game_system_entity_handlers
     NITO_SYSTEM_ENTITY_HANDLERS(room_generator),
     NITO_SYSTEM_ENTITY_HANDLERS(player_controller),
     NITO_SYSTEM_ENTITY_HANDLERS(projectile),
+    NITO_SYSTEM_ENTITY_HANDLERS(depth_handler),
 };
 
 
