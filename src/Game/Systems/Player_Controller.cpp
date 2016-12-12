@@ -1,13 +1,17 @@
+#include <GL/glew.h>
+
 #include "Game/Systems/Player_Controller.hpp"
 
 #include <map>
 #include <string>
+#include <stdexcept>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <math.h>
 #include "Nito/Components.hpp"
 #include "Nito/APIs/Input.hpp"
 #include "Nito/APIs/Window.hpp"
+#include "Nito/APIs/Graphics.hpp"
 #include "Cpp_Utils/Map.hpp"
 #include "Cpp_Utils/Collection.hpp"
 
@@ -16,6 +20,7 @@
 
 using std::map;
 using std::string;
+using std::runtime_error;
 
 // glm/glm.hpp
 using glm::vec3;
@@ -45,6 +50,9 @@ using Nito::Button_Actions;
 // Nito/Window.hpp
 using Nito::get_delta_time;
 
+// Nito/Graphics.hpp
+using Nito::get_pixels_per_unit;
+
 // Cpp_Utils/Map.hpp
 using Cpp_Utils::remove;
 
@@ -61,12 +69,23 @@ namespace Game
 // Data Structures
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+enum class Orientation
+{
+    LEFT,
+    UP,
+    RIGHT,
+    DOWN,
+};
+
+
 struct Entity_State
 {
     Transform * transform;
+    Dimensions * dimensions;
     Sprite * sprite;
     const Player_Controller * player_controller;
     vec3 look_direction;
+    Orientation orientation;
 };
 
 
@@ -85,11 +104,36 @@ static map<Entity, Entity_State> entity_states;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static void player_fire(const Entity entity)
 {
-    static const float PROJECTILE_DURATION = 0.5f;
+    static const float PROJECTILE_DURATION = 1.0f;
+    static const float LEFT_RIGHT_Y_OFFSET = 0.025f;
+    static const float UP_Y_OFFSET = 0.05f;
 
     const Entity_State & entity_state = entity_states[entity];
     const vec3 & player_position = entity_state.transform->position;
-    const vec3 projectile_position(player_position.x, player_position.y, -2.0f);
+    const Orientation orientation = entity_state.orientation;
+
+
+    // Calculate projectile's position.
+    const float left_right_x_offset = (entity_state.dimensions->width / get_pixels_per_unit() / 2) - 0.05f;
+    vec3 projectile_position(player_position.x, player_position.y, 0.0f);
+
+    if (orientation == Orientation::LEFT)
+    {
+        projectile_position.x -= left_right_x_offset;
+        projectile_position.y += LEFT_RIGHT_Y_OFFSET;
+    }
+    else if (orientation == Orientation::RIGHT)
+    {
+        projectile_position.x += left_right_x_offset;
+        projectile_position.y += LEFT_RIGHT_Y_OFFSET;
+    }
+    else if (orientation == Orientation::UP)
+    {
+        projectile_position.y += UP_Y_OFFSET;
+    }
+
+
+    // Generate projectile entity.
     const Entity projectile = create_entity();
     add_component(projectile, "transform", new Transform { projectile_position, vec3(1.0f), 0.0f });
     add_component(projectile, "projectile", new Projectile { 3.0f, entity_state.look_direction, PROJECTILE_DURATION });
@@ -112,9 +156,11 @@ void player_controller_subscribe(const Entity entity)
     entity_states[entity] =
     {
         (Transform *)get_component(entity, "transform"),
+        (Dimensions *)get_component(entity, "dimensions"),
         (Sprite *)get_component(entity, "sprite"),
         (Player_Controller *)get_component(entity, "player_controller"),
         vec3(0.0f, -1.0f, 0.0f),
+        Orientation::DOWN,
     };
 
 
@@ -138,6 +184,7 @@ void player_controller_update()
     {
         const Player_Controller * player_controller = entity_state.player_controller;
         const float stick_dead_zone = player_controller->stick_dead_zone;
+        Orientation & orientation = entity_state.orientation;
 
 
         // Get move direction and modifiy entity position.
@@ -177,19 +224,21 @@ void player_controller_update()
 
             if (fabsf(look_direction.x) > fabsf(look_direction.y))
             {
-                entity_state.sprite->texture_path =
-                    look_direction.x < 0
-                    ? "resources/textures/player_left.png"
-                    : "resources/textures/player_right.png";
+                orientation = look_direction.x < 0 ? Orientation::LEFT : Orientation::RIGHT;
             }
             else
             {
-                entity_state.sprite->texture_path =
-                    look_direction.y < 0
-                    ? "resources/textures/player_down.png"
-                    : "resources/textures/player_up.png";
+                orientation = look_direction.y < 0 ? Orientation::DOWN : Orientation::UP;
             }
         }
+
+
+        entity_state.sprite->texture_path =
+            orientation == Orientation::LEFT ? "resources/textures/player_left.png" :
+            orientation == Orientation::UP ? "resources/textures/player_up.png" :
+            orientation == Orientation::RIGHT ? "resources/textures/player_right.png" :
+            orientation == Orientation::DOWN ? "resources/textures/player_down.png" :
+            throw runtime_error("ERROR: unknown orientation for player!");
     });
 }
 

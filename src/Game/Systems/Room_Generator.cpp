@@ -93,6 +93,8 @@ static const map<Tile_Types, const string> TILE_TYPE_TEXTURE_PATHS
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void create_tile(const vec3 & position, const string & texture_path)
 {
+    static const float ROOM_Z = 100.0f;
+
     const Entity tile = create_entity();
     auto dimensions = new Dimensions { 0.0f, 0.0f, vec3(0.0f) };
     auto transform = new Transform { vec3(), vec3(1.0f), 0.0f };
@@ -103,7 +105,8 @@ void create_tile(const vec3 & position, const string & texture_path)
     add_component(tile, "sprite", sprite);
     subscribe_to_system(tile, "sprite_dimensions_handler");
     subscribe_to_system(tile, "renderer");
-    transform->position = position * vec3(dimensions->width, dimensions->height, 0.0f) / get_pixels_per_unit();
+    transform->position = position * (vec3(dimensions->width, dimensions->height, 0.0f) / get_pixels_per_unit());
+    transform->position.z = ROOM_Z;
 }
 
 

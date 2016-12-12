@@ -2,6 +2,7 @@
     "player_controller":
     [
         "transform",
+        "dimensions",
         "sprite",
         "player_controller"
     ],
