@@ -17,10 +17,8 @@ using glm::vec3;
 
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
-using Nito::create_entity;
-using Nito::add_component;
+using Nito::generate_entity;
 using Nito::get_component;
-using Nito::subscribe_to_system;
 
 // Nito/Components.hpp
 using Nito::Transform;
@@ -95,16 +93,21 @@ void create_tile(const vec3 & position, const string & texture_path)
 {
     static const float ROOM_Z = 100.0f;
 
-    const Entity tile = create_entity();
     auto dimensions = new Dimensions { 0.0f, 0.0f, vec3(0.0f) };
     auto transform = new Transform { vec3(), vec3(1.0f), 0.0f };
-    auto sprite = new Sprite { texture_path, "texture" };
-    add_component(tile, "render_layer", new string("world"));
-    add_component(tile, "transform", transform);
-    add_component(tile, "dimensions", dimensions);
-    add_component(tile, "sprite", sprite);
-    subscribe_to_system(tile, "sprite_dimensions_handler");
-    subscribe_to_system(tile, "renderer");
+
+    generate_entity(
+        {
+            { "render_layer" , new string("world")                    },
+            { "transform"    , transform                              },
+            { "dimensions"   , dimensions                             },
+            { "sprite"       , new Sprite { texture_path, "texture" } },
+        },
+        {
+            "sprite_dimensions_handler",
+            "renderer",
+        });
+
     transform->position = position * (vec3(dimensions->width, dimensions->height, 0.0f) / get_pixels_per_unit());
     transform->position.z = ROOM_Z;
 }

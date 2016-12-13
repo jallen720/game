@@ -31,9 +31,7 @@ using glm::normalize;
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
 using Nito::get_component;
-using Nito::create_entity;
-using Nito::add_component;
-using Nito::subscribe_to_system;
+using Nito::generate_entity;
 
 // Nito/Components.hpp
 using Nito::Transform;
@@ -137,16 +135,20 @@ static void player_fire(const Entity entity)
 
 
     // Generate projectile entity.
-    const Entity projectile = create_entity();
-    add_component(projectile, "transform", new Transform { projectile_position, vec3(1.0f), 0.0f });
-    add_component(projectile, "projectile", new Projectile { 3.0f, entity_state.look_direction, PROJECTILE_DURATION });
-    add_component(projectile, "sprite", new Sprite { "resources/textures/projectile.png", "texture" });
-    add_component(projectile, "dimensions", new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) });
-    add_component(projectile, "render_layer", new string("world"));
-    subscribe_to_system(projectile, "projectile");
-    subscribe_to_system(projectile, "sprite_dimensions_handler");
-    subscribe_to_system(projectile, "renderer");
-    subscribe_to_system(projectile, "depth_handler");
+    generate_entity(
+        {
+            { "transform"    , new Transform { projectile_position, vec3(1.0f), 0.0f }                   },
+            { "projectile"   , new Projectile { 3.0f, entity_state.look_direction, PROJECTILE_DURATION } },
+            { "sprite"       , new Sprite { "resources/textures/projectile.png", "texture" }             },
+            { "dimensions"   , new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) }                     },
+            { "render_layer" , new string("world")                                                       },
+        },
+        {
+            "projectile",
+            "sprite_dimensions_handler",
+            "renderer",
+            "depth_handler",
+        });
 }
 
 
