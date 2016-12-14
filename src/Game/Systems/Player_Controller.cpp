@@ -16,6 +16,7 @@
 #include "Cpp_Utils/Collection.hpp"
 
 #include "Game/Components.hpp"
+#include "Game/Utilities.hpp"
 
 
 using std::map;
@@ -102,7 +103,6 @@ static map<Entity, Entity_State> entity_states;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static void player_fire(const Entity entity)
 {
-    static const float PROJECTILE_DURATION = 1.0f;
     static const float VERTICAL_Y_OFFSET = 0.05f;
 
     const Entity_State & entity_state = entity_states[entity];
@@ -135,20 +135,7 @@ static void player_fire(const Entity entity)
 
 
     // Generate projectile entity.
-    generate_entity(
-        {
-            { "transform"    , new Transform { projectile_position, vec3(1.0f), 0.0f }                   },
-            { "projectile"   , new Projectile { 3.0f, entity_state.look_direction, PROJECTILE_DURATION } },
-            { "sprite"       , new Sprite { "resources/textures/projectile.png", "texture" }             },
-            { "dimensions"   , new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) }                     },
-            { "render_layer" , new string("world")                                                       },
-        },
-        {
-            "projectile",
-            "sprite_dimensions_handler",
-            "renderer",
-            "depth_handler",
-        });
+    fire_projectile(projectile_position, entity_state.look_direction, 1.0f);
 }
 
 
