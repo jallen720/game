@@ -14,5 +14,9 @@
     "depth_handler":
     [
         "transform"
+    ],
+    "turret":
+    [
+        "transform"
     ]
 }

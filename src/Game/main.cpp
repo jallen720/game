@@ -15,6 +15,7 @@
 #include "Game/Systems/Player_Controller.hpp"
 #include "Game/Systems/Projectile.hpp"
 #include "Game/Systems/Depth_Handler.hpp"
+#include "Game/Systems/Turret.hpp"
 
 
 using std::string;
@@ -68,6 +69,7 @@ static vector<Update_Handler> game_update_handlers
     player_controller_update,
     projectile_update,
     depth_handler_update,
+    turret_update,
 };
 
 
@@ -78,6 +80,7 @@ static map<string, const System_Entity_Handlers> game_system_entity_handlers
     NITO_SYSTEM_ENTITY_HANDLERS(player_controller),
     NITO_SYSTEM_ENTITY_HANDLERS(projectile),
     NITO_SYSTEM_ENTITY_HANDLERS(depth_handler),
+    NITO_SYSTEM_ENTITY_HANDLERS(turret),
 };
 
 

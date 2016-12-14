@@ -185,5 +185,16 @@
             "min_filter": "nearest",
             "mag_filter": "nearest"
         }
+    },
+    {
+        "path": "resources/textures/turret_down.png",
+        "format": "rgba",
+        "options":
+        {
+            "wrap_s": "clamp_to_edge",
+            "wrap_t": "clamp_to_edge",
+            "min_filter": "nearest",
+            "mag_filter": "nearest"
+        }
     }
 ]
