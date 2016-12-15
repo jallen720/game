@@ -67,7 +67,7 @@
             "render_layer": "world",
             "sprite":
             {
-                "texture_path": "resources/textures/turret_down.png",
+                "texture_path": "resources/textures/turret_up.png",
                 "shader_pipeline_name": "texture"
             },
             "dimensions":
