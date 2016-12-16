@@ -21,7 +21,6 @@ using Nito::get_component;
 using Nito::get_entity;
 
 // Nito/Components.hpp
-using Nito::Sprite;
 using Nito::Transform;
 
 // Nito/APIs/Window.hpp
@@ -45,7 +44,6 @@ namespace Game
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 struct Entity_State
 {
-    // Sprite * sprite;
     Transform * transform;
     const vec3 * target_position;
     float last_fire_time;
@@ -77,7 +75,6 @@ void turret_subscribe(const Entity entity)
 
     entity_states[entity] =
     {
-        // (Sprite *)get_component(entity, "sprite"),
         (Transform *)get_component(entity, "transform"),
         target_position,
         -FIRE_COOLDOWN,
