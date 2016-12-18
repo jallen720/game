@@ -134,21 +134,11 @@ static void player_fire(const Entity entity)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void player_controller_subscribe(const Entity entity)
 {
-    auto orientation_handler = (Orientation_Handler *)get_component(entity, "orientation_handler");
-
-    orientation_handler->orientation_texture_paths =
-    {
-        { Orientation::LEFT  , "resources/textures/player_left.png"  },
-        { Orientation::UP    , "resources/textures/player_up.png"    },
-        { Orientation::RIGHT , "resources/textures/player_right.png" },
-        { Orientation::DOWN  , "resources/textures/player_down.png"  },
-    };
-
     entity_states[entity] =
     {
         (Transform *)get_component(entity, "transform"),
         (Dimensions *)get_component(entity, "dimensions"),
-        orientation_handler,
+        (Orientation_Handler *)get_component(entity, "orientation_handler"),
         (Player_Controller *)get_component(entity, "player_controller"),
     };
 

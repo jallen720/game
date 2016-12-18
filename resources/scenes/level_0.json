@@ -55,7 +55,16 @@
                 "speed": 1,
                 "stick_dead_zone": 0.35
             },
-            "orientation_handler": {}
+            "orientation_handler":
+            {
+                "texture_paths":
+                {
+                    "left": "resources/textures/player_left.png",
+                    "up": "resources/textures/player_up.png",
+                    "right":"resources/textures/player_right.png",
+                    "down": "resources/textures/player_down.png"
+                }
+            }
         },
         "systems":
         [
@@ -79,7 +88,16 @@
             {
                 "position": { "x": 1, "y": 1 }
             },
-            "orientation_handler": {}
+            "orientation_handler":
+            {
+                "texture_paths":
+                {
+                    "left": "resources/textures/turret_left.png",
+                    "up": "resources/textures/turret_up.png",
+                    "right":"resources/textures/turret_right.png",
+                    "down": "resources/textures/turret_down.png"
+                }
+            }
         },
         "systems":
         [

@@ -75,20 +75,10 @@ void turret_subscribe(const Entity entity)
         target_position = &((Transform *)get_component(get_entity("Player"), "transform"))->position;
     }
 
-    auto orientation_handler = (Orientation_Handler *)get_component(entity, "orientation_handler");
-
-    orientation_handler->orientation_texture_paths =
-    {
-        { Orientation::LEFT  , "resources/textures/turret_left.png"  },
-        { Orientation::UP    , "resources/textures/turret_up.png"    },
-        { Orientation::RIGHT , "resources/textures/turret_right.png" },
-        { Orientation::DOWN  , "resources/textures/turret_down.png"  },
-    };
-
     entity_states[entity] =
     {
         (Transform *)get_component(entity, "transform"),
-        orientation_handler,
+        (Orientation_Handler *)get_component(entity, "orientation_handler"),
         target_position,
         -FIRE_COOLDOWN,
     };

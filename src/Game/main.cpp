@@ -130,9 +130,21 @@ static map<string, const Component_Handlers> game_component_handlers
     {
         "orientation_handler",
         {
-            [](const JSON & /*data*/) -> Component
+            [](const JSON & data) -> Component
             {
-                return new Orientation_Handler;
+                const JSON & orientation_texture_paths = data["texture_paths"];
+
+                return new Orientation_Handler
+                {
+                    Orientation::DOWN,
+                    vec3(0.0f, -1.0f, 0.0f),
+                    {
+                        { Orientation::UP    , orientation_texture_paths["up"].get<string>()    },
+                        { Orientation::DOWN  , orientation_texture_paths["down"].get<string>()  },
+                        { Orientation::LEFT  , orientation_texture_paths["left"].get<string>()  },
+                        { Orientation::RIGHT , orientation_texture_paths["right"].get<string>() },
+                    },
+                };
             },
             get_component_deallocator<Orientation_Handler>(),
         }
