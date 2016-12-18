@@ -17,7 +17,8 @@
     ],
     "turret":
     [
-        "transform"
+        "transform",
+        "orientation_handler"
     ],
     "orientation_handler":
     [

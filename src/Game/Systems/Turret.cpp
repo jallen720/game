@@ -7,6 +7,7 @@
 #include "Cpp_Utils/Map.hpp"
 #include "Cpp_Utils/Collection.hpp"
 
+#include "Game/Components.hpp"
 #include "Game/Utilities.hpp"
 
 
@@ -45,6 +46,7 @@ namespace Game
 struct Entity_State
 {
     Transform * transform;
+    Orientation_Handler * orientation_handler;
     const vec3 * target_position;
     float last_fire_time;
 };
@@ -73,9 +75,20 @@ void turret_subscribe(const Entity entity)
         target_position = &((Transform *)get_component(get_entity("Player"), "transform"))->position;
     }
 
+    auto orientation_handler = (Orientation_Handler *)get_component(entity, "orientation_handler");
+
+    orientation_handler->orientation_texture_paths =
+    {
+        { Orientation::LEFT  , "resources/textures/turret_left.png"  },
+        { Orientation::UP    , "resources/textures/turret_up.png"    },
+        { Orientation::RIGHT , "resources/textures/turret_right.png" },
+        { Orientation::DOWN  , "resources/textures/turret_down.png"  },
+    };
+
     entity_states[entity] =
     {
         (Transform *)get_component(entity, "transform"),
+        orientation_handler,
         target_position,
         -FIRE_COOLDOWN,
     };
@@ -96,10 +109,12 @@ void turret_update()
     {
         const vec3 & position = entity_state.transform->position;
         float & last_fire_time = entity_state.last_fire_time;
+        vec3 & look_direction = entity_state.orientation_handler->look_direction;
+        look_direction = *entity_state.target_position - position;
 
         if (time - last_fire_time > FIRE_COOLDOWN)
         {
-            fire_projectile(position, *entity_state.target_position - position, 1.0f);
+            fire_projectile(position, look_direction, 1.0f);
             last_fire_time = time;
         }
     });
