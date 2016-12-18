@@ -16,6 +16,7 @@
 #include "Game/Systems/Projectile.hpp"
 #include "Game/Systems/Depth_Handler.hpp"
 #include "Game/Systems/Turret.hpp"
+#include "Game/Systems/Orientation_Handler.hpp"
 
 
 using std::string;
@@ -70,6 +71,7 @@ static vector<Update_Handler> game_update_handlers
     projectile_update,
     depth_handler_update,
     turret_update,
+    orientation_handler_update,
 };
 
 
@@ -81,6 +83,7 @@ static map<string, const System_Entity_Handlers> game_system_entity_handlers
     NITO_SYSTEM_ENTITY_HANDLERS(projectile),
     NITO_SYSTEM_ENTITY_HANDLERS(depth_handler),
     NITO_SYSTEM_ENTITY_HANDLERS(turret),
+    NITO_SYSTEM_ENTITY_HANDLERS(orientation_handler),
 };
 
 
@@ -124,6 +127,16 @@ static map<string, const Component_Handlers> game_component_handlers
             get_component_deallocator<Projectile>(),
         }
     },
+    {
+        "orientation_handler",
+        {
+            [](const JSON & /*data*/) -> Component
+            {
+                return new Orientation_Handler;
+            },
+            get_component_deallocator<Orientation_Handler>(),
+        }
+    }
 };
 
 

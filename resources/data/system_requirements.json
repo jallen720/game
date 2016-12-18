@@ -3,7 +3,7 @@
     [
         "transform",
         "dimensions",
-        "sprite",
+        "orientation_handler",
         "player_controller"
     ],
     "projectile":
@@ -18,5 +18,10 @@
     "turret":
     [
         "transform"
+    ],
+    "orientation_handler":
+    [
+        "orientation_handler",
+        "sprite"
     ]
 }

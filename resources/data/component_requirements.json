@@ -6,5 +6,9 @@
     "projectile":
     [
         "projectile"
+    ],
+    "orientation_handler":
+    [
+        "orientation_handler"
     ]
 }

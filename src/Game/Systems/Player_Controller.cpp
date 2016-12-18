@@ -36,7 +36,6 @@ using Nito::generate_entity;
 
 // Nito/Components.hpp
 using Nito::Transform;
-using Nito::Sprite;
 using Nito::Dimensions;
 
 // Nito/Input.hpp
@@ -68,23 +67,12 @@ namespace Game
 // Data Structures
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-enum class Orientation
-{
-    LEFT,
-    UP,
-    RIGHT,
-    DOWN,
-};
-
-
 struct Entity_State
 {
     Transform * transform;
     Dimensions * dimensions;
-    Sprite * sprite;
+    Orientation_Handler * orientation_handler;
     const Player_Controller * player_controller;
-    vec3 look_direction;
-    Orientation orientation;
 };
 
 
@@ -107,7 +95,7 @@ static void player_fire(const Entity entity)
 
     const Entity_State & entity_state = entity_states[entity];
     const vec3 & player_position = entity_state.transform->position;
-    const Orientation orientation = entity_state.orientation;
+    const Orientation orientation = entity_state.orientation_handler->orientation;
 
 
     // Calculate projectile's position.
@@ -135,7 +123,7 @@ static void player_fire(const Entity entity)
 
 
     // Generate projectile entity.
-    fire_projectile(projectile_position, entity_state.look_direction, 1.0f);
+    fire_projectile(projectile_position, entity_state.orientation_handler->look_direction, 1.0f);
 }
 
 
@@ -146,14 +134,22 @@ static void player_fire(const Entity entity)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void player_controller_subscribe(const Entity entity)
 {
+    auto orientation_handler = (Orientation_Handler *)get_component(entity, "orientation_handler");
+
+    orientation_handler->orientation_texture_paths =
+    {
+        { Orientation::LEFT  , "resources/textures/player_left.png"  },
+        { Orientation::UP    , "resources/textures/player_up.png"    },
+        { Orientation::RIGHT , "resources/textures/player_right.png" },
+        { Orientation::DOWN  , "resources/textures/player_down.png"  },
+    };
+
     entity_states[entity] =
     {
         (Transform *)get_component(entity, "transform"),
         (Dimensions *)get_component(entity, "dimensions"),
-        (Sprite *)get_component(entity, "sprite"),
+        orientation_handler,
         (Player_Controller *)get_component(entity, "player_controller"),
-        vec3(0.0f, -1.0f, 0.0f),
-        Orientation::DOWN,
     };
 
 
@@ -177,7 +173,6 @@ void player_controller_update()
     {
         const Player_Controller * player_controller = entity_state.player_controller;
         const float stick_dead_zone = player_controller->stick_dead_zone;
-        Orientation & orientation = entity_state.orientation;
 
 
         // Get move direction and modifiy entity position.
@@ -209,29 +204,11 @@ void player_controller_update()
             : move_direction;
 
 
-        // Don't change texture path if look direction is (0, 0).
+        // Only update look direction if it's not (0, 0).
         if (look_direction.x != 0.0f || look_direction.y != 0.0f)
         {
-            // Only update look direction if it's not (0, 0).
-            entity_state.look_direction = normalize(look_direction);
-
-            if (fabsf(look_direction.x) > fabsf(look_direction.y))
-            {
-                orientation = look_direction.x < 0 ? Orientation::LEFT : Orientation::RIGHT;
-            }
-            else
-            {
-                orientation = look_direction.y < 0 ? Orientation::DOWN : Orientation::UP;
-            }
+            entity_state.orientation_handler->look_direction = look_direction;
         }
-
-
-        entity_state.sprite->texture_path =
-            orientation == Orientation::LEFT ? "resources/textures/player_left.png" :
-            orientation == Orientation::UP ? "resources/textures/player_up.png" :
-            orientation == Orientation::RIGHT ? "resources/textures/player_right.png" :
-            orientation == Orientation::DOWN ? "resources/textures/player_down.png" :
-            throw runtime_error("ERROR: unknown orientation for player!");
     });
 }
 

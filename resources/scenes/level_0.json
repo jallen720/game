@@ -54,7 +54,8 @@
             {
                 "speed": 1,
                 "stick_dead_zone": 0.35
-            }
+            },
+            "orientation_handler": {}
         },
         "systems":
         [
