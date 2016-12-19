@@ -104,5 +104,60 @@
             "turret",
             "depth_handler"
         ]
+    },
+    {
+        "components":
+        {
+            "id": "health_bar_container",
+            "transform": {},
+            "ui_transform":
+            {
+                "anchor": { "x": 0.01, "y": 0.99 }
+            }
+        },
+        "systems": []
+    },
+    {
+        "components":
+        {
+            "render_layer": "ui",
+            "parent_id": "health_bar_container",
+            "sprite":
+            {
+                "texture_path": "resources/textures/ui/health_bar_background.png",
+                "shader_pipeline_name": "texture"
+            },
+            "dimensions":
+            {
+                "width": 400,
+                "height": 16,
+                "origin": { "x": 0, "y": 1 }
+            },
+            "transform": {},
+            "local_transform": {}
+        },
+        "systems": []
+    },
+    {
+        "components":
+        {
+            "id": "health_bar_foreground",
+            "render_layer": "ui",
+            "parent_id": "health_bar_container",
+            "sprite":
+            {
+                "texture_path": "resources/textures/ui/health_bar_foreground.png",
+                "shader_pipeline_name": "texture"
+            },
+            "dimensions":
+            {
+                "width": 400,
+                "height": 16,
+                "origin": { "x": 0, "y": 1 }
+            },
+            "transform": {},
+            "local_transform": {}
+        },
+        "systems": []
     }
 ]
