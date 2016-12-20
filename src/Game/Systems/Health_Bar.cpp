@@ -34,8 +34,8 @@ namespace Game
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 struct Entity_State
 {
-    float max_sprite_width;
-    float * sprite_width;
+    float max_health_bar_width;
+    float * health_bar_width;
     float max_health;
     float * health;
 };
@@ -56,13 +56,13 @@ static map<Entity, Entity_State> entity_states;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void health_bar_subscribe(const Entity entity)
 {
-    float * sprite_width = &((Dimensions *)get_component(get_entity("health_bar_foreground"), "dimensions"))->width;
+    float * health_bar_width = &((Dimensions *)get_component(get_entity("health_bar_foreground"), "dimensions"))->width;
     float * health = (float *)get_component(entity, "health");
 
     entity_states[entity] =
     {
-        *sprite_width,
-        sprite_width,
+        *health_bar_width,
+        health_bar_width,
         *health,
         health,
     };
@@ -79,7 +79,8 @@ void health_bar_update()
 {
     for_each(entity_states, [](const Entity /*entity*/, const Entity_State & entity_state) -> void
     {
-        *entity_state.sprite_width = entity_state.max_sprite_width * (*entity_state.health / entity_state.max_health);
+        *entity_state.health_bar_width =
+            entity_state.max_health_bar_width * (*entity_state.health / entity_state.max_health);
     });
 }
 
