@@ -148,7 +148,14 @@ static map<string, const Component_Handlers> game_component_handlers
             },
             get_component_deallocator<Orientation_Handler>(),
         }
-    }
+    },
+    {
+        "health",
+        {
+            get_component_allocator<float>(),
+            get_component_deallocator<float>(),
+        }
+    },
 };
 
 

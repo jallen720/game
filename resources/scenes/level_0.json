@@ -64,7 +64,8 @@
                     "right":"resources/textures/player_right.png",
                     "down": "resources/textures/player_down.png"
                 }
-            }
+            },
+            "health": 100
         },
         "systems":
         [
