@@ -69,7 +69,8 @@
         },
         "systems":
         [
-            "depth_handler"
+            "depth_handler",
+            "health_bar"
         ]
     },
     {

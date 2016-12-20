@@ -17,6 +17,7 @@
 #include "Game/Systems/Depth_Handler.hpp"
 #include "Game/Systems/Turret.hpp"
 #include "Game/Systems/Orientation_Handler.hpp"
+#include "Game/Systems/Health_Bar.hpp"
 
 
 using std::string;
@@ -72,6 +73,7 @@ static vector<Update_Handler> game_update_handlers
     depth_handler_update,
     turret_update,
     orientation_handler_update,
+    health_bar_update,
 };
 
 
@@ -84,6 +86,7 @@ static map<string, const System_Entity_Handlers> game_system_entity_handlers
     NITO_SYSTEM_ENTITY_HANDLERS(depth_handler),
     NITO_SYSTEM_ENTITY_HANDLERS(turret),
     NITO_SYSTEM_ENTITY_HANDLERS(orientation_handler),
+    NITO_SYSTEM_ENTITY_HANDLERS(health_bar),
 };
 
 
