@@ -11,9 +11,8 @@
         {
             "dimensions":
             {
-                "width": 1600,
-                "height": 900,
-                "origin": { "x": 0, "y": 0 }
+                "width": 1500,
+                "height": 800
             },
             "viewport":
             {
