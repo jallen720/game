@@ -110,7 +110,8 @@
             {
                 "render": true,
                 "radius": 0.2
-            }
+            },
+            "health": 100
         },
         "systems":
         [
