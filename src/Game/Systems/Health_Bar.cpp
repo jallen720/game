@@ -5,6 +5,8 @@
 #include "Cpp_Utils/Map.hpp"
 #include "Cpp_Utils/Collection.hpp"
 
+#include "Game/Components.hpp"
+
 
 using std::map;
 
@@ -36,8 +38,7 @@ struct Entity_State
 {
     float max_health_bar_width;
     float * health_bar_width;
-    float max_health;
-    float * health;
+    Health * health;
 };
 
 
@@ -57,14 +58,12 @@ static map<Entity, Entity_State> entity_states;
 void health_bar_subscribe(const Entity entity)
 {
     float * health_bar_width = &((Dimensions *)get_component(get_entity("health_bar_foreground"), "dimensions"))->width;
-    float * health = (float *)get_component(entity, "health");
 
     entity_states[entity] =
     {
         *health_bar_width,
         health_bar_width,
-        *health,
-        health,
+        (Health *)get_component(entity, "health"),
     };
 }
 
@@ -79,8 +78,8 @@ void health_bar_update()
 {
     for_each(entity_states, [](const Entity /*entity*/, const Entity_State & entity_state) -> void
     {
-        *entity_state.health_bar_width =
-            entity_state.max_health_bar_width * (*entity_state.health / entity_state.max_health);
+        Health * health = entity_state.health;
+        *entity_state.health_bar_width = entity_state.max_health_bar_width * (health->current / health->max);
     });
 }
 

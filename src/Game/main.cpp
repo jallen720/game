@@ -161,8 +161,15 @@ static map<string, const Component_Handlers> game_component_handlers
     {
         "health",
         {
-            get_component_allocator<float>(),
-            get_component_deallocator<float>(),
+            [](const JSON & data) -> Component
+            {
+                return new Health
+                {
+                    data,
+                    data,
+                };
+            },
+            get_component_deallocator<Health>(),
         }
     },
     {

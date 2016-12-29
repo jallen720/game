@@ -64,4 +64,11 @@ struct Collider
 };
 
 
+struct Health
+{
+    float max;
+    float current;
+};
+
+
 } // namespace Game
