@@ -180,6 +180,13 @@ static map<string, const Component_Handlers> game_component_handlers
             get_component_deallocator<Collider>(),
         }
     },
+    {
+        "layer",
+        {
+            get_component_allocator<string>(),
+            get_component_deallocator<string>(),
+        }
+    },
 };
 
 

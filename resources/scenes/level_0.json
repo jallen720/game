@@ -35,6 +35,7 @@
         "components":
         {
             "id": "Player",
+            "layer": "player",
             "render_layer": "world",
             "sprite":
             {
@@ -80,6 +81,7 @@
     {
         "components":
         {
+            "layer": "enemy",
             "render_layer": "world",
             "sprite":
             {
