@@ -115,10 +115,12 @@ void collider_update()
             }
 
             const Transform * other_entity_transform = other_entity_state.transform;
-            const float other_entity_radius = other_entity_state.collider->radius * other_entity_transform->scale.x;
 
-            if (distance((vec2)entity_position, (vec2)other_entity_transform->position) <=
-                entity_radius * entity_scale.x + other_entity_radius)
+            const float collision_distance =
+                (entity_radius * entity_scale.x) +
+                (other_entity_state.collider->radius * other_entity_transform->scale.x);
+
+            if (distance((vec2)entity_position, (vec2)other_entity_transform->position) <= collision_distance)
             {
                 const Collider::Collision_Handler & entity_collision_handler = entity_collider->collision_handler;
 
