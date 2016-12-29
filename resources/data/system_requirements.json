@@ -28,5 +28,10 @@
     "health_bar":
     [
         "health"
+    ],
+    "collider":
+    [
+        "transform",
+        "collider"
     ]
 }

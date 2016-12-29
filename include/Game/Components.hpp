@@ -3,7 +3,9 @@
 
 #include <map>
 #include <string>
+#include <functional>
 #include <glm/glm.hpp>
+#include "Nito/APIs/ECS.hpp"
 
 
 namespace Game
@@ -49,6 +51,16 @@ struct Orientation_Handler
     Orientation orientation;
     glm::vec3 look_direction;
     std::map<Orientation, std::string> orientation_texture_paths;
+};
+
+
+struct Collider
+{
+    using Collision_Handler = std::function<void(const Nito::Entity)>;
+
+    bool render;
+    float radius;
+    Collision_Handler collision_handler;
 };
 
 

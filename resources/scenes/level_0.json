@@ -64,7 +64,12 @@
                     "down": "resources/textures/player_down.png"
                 }
             },
-            "health": 100
+            "health": 100,
+            "collider":
+            {
+                "render": true,
+                "radius": 0.175
+            }
         },
         "systems":
         [
@@ -98,6 +103,11 @@
                     "right":"resources/textures/turret_right.png",
                     "down": "resources/textures/turret_down.png"
                 }
+            },
+            "collider":
+            {
+                "render": true,
+                "radius": 0.2
             }
         },
         "systems":

@@ -10,5 +10,9 @@
     "orientation_handler":
     [
         "orientation_handler"
+    ],
+    "collider":
+    [
+        "collider"
     ]
 }

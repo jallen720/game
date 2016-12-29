@@ -1,3 +1,6 @@
+// Required before any other OpenGL includes
+#include <GL/glew.h>
+
 #include <string>
 #include <vector>
 #include <map>
@@ -18,6 +21,7 @@
 #include "Game/Systems/Turret.hpp"
 #include "Game/Systems/Orientation_Handler.hpp"
 #include "Game/Systems/Health_Bar.hpp"
+#include "Game/Systems/Collider.hpp"
 
 
 using std::string;
@@ -74,6 +78,7 @@ static vector<Update_Handler> game_update_handlers
     turret_update,
     orientation_handler_update,
     health_bar_update,
+    collider_update,
 };
 
 
@@ -87,6 +92,7 @@ static map<string, const System_Entity_Handlers> game_system_entity_handlers
     NITO_SYSTEM_ENTITY_HANDLERS(turret),
     NITO_SYSTEM_ENTITY_HANDLERS(orientation_handler),
     NITO_SYSTEM_ENTITY_HANDLERS(health_bar),
+    NITO_SYSTEM_ENTITY_HANDLERS(collider),
 };
 
 
@@ -157,6 +163,21 @@ static map<string, const Component_Handlers> game_component_handlers
         {
             get_component_allocator<float>(),
             get_component_deallocator<float>(),
+        }
+    },
+    {
+        "collider",
+        {
+            [](const JSON & data) -> Component
+            {
+                return new Collider
+                {
+                    data["render"],
+                    data["radius"],
+                    {},
+                };
+            },
+            get_component_deallocator<Collider>(),
         }
     },
 };
