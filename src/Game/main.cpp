@@ -22,6 +22,7 @@
 #include "Game/Systems/Orientation_Handler.hpp"
 #include "Game/Systems/Health_Bar.hpp"
 #include "Game/Systems/Collider.hpp"
+#include "Game/Systems/Health.hpp"
 
 
 using std::string;
@@ -93,6 +94,7 @@ static map<string, const System_Entity_Handlers> game_system_entity_handlers
     NITO_SYSTEM_ENTITY_HANDLERS(orientation_handler),
     NITO_SYSTEM_ENTITY_HANDLERS(health_bar),
     NITO_SYSTEM_ENTITY_HANDLERS(collider),
+    NITO_SYSTEM_ENTITY_HANDLERS(health),
 };
 
 

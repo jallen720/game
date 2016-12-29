@@ -33,5 +33,9 @@
     [
         "transform",
         "collider"
+    ],
+    "health":
+    [
+        "health"
     ]
 }
