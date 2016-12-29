@@ -1,7 +1,5 @@
 #include "Game/Utilities.hpp"
 
-#include <string>
-#include <vector>
 #include <glm/gtc/matrix_transform.hpp>
 #include "Nito/Components.hpp"
 #include "Nito/APIs/ECS.hpp"
@@ -37,7 +35,7 @@ namespace Game
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void fire_projectile(const vec3 & origin, const vec3 & direction, float duration)
+void fire_projectile(const vec3 & origin, const vec3 & direction, float duration, const vector<string> & target_layers)
 {
     static const vector<string> PROJECTILE_SYSTEMS
     {
@@ -45,15 +43,17 @@ void fire_projectile(const vec3 & origin, const vec3 & direction, float duration
         "sprite_dimensions_handler",
         "renderer",
         "depth_handler",
+        "collider",
     };
 
     generate_entity(
         {
-            { "transform"    , new Transform { origin, vec3(1.0f), 0.0f }                    },
-            { "projectile"   , new Projectile { 3.0f, normalize(direction), duration }       },
-            { "sprite"       , new Sprite { "resources/textures/projectile.png", "texture" } },
-            { "dimensions"   , new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) }         },
-            { "render_layer" , new string("world")                                           },
+            { "transform"    , new Transform { origin, vec3(1.0f), 0.0f }                             },
+            { "projectile"   , new Projectile { 3.0f, normalize(direction), duration, target_layers } },
+            { "sprite"       , new Sprite { "resources/textures/projectile.png", "texture" }          },
+            { "dimensions"   , new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) }                  },
+            { "collider"     , new Collider { true, 0.065f, {} }                                      },
+            { "render_layer" , new string("world")                                                    },
         },
         PROJECTILE_SYSTEMS);
 }

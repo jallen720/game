@@ -14,5 +14,9 @@
     "collider":
     [
         "collider"
+    ],
+    "health":
+    [
+        "health"
     ]
 }

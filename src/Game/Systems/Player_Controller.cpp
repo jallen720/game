@@ -3,6 +3,7 @@
 #include "Game/Systems/Player_Controller.hpp"
 
 #include <map>
+#include <vector>
 #include <string>
 #include <stdexcept>
 #include <glm/glm.hpp>
@@ -20,6 +21,7 @@
 
 
 using std::map;
+using std::vector;
 using std::string;
 using std::runtime_error;
 
@@ -81,6 +83,7 @@ struct Entity_State
 // Data
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+static const vector<string> TARGET_LAYERS { "enemy" };
 static map<Entity, Entity_State> entity_states;
 
 
@@ -123,7 +126,7 @@ static void player_fire(const Entity entity)
 
 
     // Generate projectile entity.
-    fire_projectile(projectile_position, entity_state.orientation_handler->look_direction, 1.0f);
+    fire_projectile(projectile_position, entity_state.orientation_handler->look_direction, 1.0f, TARGET_LAYERS);
 }
 
 

@@ -9,7 +9,8 @@
     "projectile":
     [
         "projectile",
-        "transform"
+        "transform",
+        "collider"
     ],
     "depth_handler":
     [

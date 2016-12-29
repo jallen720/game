@@ -1,6 +1,8 @@
 #pragma once
 
 
+#include <string>
+#include <vector>
 #include <glm/glm.hpp>
 
 
@@ -13,7 +15,11 @@ namespace Game
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void fire_projectile(const glm::vec3 & origin, const glm::vec3 & direction, float duration);
+void fire_projectile(
+    const glm::vec3 & origin,
+    const glm::vec3 & direction,
+    float duration,
+    const std::vector<std::string> & target_layers);
 
 
 } // namespace Game
