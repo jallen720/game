@@ -43,7 +43,7 @@
             },
             "dimensions":
             {
-                "origin": { "x": 0.5, "y": 0.55 }
+                "origin": { "x": 0.484375, "y": 0.55 }
             },
             "transform":
             {
@@ -60,7 +60,7 @@
                 {
                     "left": "resources/textures/player_left.png",
                     "up": "resources/textures/player_up.png",
-                    "right":"resources/textures/player_right.png",
+                    "right": "resources/textures/player_right.png",
                     "down": "resources/textures/player_down.png"
                 }
             },
