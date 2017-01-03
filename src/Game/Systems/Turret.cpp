@@ -114,8 +114,6 @@ void turret_update()
             fire_projectile(position, look_direction, 1.0f, TARGET_LAYERS);
             last_fire_time = time;
         }
-
-        printf("turret health: %f\n", entity_state.health->current);
     });
 }
 
