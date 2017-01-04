@@ -58,7 +58,7 @@
                 "height": 800,
                 "origin": { "x": 0.5, "y": 0.5 }
             },
-            "viewport":
+            "camera":
             {
                 "x": 0,
                 "y": 0,
@@ -67,9 +67,6 @@
             },
             "transform": {}
         },
-        "systems":
-        [
-            "camera"
-        ]
+        "systems": []
     }
 ]

@@ -14,7 +14,7 @@
                 "width": 1500,
                 "height": 800
             },
-            "viewport":
+            "camera":
             {
                 "x": 0,
                 "y": 0,
@@ -26,10 +26,7 @@
                 "scale": { "x": 3, "y": 3 }
             }
         },
-        "systems":
-        [
-            "camera"
-        ]
+        "systems": []
     },
     {
         "components":
