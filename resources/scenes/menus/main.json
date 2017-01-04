@@ -54,8 +54,6 @@
         {
             "dimensions":
             {
-                "width": 1500,
-                "height": 800,
                 "origin": { "x": 0.5, "y": 0.5 }
             },
             "camera":

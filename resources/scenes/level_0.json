@@ -9,11 +9,7 @@
     {
         "components":
         {
-            "dimensions":
-            {
-                "width": 1500,
-                "height": 800
-            },
+            "dimensions": {},
             "camera":
             {
                 "z_near": -100,
