@@ -1,13 +1,22 @@
 # Build output directories
-build/
-bin/
-lib/
+/build/
+/bin/
+/lib/
+
 
 # Sublime files
-*.sublime*
+/*.sublime*
+
 
 # Misc. files
-todo
+/todo
+
 
 # Core dump
-core
+/core
+
+
+# Linux scripts
+/run
+/memcheck
+/debug
