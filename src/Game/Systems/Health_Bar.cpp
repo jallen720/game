@@ -34,7 +34,7 @@ namespace Game
 // Data Structures
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-struct Entity_State
+struct Health_Bar_State
 {
     float max_health_bar_width;
     float * health_bar_width;
@@ -47,7 +47,7 @@ struct Entity_State
 // Data
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static map<Entity, Entity_State> entity_states;
+static map<Entity, Health_Bar_State> entity_states;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,7 +76,7 @@ void health_bar_unsubscribe(const Entity entity)
 
 void health_bar_update()
 {
-    for_each(entity_states, [](const Entity /*entity*/, const Entity_State & entity_state) -> void
+    for_each(entity_states, [](const Entity /*entity*/, const Health_Bar_State & entity_state) -> void
     {
         Health * health = entity_state.health;
         *entity_state.health_bar_width = entity_state.max_health_bar_width * (health->current / health->max);

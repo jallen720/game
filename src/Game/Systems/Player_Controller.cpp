@@ -69,7 +69,7 @@ namespace Game
 // Data Structures
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-struct Entity_State
+struct Player_Controller_State
 {
     Transform * transform;
     Dimensions * dimensions;
@@ -84,7 +84,7 @@ struct Entity_State
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static const vector<string> TARGET_LAYERS { "enemy" };
-static map<Entity, Entity_State> entity_states;
+static map<Entity, Player_Controller_State> entity_states;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,7 +96,7 @@ static void player_fire(const Entity entity)
 {
     static const float VERTICAL_Y_OFFSET = 0.05f;
 
-    const Entity_State & entity_state = entity_states[entity];
+    const Player_Controller_State & entity_state = entity_states[entity];
     const vec3 & player_position = entity_state.transform->position;
     const Orientation orientation = entity_state.orientation_handler->orientation;
 
@@ -162,7 +162,7 @@ void player_controller_unsubscribe(const Entity entity)
 
 void player_controller_update()
 {
-    for_each(entity_states, [](const Entity /*entity*/, Entity_State & entity_state) -> void
+    for_each(entity_states, [](const Entity /*entity*/, Player_Controller_State & entity_state) -> void
     {
         const Player_Controller * player_controller = entity_state.player_controller;
         const float stick_dead_zone = player_controller->stick_dead_zone;

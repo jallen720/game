@@ -47,7 +47,7 @@ namespace Game
 // Data Structures
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-struct Entity_State
+struct Turret_State
 {
     Transform * transform;
     Orientation_Handler * orientation_handler;
@@ -64,7 +64,7 @@ struct Entity_State
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static const float FIRE_COOLDOWN = 1.0f;
 static const vector<string> TARGET_LAYERS { "player" };
-static map<Entity, Entity_State> entity_states;
+static map<Entity, Turret_State> entity_states;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -102,7 +102,7 @@ void turret_update()
 {
     const float time = get_time();
 
-    for_each(entity_states, [&](const Entity /*entity*/, Entity_State & entity_state) -> void
+    for_each(entity_states, [&](const Entity /*entity*/, Turret_State & entity_state) -> void
     {
         const vec3 & position = entity_state.transform->position;
         float & last_fire_time = entity_state.last_fire_time;

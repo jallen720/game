@@ -54,7 +54,7 @@ namespace Game
 // Data Structures
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-struct Entity_State
+struct Collider_State
 {
     const Collider * collider;
     const Transform * transform;
@@ -66,7 +66,7 @@ struct Entity_State
 // Data
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static map<Entity, Entity_State> entity_states;
+static map<Entity, Collider_State> entity_states;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,7 +96,7 @@ void collider_update()
 
 
     // TODO: could be optimized with an overload of for_each().
-    for_each(entity_states, [=](const Entity entity, Entity_State & entity_state) -> void
+    for_each(entity_states, [=](const Entity entity, Collider_State & entity_state) -> void
     {
         const Transform * entity_transform = entity_state.transform;
         const Collider * entity_collider = entity_state.collider;
@@ -106,7 +106,7 @@ void collider_update()
 
 
         // Check for collisions with other colliders.
-        for_each(entity_states, [&](const Entity other_entity, Entity_State & other_entity_state) -> void
+        for_each(entity_states, [&](const Entity other_entity, Collider_State & other_entity_state) -> void
         {
             // Don't check for collisions against self.
             if (other_entity == entity)

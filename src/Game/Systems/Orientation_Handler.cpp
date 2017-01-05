@@ -40,7 +40,7 @@ namespace Game
 // Data Structures
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-struct Entity_State
+struct Orientation_Handler_State
 {
     Sprite * sprite;
     Orientation_Handler * orientation_handler;
@@ -52,7 +52,7 @@ struct Entity_State
 // Data
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static map<Entity, Entity_State> entity_states;
+static map<Entity, Orientation_Handler_State> entity_states;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -96,7 +96,7 @@ void orientation_handler_unsubscribe(const Entity entity)
 
 void orientation_handler_update()
 {
-    for_each(entity_states, [](const Entity /*entity*/, Entity_State & entity_state) -> void
+    for_each(entity_states, [](const Entity /*entity*/, Orientation_Handler_State & entity_state) -> void
     {
         Orientation_Handler * orientation_handler = entity_state.orientation_handler;
         Orientation & orientation = orientation_handler->orientation;

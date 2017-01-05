@@ -47,7 +47,7 @@ namespace Game
 // Data Structures
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-struct Entity_State
+struct Projectile_State
 {
     Transform * transform;
     const Projectile * projectile;
@@ -60,7 +60,7 @@ struct Entity_State
 // Data
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static map<Entity, Entity_State> entity_states;
+static map<Entity, Projectile_State> entity_states;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -110,7 +110,7 @@ void projectile_update()
     const float time = get_time();
     const float delta_time = get_delta_time();
 
-    for_each(entity_states, [=](const Entity entity, const Entity_State & entity_state) -> void
+    for_each(entity_states, [=](const Entity entity, const Projectile_State & entity_state) -> void
     {
         const Projectile * projectile = entity_state.projectile;
 
