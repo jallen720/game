@@ -113,7 +113,7 @@ void create_tile(const vec3 & position, const string & texture_path)
 }
 
 
-void iterate_tile_map(const function<void(const unsigned int, const unsigned int, Tile_Types & tile_type)> callback)
+void iterate_tile_map(const function<void(const int, const int, Tile_Types & tile_type)> callback)
 {
     for (auto x = 0u; x < ROOM_WIDTH; x++)
     {
@@ -132,7 +132,7 @@ void iterate_tile_map(const function<void(const unsigned int, const unsigned int
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void room_generator_subscribe(const Entity /*entity*/)
 {
-    iterate_tile_map([](const unsigned int x, const unsigned int y, Tile_Types & tile_type) -> void
+    iterate_tile_map([](const int x, const int y, Tile_Types & tile_type) -> void
     {
         // Left wall
         if (x == 0 && y != 0 && y != ROOM_HEIGHT - 1)
@@ -181,7 +181,7 @@ void room_generator_subscribe(const Entity /*entity*/)
         }
     });
 
-    iterate_tile_map([&](const unsigned int x, const unsigned int y, const Tile_Types & tile_type) -> void
+    iterate_tile_map([&](const int x, const int y, const Tile_Types & tile_type) -> void
     {
         create_tile(vec3(x, y, 0.0f), TILE_TYPE_TEXTURE_PATHS.at(tile_type));
     });
