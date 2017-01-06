@@ -46,7 +46,7 @@ void play_button_subscribe(const Entity entity)
 
     button->click_handler = [=]() -> void
     {
-        set_scene_to_load("level_0");
+        set_scene_to_load("game");
     };
 }
 

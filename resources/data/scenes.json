@@ -1,4 +1,4 @@
 {
     "default": "resources/scenes/menus/main.json",
-    "level_0": "resources/scenes/level_0.json"
+    "game": "resources/scenes/game.json"
 }
