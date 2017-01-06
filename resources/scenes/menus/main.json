@@ -65,8 +65,7 @@
             {
                 "position": { "z": -1 }
             }
-        },
-        "systems": []
+        }
     },
     {
         "components":
@@ -119,8 +118,7 @@
             {
                 "position": { "z": -1 }
             }
-        },
-        "systems": []
+        }
     },
     {
         "components":
@@ -135,8 +133,7 @@
                 "z_far": 100
             },
             "transform": {}
-        },
-        "systems": []
+        }
     },
     {
         "components":
@@ -158,7 +155,6 @@
             {
                 "position": { "z": 1 }
             }
-        },
-        "systems": []
+        }
     }
 ]
