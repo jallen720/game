@@ -103,7 +103,7 @@ void main_menu_controller_subscribe(const Entity /*entity*/)
         CONTROLLER_BUTTON_HANDLER_ID,
         1,
         Button_Actions::PRESS,
-        [=]() -> void
+        [&]() -> void
         {
             selected_menu_button->button->click_handler();
         });
@@ -112,12 +112,25 @@ void main_menu_controller_subscribe(const Entity /*entity*/)
 
 void main_menu_controller_unsubscribe(const Entity /*entity*/)
 {
+    selection_sprite_parent_id = nullptr;
+    selected_menu_button = nullptr;
+
+    for_each(menu_buttons, [](const Selections /*selection*/, Menu_Button & menu_button) -> void
+    {
+        menu_button.button = nullptr;
+    });
+
     remove_controller_button_handler(CONTROLLER_BUTTON_HANDLER_ID);
 }
 
 
 void main_menu_controller_update()
 {
+    if (selection_sprite_parent_id == nullptr)
+    {
+        return;
+    }
+
     const float d_pad_y = get_controller_axis(Controller_Axes::D_PAD_Y);
 
     if (d_pad_y > 0.0f)
