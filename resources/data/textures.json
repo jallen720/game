@@ -12,7 +12,8 @@
         [
             "resources/textures/ui/button.png",
             "resources/textures/ui/button_hover.png",
-            "resources/textures/ui/button_pressed.png"
+            "resources/textures/ui/button_pressed.png",
+            "resources/textures/ui/selection.png"
         ]
     },
     {

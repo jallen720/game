@@ -9,7 +9,10 @@
                 "anchor": { "x": 0.5, "y": 0.5 }
             }
         },
-        "systems": []
+        "systems":
+        [
+            "main_menu_controller"
+        ]
     },
     {
         "components":
@@ -34,7 +37,7 @@
             },
             "local_transform":
             {
-                "position": { "x": 0, "y": 0.55 }
+                "position": { "x": 0, "y": 0.6 }
             },
             "ui_mouse_event_handlers": {}
         },
@@ -88,7 +91,7 @@
             },
             "local_transform":
             {
-                "position": { "x": 0, "y": -0.55 }
+                "position": { "x": 0, "y": -0.6 }
             },
             "ui_mouse_event_handlers": {}
         },
@@ -132,6 +135,26 @@
                 "z_far": 100
             },
             "transform": {}
+        },
+        "systems": []
+    },
+    {
+        "components":
+        {
+            "id": "selection_sprite",
+            "parent_id": "",
+            "render_layer": "ui",
+            "sprite":
+            {
+                "texture_path": "resources/textures/ui/selection.png",
+                "shader_pipeline_name": "texture"
+            },
+            "dimensions":
+            {
+                "origin": { "x": 0.5, "y": 0.5 }
+            },
+            "transform": {},
+            "local_transform": {}
         },
         "systems": []
     }

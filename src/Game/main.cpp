@@ -24,6 +24,7 @@
 #include "Game/Systems/Health_Bar.hpp"
 #include "Game/Systems/Collider.hpp"
 #include "Game/Systems/Health.hpp"
+#include "Game/Systems/Main_Menu_Controller.hpp"
 
 
 using std::string;
@@ -81,6 +82,7 @@ static vector<Update_Handler> game_update_handlers
     orientation_handler_update,
     health_bar_update,
     collider_update,
+    main_menu_controller_update,
 };
 
 
@@ -97,6 +99,7 @@ static map<string, const System_Entity_Handlers> game_system_entity_handlers
     NITO_SYSTEM_ENTITY_HANDLERS(health_bar),
     NITO_SYSTEM_ENTITY_HANDLERS(collider),
     NITO_SYSTEM_ENTITY_HANDLERS(health),
+    NITO_SYSTEM_ENTITY_HANDLERS(main_menu_controller),
 };
 
 
