@@ -154,7 +154,10 @@
                 "origin": { "x": 0.5, "y": 0.5 }
             },
             "transform": {},
-            "local_transform": {}
+            "local_transform":
+            {
+                "position": { "z": 1 }
+            }
         },
         "systems": []
     }
