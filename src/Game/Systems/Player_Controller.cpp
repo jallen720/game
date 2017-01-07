@@ -170,7 +170,8 @@ void player_controller_unsubscribe(const Entity entity)
 
 void player_controller_update()
 {
-    const float delta_time = get_delta_time() * get_time_scale();
+    const float time_scale = get_time_scale();
+    const float delta_time = get_delta_time() * time_scale;
 
     for_each(entity_states, [=](const Entity /*entity*/, Player_Controller_State & entity_state) -> void
     {
@@ -196,7 +197,7 @@ void player_controller_update()
 
 
         // Don't update look direction if game is paused.
-        if (delta_time == 0.0f)
+        if (time_scale == 0.0f)
         {
             return;
         }
