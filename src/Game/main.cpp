@@ -7,8 +7,6 @@
 #include <glm/glm.hpp>
 #include "Nito/Engine.hpp"
 #include "Nito/APIs/ECS.hpp"
-#include "Nito/APIs/Input.hpp"
-#include "Nito/APIs/Window.hpp"
 #include "Cpp_Utils/Collection.hpp"
 #include "Cpp_Utils/JSON.hpp"
 
@@ -47,14 +45,6 @@ using Nito::System_Entity_Handlers;
 using Nito::set_component_handlers;
 using Nito::set_system_entity_handlers;
 using Nito::Component;
-
-// Nito/APIs/Input.hpp
-using Nito::Keys;
-using Nito::Button_Actions;
-using Nito::set_key_handler;
-
-// Nito/APIs/Window.hpp
-using Nito::close_window;
 
 // Cpp_Utils/Container.hpp
 using Cpp_Utils::for_each;
@@ -226,7 +216,6 @@ int run()
         set_component_handlers(type, component_handlers.allocator, component_handlers.deallocator);
     });
 
-    set_key_handler("exit", Keys::ESCAPE, Button_Actions::PRESS, close_window);
     return run_engine();
 }
 

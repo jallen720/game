@@ -4,6 +4,7 @@
 #include <string>
 #include "Nito/Components.hpp"
 #include "Nito/APIs/Input.hpp"
+#include "Nito/APIs/Window.hpp"
 #include "Cpp_Utils/Collection.hpp"
 
 
@@ -20,10 +21,16 @@ using Nito::get_entity;
 
 // Nito/APIs/Input.hpp
 using Nito::Controller_Axes;
+using Nito::Keys;
 using Nito::Button_Actions;
 using Nito::get_controller_axis;
 using Nito::set_controller_button_handler;
 using Nito::remove_controller_button_handler;
+using Nito::set_key_handler;
+using Nito::remove_key_handler;
+
+// Nito/APIs/Window.hpp
+using Nito::close_window;
 
 // Cpp_Utils/Collection.hpp
 using Cpp_Utils::for_each;
@@ -63,7 +70,8 @@ static map<Selections, Menu_Button> menu_buttons
     { Selections::QUIT_BUTTON    , { "Quit_Button", nullptr } },
 };
 
-static const string CONTROLLER_BUTTON_HANDLER_ID = "main_menu_controls select";
+static const string SELECT_HANDLER_ID = "main_menu_controls select";
+static const string EXIT_HANDLER_ID = "main_menu_controls exit";
 static string * selection_sprite_parent_id;
 static const Menu_Button * selected_menu_button;
 
@@ -98,15 +106,17 @@ void main_menu_controls_subscribe(const Entity /*entity*/)
     });
 
 
-    // Set selection handler to call the selected button's click_handler().
+    // Set handlers.
     set_controller_button_handler(
-        CONTROLLER_BUTTON_HANDLER_ID,
+        SELECT_HANDLER_ID,
         1,
         Button_Actions::PRESS,
         [&]() -> void
         {
             selected_menu_button->button->click_handler();
         });
+
+    set_key_handler(EXIT_HANDLER_ID, Keys::ESCAPE, Button_Actions::PRESS, close_window);
 }
 
 
@@ -120,7 +130,8 @@ void main_menu_controls_unsubscribe(const Entity /*entity*/)
         menu_button.button = nullptr;
     });
 
-    remove_controller_button_handler(CONTROLLER_BUTTON_HANDLER_ID);
+    remove_controller_button_handler(SELECT_HANDLER_ID);
+    remove_key_handler(EXIT_HANDLER_ID);
 }
 
 
