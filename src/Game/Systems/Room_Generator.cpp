@@ -63,7 +63,7 @@ enum class Tile_Types
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static const auto ROOM_WIDTH = 13u;
 static const auto ROOM_HEIGHT = 9u;
-Tile_Types tile_map[ROOM_WIDTH * ROOM_HEIGHT];
+static Tile_Types tile_map[ROOM_WIDTH * ROOM_HEIGHT];
 
 
 static const map<Tile_Types, const string> TILE_TYPE_TEXTURE_PATHS
@@ -89,7 +89,7 @@ static const map<Tile_Types, const string> TILE_TYPE_TEXTURE_PATHS
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void create_tile(const vec3 & position, const string & texture_path)
+static void create_tile(const vec3 & position, const string & texture_path)
 {
     static const float ROOM_Z = 100.0f;
 
@@ -113,7 +113,7 @@ void create_tile(const vec3 & position, const string & texture_path)
 }
 
 
-void iterate_tile_map(const function<void(const int, const int, Tile_Types & tile_type)> callback)
+static void iterate_tile_map(const function<void(const int, const int, Tile_Types & tile_type)> callback)
 {
     for (auto x = 0u; x < ROOM_WIDTH; x++)
     {

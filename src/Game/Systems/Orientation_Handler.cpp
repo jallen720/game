@@ -60,7 +60,7 @@ static map<Entity, Orientation_Handler_State> entity_states;
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Orientation get_orientation(const vec3 & look_direction)
+static Orientation get_orientation(const vec3 & look_direction)
 {
     if (fabsf(look_direction.x) > fabsf(look_direction.y))
     {

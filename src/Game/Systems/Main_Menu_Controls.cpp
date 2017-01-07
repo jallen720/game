@@ -82,7 +82,7 @@ static const Menu_Button * selected_menu_button;
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void select_menu_button(const Selections selection)
+static void select_menu_button(const Selections selection)
 {
     selected_menu_button = &menu_buttons.at(selection);
     *selection_sprite_parent_id = selected_menu_button->id;
