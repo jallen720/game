@@ -1,4 +1,4 @@
-#include "Game/Systems/Main_Menu_Controller.hpp"
+#include "Game/Systems/Main_Menu_Controls.hpp"
 
 #include <map>
 #include <string>
@@ -63,7 +63,7 @@ static map<Selections, Menu_Button> menu_buttons
     { Selections::QUIT_BUTTON    , { "Quit_Button", nullptr } },
 };
 
-static const string CONTROLLER_BUTTON_HANDLER_ID = "main_menu_controller select";
+static const string CONTROLLER_BUTTON_HANDLER_ID = "main_menu_controls select";
 static string * selection_sprite_parent_id;
 static const Menu_Button * selected_menu_button;
 
@@ -85,7 +85,7 @@ void select_menu_button(const Selections selection)
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void main_menu_controller_subscribe(const Entity /*entity*/)
+void main_menu_controls_subscribe(const Entity /*entity*/)
 {
     selection_sprite_parent_id = (string *)get_component(get_entity("selection_sprite"), "parent_id");
     select_menu_button(Selections::DEFAULT_BUTTON);
@@ -110,7 +110,7 @@ void main_menu_controller_subscribe(const Entity /*entity*/)
 }
 
 
-void main_menu_controller_unsubscribe(const Entity /*entity*/)
+void main_menu_controls_unsubscribe(const Entity /*entity*/)
 {
     selection_sprite_parent_id = nullptr;
     selected_menu_button = nullptr;
@@ -124,7 +124,7 @@ void main_menu_controller_unsubscribe(const Entity /*entity*/)
 }
 
 
-void main_menu_controller_update()
+void main_menu_controls_update()
 {
     if (selection_sprite_parent_id == nullptr)
     {
