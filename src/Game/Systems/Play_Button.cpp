@@ -53,9 +53,9 @@ void play_button_subscribe(Entity entity)
 
 void play_button_unsubscribe(Entity entity)
 {
-    static const auto dud = []() -> void {};
+    static const auto DUD = []() -> void {};
 
-    entity_buttons[entity]->click_handler = dud;
+    entity_buttons[entity]->click_handler = DUD;
     remove(entity_buttons, entity);
 }
 

@@ -135,36 +135,36 @@ void collider_update()
         // Render collider if flagged.
         if (entity_collider->render)
         {
-            static vec4 color(0.0f, 0.7f, 0.0f, 1.0f);
+            static const vec4 COLOR(0.0f, 0.7f, 0.0f, 1.0f);
 
-            static const Render_Data::Uniforms uniforms
+            static const Render_Data::Uniforms UNIFORMS
             {
-                { "color", Uniform { Uniform::Types::VEC4, &color } },
+                { "color", Uniform { Uniform::Types::VEC4, &COLOR } },
             };
 
-            static const string layer_name("world");
-            static const string shader_pipeline_name("color");
-            static const string vertex_container_id("collider");
-            static const vec3 origin(0.0f);
-            static const float rotation = 0.0f;
+            static const string LAYER_NAME("world");
+            static const string SHADER_PIPELINE_NAME("color");
+            static const string VERTEX_CONTAINER_ID("collider");
+            static const vec3 ORIGIN(0.0f);
+            static const float ROTATION = 0.0f;
 
             const float dimensional_size = entity_radius * pixels_per_unit * 2;
 
             load_render_data(
                 {
                     Render_Modes::LINE_STRIP,
-                    &layer_name,
+                    &LAYER_NAME,
                     nullptr,
-                    &shader_pipeline_name,
-                    &vertex_container_id,
-                    &uniforms,
+                    &SHADER_PIPELINE_NAME,
+                    &VERTEX_CONTAINER_ID,
+                    &UNIFORMS,
                     calculate_model_matrix(
                         dimensional_size,
                         dimensional_size,
-                        origin,
+                        ORIGIN,
                         entity_position,
                         entity_scale,
-                        rotation)
+                        ROTATION)
                 });
         }
     });

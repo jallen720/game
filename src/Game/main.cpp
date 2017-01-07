@@ -64,7 +64,7 @@ namespace Game
 // Data
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static vector<Update_Handler> game_update_handlers
+static const vector<Update_Handler> GAME_UPDATE_HANDLERS
 {
     player_controller_update,
     projectile_update,
@@ -77,7 +77,7 @@ static vector<Update_Handler> game_update_handlers
 };
 
 
-static map<string, const System_Entity_Handlers> game_system_entity_handlers
+static const map<string, const System_Entity_Handlers> GAME_SYSTEM_ENTITY_HANDLERS
 {
     NITO_SYSTEM_ENTITY_HANDLERS(play_button),
     NITO_SYSTEM_ENTITY_HANDLERS(quit_button),
@@ -95,7 +95,7 @@ static map<string, const System_Entity_Handlers> game_system_entity_handlers
 };
 
 
-static map<string, const Component_Handlers> game_component_handlers
+static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
 {
     {
         "player_controller",
@@ -204,16 +204,16 @@ static map<string, const Component_Handlers> game_component_handlers
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int run()
 {
-    for_each(game_update_handlers, add_update_handler);
+    for_each(GAME_UPDATE_HANDLERS, add_update_handler);
 
     for_each(
-        game_system_entity_handlers,
+        GAME_SYSTEM_ENTITY_HANDLERS,
         [](const string & name, const System_Entity_Handlers & system_entity_handlers) -> void
         {
             set_system_entity_handlers(name, system_entity_handlers.subscriber, system_entity_handlers.unsubscriber);
         });
 
-    for_each(game_component_handlers, [](const string & type, const Component_Handlers & component_handlers) -> void
+    for_each(GAME_COMPONENT_HANDLERS, [](const string & type, const Component_Handlers & component_handlers) -> void
     {
         set_component_handlers(type, component_handlers.allocator, component_handlers.deallocator);
     });
