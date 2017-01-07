@@ -54,7 +54,7 @@ static void toggle_paused()
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void in_game_controls_subscribe(const Entity /*entity*/)
+void in_game_controls_subscribe(Entity /*entity*/)
 {
     paused = false;
     set_key_handler(PAUSE_HANDLER_ID, Keys::ESCAPE, Button_Actions::PRESS, toggle_paused);
@@ -62,7 +62,7 @@ void in_game_controls_subscribe(const Entity /*entity*/)
 }
 
 
-void in_game_controls_unsubscribe(const Entity /*entity*/)
+void in_game_controls_unsubscribe(Entity /*entity*/)
 {
     remove_key_handler(PAUSE_HANDLER_ID);
     remove_controller_button_handler(PAUSE_HANDLER_ID);

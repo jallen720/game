@@ -39,7 +39,7 @@ static map<Entity, Button *> entity_buttons;
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void play_button_subscribe(const Entity entity)
+void play_button_subscribe(Entity entity)
 {
     auto button = (Button *)get_component(entity, "button");
     entity_buttons[entity] = button;
@@ -51,7 +51,7 @@ void play_button_subscribe(const Entity entity)
 }
 
 
-void play_button_unsubscribe(const Entity entity)
+void play_button_unsubscribe(Entity entity)
 {
     static const auto dud = []() -> void {};
 

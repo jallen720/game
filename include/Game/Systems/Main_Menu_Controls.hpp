@@ -13,8 +13,8 @@ namespace Game
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void main_menu_controls_subscribe(const Nito::Entity entity);
-void main_menu_controls_unsubscribe(const Nito::Entity entity);
+void main_menu_controls_subscribe(Nito::Entity entity);
+void main_menu_controls_unsubscribe(Nito::Entity entity);
 void main_menu_controls_update();
 
 

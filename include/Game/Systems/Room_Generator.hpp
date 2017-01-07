@@ -13,8 +13,8 @@ namespace Game
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void room_generator_subscribe(const Nito::Entity entity);
-void room_generator_unsubscribe(const Nito::Entity entity);
+void room_generator_subscribe(Nito::Entity entity);
+void room_generator_unsubscribe(Nito::Entity entity);
 
 
 } // namespace Game

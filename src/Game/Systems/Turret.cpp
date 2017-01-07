@@ -76,7 +76,7 @@ static map<Entity, Turret_State> entity_states;
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void turret_subscribe(const Entity entity)
+void turret_subscribe(Entity entity)
 {
     static vec3 * target_position;
 
@@ -96,7 +96,7 @@ void turret_subscribe(const Entity entity)
 }
 
 
-void turret_unsubscribe(const Entity entity)
+void turret_unsubscribe(Entity entity)
 {
     remove(entity_states, entity);
 }
@@ -106,7 +106,7 @@ void turret_update()
 {
     const float delta_time = get_delta_time() * get_time_scale();
 
-    for_each(entity_states, [&](const Entity /*entity*/, Turret_State & entity_state) -> void
+    for_each(entity_states, [&](Entity /*entity*/, Turret_State & entity_state) -> void
     {
         const vec3 & position = entity_state.transform->position;
         float & cooldown = entity_state.cooldown;

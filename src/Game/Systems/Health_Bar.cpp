@@ -55,7 +55,7 @@ static map<Entity, Health_Bar_State> entity_states;
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void health_bar_subscribe(const Entity entity)
+void health_bar_subscribe(Entity entity)
 {
     float * health_bar_width = &((Dimensions *)get_component(get_entity("health_bar_foreground"), "dimensions"))->width;
 
@@ -68,7 +68,7 @@ void health_bar_subscribe(const Entity entity)
 }
 
 
-void health_bar_unsubscribe(const Entity entity)
+void health_bar_unsubscribe(Entity entity)
 {
     remove(entity_states, entity);
 }
@@ -76,7 +76,7 @@ void health_bar_unsubscribe(const Entity entity)
 
 void health_bar_update()
 {
-    for_each(entity_states, [](const Entity /*entity*/, const Health_Bar_State & entity_state) -> void
+    for_each(entity_states, [](Entity /*entity*/, const Health_Bar_State & entity_state) -> void
     {
         Health * health = entity_state.health;
         *entity_state.health_bar_width = entity_state.max_health_bar_width * (health->current / health->max);

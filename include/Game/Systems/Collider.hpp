@@ -13,8 +13,8 @@ namespace Game
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void collider_subscribe(const Nito::Entity entity);
-void collider_unsubscribe(const Nito::Entity entity);
+void collider_subscribe(Nito::Entity entity);
+void collider_unsubscribe(Nito::Entity entity);
 void collider_update();
 
 

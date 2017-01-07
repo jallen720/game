@@ -57,7 +57,7 @@ struct Orientation_Handler
 
 struct Collider
 {
-    using Collision_Handler = std::function<void(const Nito::Entity)>;
+    using Collision_Handler = std::function<void(Nito::Entity)>;
 
     bool render;
     float radius;

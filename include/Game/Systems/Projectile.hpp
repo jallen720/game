@@ -13,8 +13,8 @@ namespace Game
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void projectile_subscribe(const Nito::Entity entity);
-void projectile_unsubscribe(const Nito::Entity entity);
+void projectile_subscribe(Nito::Entity entity);
+void projectile_unsubscribe(Nito::Entity entity);
 void projectile_update();
 
 

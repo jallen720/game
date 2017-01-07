@@ -82,7 +82,7 @@ static const Menu_Button * selected_menu_button;
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static void select_menu_button(const Selections selection)
+static void select_menu_button(Selections selection)
 {
     selected_menu_button = &menu_buttons.at(selection);
     *selection_sprite_parent_id = selected_menu_button->id;
@@ -94,14 +94,14 @@ static void select_menu_button(const Selections selection)
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void main_menu_controls_subscribe(const Entity /*entity*/)
+void main_menu_controls_subscribe(Entity /*entity*/)
 {
     selection_sprite_parent_id = (string *)get_component(get_entity("selection_sprite"), "parent_id");
     select_menu_button(Selections::DEFAULT_BUTTON);
 
 
     // Get menu buttons' Button components.
-    for_each(menu_buttons, [](const Selections /*selection*/, Menu_Button & menu_button) -> void
+    for_each(menu_buttons, [](Selections /*selection*/, Menu_Button & menu_button) -> void
     {
         menu_button.button = (Button *)get_component(get_entity(menu_button.id), "button");
     });
@@ -118,14 +118,14 @@ void main_menu_controls_subscribe(const Entity /*entity*/)
 }
 
 
-void main_menu_controls_unsubscribe(const Entity /*entity*/)
+void main_menu_controls_unsubscribe(Entity /*entity*/)
 {
     selection_sprite_parent_id = nullptr;
     selected_menu_button = nullptr;
 
 
     // Clear menu buttons' Button components.
-    for_each(menu_buttons, [](const Selections /*selection*/, Menu_Button & menu_button) -> void
+    for_each(menu_buttons, [](Selections /*selection*/, Menu_Button & menu_button) -> void
     {
         menu_button.button = nullptr;
     });

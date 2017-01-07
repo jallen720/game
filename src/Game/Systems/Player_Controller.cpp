@@ -99,7 +99,7 @@ static map<Entity, Player_Controller_State> entity_states;
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static void player_fire(const Entity entity)
+static void player_fire(Entity entity)
 {
     static const float VERTICAL_Y_OFFSET = 0.05f;
 
@@ -142,7 +142,7 @@ static void player_fire(const Entity entity)
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void player_controller_subscribe(const Entity entity)
+void player_controller_subscribe(Entity entity)
 {
     entity_states[entity] =
     {
@@ -161,7 +161,7 @@ void player_controller_subscribe(const Entity entity)
 }
 
 
-void player_controller_unsubscribe(const Entity entity)
+void player_controller_unsubscribe(Entity entity)
 {
     remove(entity_states, entity);
     remove_controller_button_handler(FIRE_HANDLER_ID);
@@ -173,7 +173,7 @@ void player_controller_update()
     const float time_scale = get_time_scale();
     const float delta_time = get_delta_time() * time_scale;
 
-    for_each(entity_states, [=](const Entity /*entity*/, Player_Controller_State & entity_state) -> void
+    for_each(entity_states, [=](Entity /*entity*/, Player_Controller_State & entity_state) -> void
     {
         const Player_Controller * player_controller = entity_state.player_controller;
         const float stick_dead_zone = player_controller->stick_dead_zone;

@@ -78,7 +78,7 @@ static Orientation get_orientation(const vec3 & look_direction)
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void orientation_handler_subscribe(const Entity entity)
+void orientation_handler_subscribe(Entity entity)
 {
     entity_states[entity] =
     {
@@ -88,7 +88,7 @@ void orientation_handler_subscribe(const Entity entity)
 }
 
 
-void orientation_handler_unsubscribe(const Entity entity)
+void orientation_handler_unsubscribe(Entity entity)
 {
     remove(entity_states, entity);
 }
@@ -96,7 +96,7 @@ void orientation_handler_unsubscribe(const Entity entity)
 
 void orientation_handler_update()
 {
-    for_each(entity_states, [](const Entity /*entity*/, Orientation_Handler_State & entity_state) -> void
+    for_each(entity_states, [](Entity /*entity*/, Orientation_Handler_State & entity_state) -> void
     {
         Orientation_Handler * orientation_handler = entity_state.orientation_handler;
         Orientation & orientation = orientation_handler->orientation;

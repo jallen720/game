@@ -71,7 +71,7 @@ static map<Entity, Projectile_State> entity_states;
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void projectile_subscribe(const Entity entity)
+void projectile_subscribe(Entity entity)
 {
     auto projectile = (Projectile *)get_component(entity, "projectile");
 
@@ -86,7 +86,7 @@ void projectile_subscribe(const Entity entity)
     // Setup collision handler to damage entity if its layer is in projectile's target layers.
     auto collider = (Collider *)get_component(entity, "collider");
 
-    collider->collision_handler = [=](const Entity collision_entity) -> void
+    collider->collision_handler = [=](Entity collision_entity) -> void
     {
         if (has_component(collision_entity, "layer"))
         {
@@ -102,7 +102,7 @@ void projectile_subscribe(const Entity entity)
 }
 
 
-void projectile_unsubscribe(const Entity entity)
+void projectile_unsubscribe(Entity entity)
 {
     remove(entity_states, entity);
 }
@@ -112,7 +112,7 @@ void projectile_update()
 {
     const float delta_time = get_delta_time() * get_time_scale();
 
-    for_each(entity_states, [=](const Entity entity, Projectile_State & entity_state) -> void
+    for_each(entity_states, [=](Entity entity, Projectile_State & entity_state) -> void
     {
         const Projectile * projectile = entity_state.projectile;
         float & time_elapsed = entity_state.time_elapsed;

@@ -40,19 +40,19 @@ static map<Entity, Health *> entity_healths;
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void health_subscribe(const Entity entity)
+void health_subscribe(Entity entity)
 {
     entity_healths[entity] = (Health *)get_component(entity, "health");
 }
 
 
-void health_unsubscribe(const Entity entity)
+void health_unsubscribe(Entity entity)
 {
     remove(entity_healths, entity);
 }
 
 
-void damage_entity(const Entity entity, const float amount)
+void damage_entity(Entity entity, float amount)
 {
     if (!contains_key(entity_healths, entity))
     {

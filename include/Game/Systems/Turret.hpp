@@ -13,8 +13,8 @@ namespace Game
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void turret_subscribe(const Nito::Entity entity);
-void turret_unsubscribe(const Nito::Entity entity);
+void turret_subscribe(Nito::Entity entity);
+void turret_unsubscribe(Nito::Entity entity);
 void turret_update();
 
 

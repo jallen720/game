@@ -13,8 +13,8 @@ namespace Game
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void orientation_handler_subscribe(const Nito::Entity entity);
-void orientation_handler_unsubscribe(const Nito::Entity entity);
+void orientation_handler_subscribe(Nito::Entity entity);
+void orientation_handler_unsubscribe(Nito::Entity entity);
 void orientation_handler_update();
 
 

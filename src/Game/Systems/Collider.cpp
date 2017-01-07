@@ -74,7 +74,7 @@ static map<Entity, Collider_State> entity_states;
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void collider_subscribe(const Entity entity)
+void collider_subscribe(Entity entity)
 {
     entity_states[entity] =
     {
@@ -84,7 +84,7 @@ void collider_subscribe(const Entity entity)
 }
 
 
-void collider_unsubscribe(const Entity entity)
+void collider_unsubscribe(Entity entity)
 {
     remove(entity_states, entity);
 }
@@ -96,7 +96,7 @@ void collider_update()
 
 
     // TODO: could be optimized with an overload of for_each().
-    for_each(entity_states, [=](const Entity entity, Collider_State & entity_state) -> void
+    for_each(entity_states, [=](Entity entity, Collider_State & entity_state) -> void
     {
         const Transform * entity_transform = entity_state.transform;
         const Collider * entity_collider = entity_state.collider;
@@ -106,7 +106,7 @@ void collider_update()
 
 
         // Check for collisions with other colliders.
-        for_each(entity_states, [&](const Entity other_entity, Collider_State & other_entity_state) -> void
+        for_each(entity_states, [&](Entity other_entity, Collider_State & other_entity_state) -> void
         {
             // Don't check for collisions against self.
             if (other_entity == entity)

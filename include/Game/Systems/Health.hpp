@@ -13,9 +13,9 @@ namespace Game
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void health_subscribe(const Nito::Entity entity);
-void health_unsubscribe(const Nito::Entity entity);
-void damage_entity(const Nito::Entity entity, const float amount);
+void health_subscribe(Nito::Entity entity);
+void health_unsubscribe(Nito::Entity entity);
+void damage_entity(Nito::Entity entity, float amount);
 
 
 } // namespace Game

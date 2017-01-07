@@ -13,8 +13,8 @@ namespace Game
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void health_bar_subscribe(const Nito::Entity entity);
-void health_bar_unsubscribe(const Nito::Entity entity);
+void health_bar_subscribe(Nito::Entity entity);
+void health_bar_unsubscribe(Nito::Entity entity);
 void health_bar_update();
 
 

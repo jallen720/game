@@ -13,8 +13,8 @@ namespace Game
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void depth_handler_subscribe(const Nito::Entity entity);
-void depth_handler_unsubscribe(const Nito::Entity entity);
+void depth_handler_subscribe(Nito::Entity entity);
+void depth_handler_unsubscribe(Nito::Entity entity);
 void depth_handler_update();
 
 

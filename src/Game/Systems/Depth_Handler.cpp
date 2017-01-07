@@ -43,13 +43,13 @@ static map<Entity, vec3 *> entity_positions;
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void depth_handler_subscribe(const Entity entity)
+void depth_handler_subscribe(Entity entity)
 {
     entity_positions[entity] = &((Transform *)get_component(entity, "transform"))->position;
 }
 
 
-void depth_handler_unsubscribe(const Entity entity)
+void depth_handler_unsubscribe(Entity entity)
 {
 
     remove(entity_positions, entity);
@@ -58,7 +58,7 @@ void depth_handler_unsubscribe(const Entity entity)
 
 void depth_handler_update()
 {
-    for_each(entity_positions, [](const Entity /*entity*/, vec3 * position) -> void
+    for_each(entity_positions, [](Entity /*entity*/, vec3 * position) -> void
     {
         position->z = position->y;
     });
