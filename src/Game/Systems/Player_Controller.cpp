@@ -45,7 +45,7 @@ using Nito::debug_controllers;
 using Nito::get_controller_axis;
 using Nito::set_controller_button_handler;
 using Nito::remove_controller_button_handler;
-using Nito::Controller_Axes;
+using Nito::DS4_Axes;
 using Nito::DS4_Buttons;
 using Nito::Button_Actions;
 
@@ -174,8 +174,8 @@ void player_controller_update()
 
         // Get move direction and modifiy entity position.
         const vec3 left_stick_direction(
-            get_controller_axis(Controller_Axes::LEFT_STICK_X),
-            -get_controller_axis(Controller_Axes::LEFT_STICK_Y),
+            get_controller_axis(DS4_Axes::LEFT_STICK_X),
+            -get_controller_axis(DS4_Axes::LEFT_STICK_Y),
             0.0f);
 
         const vec3 move_direction(
@@ -191,8 +191,8 @@ void player_controller_update()
 
         // Set texture path for entity's look direction based on right stick input if any or move direction otherwise.
         const vec3 right_stick_direction(
-            get_controller_axis(Controller_Axes::RIGHT_STICK_X),
-            -get_controller_axis(Controller_Axes::RIGHT_STICK_Y),
+            get_controller_axis(DS4_Axes::RIGHT_STICK_X),
+            -get_controller_axis(DS4_Axes::RIGHT_STICK_Y),
             0.0f);
 
         const vec3 & look_direction =

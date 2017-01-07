@@ -20,8 +20,8 @@ using Nito::get_component;
 using Nito::get_entity;
 
 // Nito/APIs/Input.hpp
-using Nito::Controller_Axes;
 using Nito::Keys;
+using Nito::DS4_Axes;
 using Nito::DS4_Buttons;
 using Nito::Button_Actions;
 using Nito::get_controller_axis;
@@ -145,7 +145,7 @@ void main_menu_controls_update()
         return;
     }
 
-    const float d_pad_y = get_controller_axis(Controller_Axes::D_PAD_Y);
+    const float d_pad_y = get_controller_axis(DS4_Axes::D_PAD_Y);
 
     if (d_pad_y > 0.0f)
     {
