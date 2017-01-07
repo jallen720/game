@@ -107,15 +107,12 @@ void main_menu_controls_subscribe(const Entity /*entity*/)
 
 
     // Set handlers.
-    set_controller_button_handler(
-        SELECT_HANDLER_ID,
-        1,
-        Button_Actions::PRESS,
-        [&]() -> void
-        {
-            selected_menu_button->button->click_handler();
-        });
+    set_controller_button_handler(SELECT_HANDLER_ID, 1, Button_Actions::PRESS, [&]() -> void
+    {
+        selected_menu_button->button->click_handler();
+    });
 
+    set_controller_button_handler(EXIT_HANDLER_ID, 2, Button_Actions::PRESS, close_window);
     set_key_handler(EXIT_HANDLER_ID, Keys::ESCAPE, Button_Actions::PRESS, close_window);
 }
 
@@ -125,12 +122,17 @@ void main_menu_controls_unsubscribe(const Entity /*entity*/)
     selection_sprite_parent_id = nullptr;
     selected_menu_button = nullptr;
 
+
+    // Clear menu buttons' Button components.
     for_each(menu_buttons, [](const Selections /*selection*/, Menu_Button & menu_button) -> void
     {
         menu_button.button = nullptr;
     });
 
+
+    // Remove handlers.
     remove_controller_button_handler(SELECT_HANDLER_ID);
+    remove_controller_button_handler(EXIT_HANDLER_ID);
     remove_key_handler(EXIT_HANDLER_ID);
 }
 
