@@ -2,6 +2,7 @@
 
 #include <map>
 #include <string>
+#include "Nito/Engine.hpp"
 #include "Nito/Components.hpp"
 #include "Nito/APIs/Window.hpp"
 #include "Cpp_Utils/Map.hpp"
@@ -21,11 +22,13 @@ using Nito::get_component;
 using Nito::has_component;
 using Nito::flag_entity_for_deletion;
 
+// Nito/Engine.hpp
+using Nito::get_time_scale;
+
 // Nito/Components.hpp
 using Nito::Transform;
 
 // Nito/APIs/Window.hpp
-using Nito::get_time;
 using Nito::get_delta_time;
 
 // Cpp_Utils/Map.hpp
@@ -51,7 +54,7 @@ struct Projectile_State
 {
     Transform * transform;
     const Projectile * projectile;
-    float creation_time;
+    float time_elapsed;
 };
 
 
@@ -76,7 +79,7 @@ void projectile_subscribe(const Entity entity)
     {
         (Transform *)get_component(entity, "transform"),
         projectile,
-        get_time(),
+        0.0f,
     };
 
 
@@ -107,21 +110,22 @@ void projectile_unsubscribe(const Entity entity)
 
 void projectile_update()
 {
-    const float time = get_time();
-    const float delta_time = get_delta_time();
+    const float delta_time = get_delta_time() * get_time_scale();
 
-    for_each(entity_states, [=](const Entity entity, const Projectile_State & entity_state) -> void
+    for_each(entity_states, [=](const Entity entity, Projectile_State & entity_state) -> void
     {
         const Projectile * projectile = entity_state.projectile;
+        float & time_elapsed = entity_state.time_elapsed;
 
         // If projectile's duration has expired, flag it for deletion.
-        if (time - entity_state.creation_time > projectile->duration)
+        if (time_elapsed > projectile->duration)
         {
             flag_entity_for_deletion(entity);
             return;
         }
 
         entity_state.transform->position += projectile->speed * projectile->direction * delta_time;
+        time_elapsed += delta_time;
     });
 }
 

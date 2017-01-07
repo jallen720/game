@@ -9,6 +9,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <math.h>
+#include "Nito/Engine.hpp"
 #include "Nito/Components.hpp"
 #include "Nito/APIs/Input.hpp"
 #include "Nito/APIs/Window.hpp"
@@ -35,6 +36,9 @@ using glm::normalize;
 using Nito::Entity;
 using Nito::get_component;
 using Nito::generate_entity;
+
+// Nito/Engine.hpp
+using Nito::get_time_scale;
 
 // Nito/Components.hpp
 using Nito::Transform;
@@ -166,7 +170,9 @@ void player_controller_unsubscribe(const Entity entity)
 
 void player_controller_update()
 {
-    for_each(entity_states, [](const Entity /*entity*/, Player_Controller_State & entity_state) -> void
+    const float delta_time = get_delta_time() * get_time_scale();
+
+    for_each(entity_states, [=](const Entity /*entity*/, Player_Controller_State & entity_state) -> void
     {
         const Player_Controller * player_controller = entity_state.player_controller;
         const float stick_dead_zone = player_controller->stick_dead_zone;
@@ -185,7 +191,14 @@ void player_controller_update()
 
         if (move_direction.x != 0.0f || move_direction.y != 0.0f)
         {
-            entity_state.transform->position += normalize(move_direction) * player_controller->speed * get_delta_time();
+            entity_state.transform->position += normalize(move_direction) * player_controller->speed * delta_time;
+        }
+
+
+        // Don't update look direction if game is paused.
+        if (delta_time == 0.0f)
+        {
+            return;
         }
 
 

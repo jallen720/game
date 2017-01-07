@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <glm/glm.hpp>
+#include "Nito/Engine.hpp"
 #include "Nito/Components.hpp"
 #include "Nito/APIs/Window.hpp"
 #include "Cpp_Utils/Map.hpp"
@@ -25,11 +26,14 @@ using Nito::Entity;
 using Nito::get_component;
 using Nito::get_entity;
 
+// Nito/Engine.hpp
+using Nito::get_time_scale;
+
 // Nito/Components.hpp
 using Nito::Transform;
 
 // Nito/APIs/Window.hpp
-using Nito::get_time;
+using Nito::get_delta_time;
 
 // Cpp_Utils/Map.hpp
 using Cpp_Utils::remove;
@@ -53,7 +57,7 @@ struct Turret_State
     Orientation_Handler * orientation_handler;
     Health * health;
     const vec3 * target_position;
-    float last_fire_time;
+    float cooldown;
 };
 
 
@@ -87,7 +91,7 @@ void turret_subscribe(const Entity entity)
         (Orientation_Handler *)get_component(entity, "orientation_handler"),
         (Health *)get_component(entity, "health"),
         target_position,
-        -FIRE_COOLDOWN,
+        0.0f,
     };
 }
 
@@ -100,19 +104,23 @@ void turret_unsubscribe(const Entity entity)
 
 void turret_update()
 {
-    const float time = get_time();
+    const float delta_time = get_delta_time() * get_time_scale();
 
     for_each(entity_states, [&](const Entity /*entity*/, Turret_State & entity_state) -> void
     {
         const vec3 & position = entity_state.transform->position;
-        float & last_fire_time = entity_state.last_fire_time;
+        float & cooldown = entity_state.cooldown;
         vec3 & look_direction = entity_state.orientation_handler->look_direction;
         look_direction = *entity_state.target_position - position;
 
-        if (time - last_fire_time > FIRE_COOLDOWN)
+        if (cooldown <= 0.0f)
         {
             fire_projectile(position, look_direction, 1.0f, TARGET_LAYERS);
-            last_fire_time = time;
+            cooldown = FIRE_COOLDOWN;
+        }
+        else
+        {
+            cooldown -= delta_time;
         }
     });
 }
