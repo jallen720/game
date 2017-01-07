@@ -22,6 +22,7 @@ using Nito::get_entity;
 // Nito/APIs/Input.hpp
 using Nito::Controller_Axes;
 using Nito::Keys;
+using Nito::DS4_Buttons;
 using Nito::Button_Actions;
 using Nito::get_controller_axis;
 using Nito::set_controller_button_handler;
@@ -107,12 +108,12 @@ void main_menu_controls_subscribe(const Entity /*entity*/)
 
 
     // Set handlers.
-    set_controller_button_handler(SELECT_HANDLER_ID, 1, Button_Actions::PRESS, [&]() -> void
+    set_controller_button_handler(SELECT_HANDLER_ID, DS4_Buttons::X, Button_Actions::PRESS, [&]() -> void
     {
         selected_menu_button->button->click_handler();
     });
 
-    set_controller_button_handler(EXIT_HANDLER_ID, 2, Button_Actions::PRESS, close_window);
+    set_controller_button_handler(EXIT_HANDLER_ID, DS4_Buttons::CIRCLE, Button_Actions::PRESS, close_window);
     set_key_handler(EXIT_HANDLER_ID, Keys::ESCAPE, Button_Actions::PRESS, close_window);
 }
 

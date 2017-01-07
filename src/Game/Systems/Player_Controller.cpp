@@ -44,7 +44,9 @@ using Nito::Dimensions;
 using Nito::debug_controllers;
 using Nito::get_controller_axis;
 using Nito::set_controller_button_handler;
+using Nito::remove_controller_button_handler;
 using Nito::Controller_Axes;
+using Nito::DS4_Buttons;
 using Nito::Button_Actions;
 
 // Nito/Window.hpp
@@ -83,6 +85,7 @@ struct Player_Controller_State
 // Data
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+static const string FIRE_HANDLER_ID = "player_controller fire";
 static const vector<string> TARGET_LAYERS { "enemy" };
 static map<Entity, Player_Controller_State> entity_states;
 
@@ -147,7 +150,7 @@ void player_controller_subscribe(const Entity entity)
 
 
     // Set player fire handler to controller button 5.
-    set_controller_button_handler("player_fire", 5, Button_Actions::PRESS, [=]() -> void
+    set_controller_button_handler(FIRE_HANDLER_ID, DS4_Buttons::R1, Button_Actions::PRESS, [=]() -> void
     {
         player_fire(entity);
     });
@@ -157,6 +160,7 @@ void player_controller_subscribe(const Entity entity)
 void player_controller_unsubscribe(const Entity entity)
 {
     remove(entity_states, entity);
+    remove_controller_button_handler(FIRE_HANDLER_ID);
 }
 
 
