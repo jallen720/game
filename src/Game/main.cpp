@@ -23,6 +23,7 @@
 #include "Game/Systems/Collider.hpp"
 #include "Game/Systems/Health.hpp"
 #include "Game/Systems/Main_Menu_Controls.hpp"
+#include "Game/Systems/In_Game_Controls.hpp"
 
 
 using std::string;
@@ -90,6 +91,7 @@ static map<string, const System_Entity_Handlers> game_system_entity_handlers
     NITO_SYSTEM_ENTITY_HANDLERS(collider),
     NITO_SYSTEM_ENTITY_HANDLERS(health),
     NITO_SYSTEM_ENTITY_HANDLERS(main_menu_controls),
+    NITO_SYSTEM_ENTITY_HANDLERS(in_game_controls),
 };
 
 
