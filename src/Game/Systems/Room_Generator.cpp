@@ -113,7 +113,7 @@ static void create_tile(const vec3 & position, const string & texture_path)
 }
 
 
-static void iterate_tile_map(const function<void(const int, const int, Tile_Types & tile_type)> callback)
+static void iterate_tile_map(const function<void(const int, const int, Tile_Types & tile_type)> & callback)
 {
     for (auto x = 0u; x < ROOM_WIDTH; x++)
     {
