@@ -47,7 +47,7 @@ using Nito::set_component_handlers;
 using Nito::set_system_entity_handlers;
 using Nito::Component;
 
-// Cpp_Utils/Container.hpp
+// Cpp_Utils/Collection.hpp
 using Cpp_Utils::for_each;
 
 // Cpp_Utils/JSON.hpp
