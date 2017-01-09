@@ -13,9 +13,9 @@ namespace Game
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void main_menu_controls_subscribe(Nito::Entity entity);
-void main_menu_controls_unsubscribe(Nito::Entity entity);
-void main_menu_controls_update();
+void menu_buttons_handler_subscribe(Nito::Entity entity);
+void menu_buttons_handler_unsubscribe(Nito::Entity entity);
+void menu_buttons_handler_update();
 
 
 } // namespace Game

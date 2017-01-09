@@ -7,125 +7,16 @@
             "ui_transform":
             {
                 "anchor": { "x": 0.5, "y": 0.5 }
-            }
+            },
+            "menu_buttons_handler":
+            [
+                "Play",
+                "Quit"
+            ]
         },
         "systems":
         [
-            "main_menu_controls"
         ]
-    },
-    {
-        "components":
-        {
-            "id": "Play_Button",
-            "parent_id": "menu",
-            "render_layer": "ui",
-            "button":
-            {
-                "hover_texture_path": "resources/textures/ui/button_hover.png",
-                "pressed_texture_path": "resources/textures/ui/button_pressed.png"
-            },
-            "sprite":
-            {
-                "texture_path": "resources/textures/ui/button.png",
-                "shader_pipeline_name": "texture"
-            },
-            "transform": {},
-            "dimensions":
-            {
-                "origin": { "x": 0.5, "y": 0.5 }
-            },
-            "local_transform":
-            {
-                "position": { "x": 0, "y": 0.6 }
-            },
-            "ui_mouse_event_handlers": {}
-        }
-    },
-    {
-        "components":
-        {
-            "render_layer": "ui",
-            "parent_id": "Play_Button",
-            "text":
-            {
-                "font": "resources/fonts/Ubuntu-L.ttf",
-                "value": "Play"
-            },
-            "transform": {},
-            "dimensions":
-            {
-                "origin": { "x": 0.5, "y": 0.45 }
-            },
-            "local_transform":
-            {
-                "position": { "z": -1 }
-            }
-        }
-    },
-    {
-        "components":
-        {
-            "id": "Quit_Button",
-            "parent_id": "menu",
-            "render_layer": "ui",
-            "button":
-            {
-                "hover_texture_path": "resources/textures/ui/button_hover.png",
-                "pressed_texture_path": "resources/textures/ui/button_pressed.png"
-            },
-            "sprite":
-            {
-                "texture_path": "resources/textures/ui/button.png",
-                "shader_pipeline_name": "texture"
-            },
-            "transform": {},
-            "dimensions":
-            {
-                "origin": { "x": 0.5, "y": 0.5 }
-            },
-            "local_transform":
-            {
-                "position": { "x": 0, "y": -0.6 }
-            },
-            "ui_mouse_event_handlers": {}
-        }
-    },
-    {
-        "components":
-        {
-            "render_layer": "ui",
-            "parent_id": "Quit_Button",
-            "text":
-            {
-                "font": "resources/fonts/Ubuntu-L.ttf",
-                "value": "Quit"
-            },
-            "transform": {},
-            "dimensions":
-            {
-                "origin": { "x": 0.5, "y": 0.45 }
-            },
-            "local_transform":
-            {
-                "position": { "z": -1 }
-            }
-        }
-    },
-    {
-        "components":
-        {
-            "dimensions":
-            {
-                "origin": { "x": 0.5, "y": 0.5 }
-            },
-            "camera":
-            {
-                "z_near": -100,
-                "z_far": 100
-            },
-            "transform": {}
-        }
     },
     {
         "components":
@@ -147,6 +38,21 @@
             {
                 "position": { "z": 1 }
             }
+        }
+    },
+    {
+        "components":
+        {
+            "dimensions":
+            {
+                "origin": { "x": 0.5, "y": 0.5 }
+            },
+            "camera":
+            {
+                "z_near": -100,
+                "z_far": 100
+            },
+            "transform": {}
         }
     }
 ]

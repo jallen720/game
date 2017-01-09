@@ -72,4 +72,12 @@ struct Health
 };
 
 
+struct Menu_Buttons_Handler
+{
+    std::vector<std::string> button_ids;
+    std::map<std::string, std::function<void()>> button_handlers;
+    std::function<void()> back_handler;
+};
+
+
 } // namespace Game

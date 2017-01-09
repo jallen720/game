@@ -18,5 +18,9 @@
     "health":
     [
         "health"
+    ],
+    "menu_buttons_handler":
+    [
+        "menu_buttons_handler"
     ]
 }

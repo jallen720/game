@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <functional>
 #include <glm/glm.hpp>
 #include "Nito/Engine.hpp"
 #include "Nito/APIs/ECS.hpp"
@@ -20,13 +21,14 @@
 #include "Game/Systems/Health_Bar.hpp"
 #include "Game/Systems/Collider.hpp"
 #include "Game/Systems/Health.hpp"
-#include "Game/Systems/Main_Menu_Controls.hpp"
 #include "Game/Systems/In_Game_Controls.hpp"
+#include "Game/Systems/Menu_Buttons_Handler.hpp"
 
 
 using std::string;
 using std::vector;
 using std::map;
+using std::function;
 
 // glm/glm.hpp
 using glm::vec3;
@@ -71,7 +73,7 @@ static const vector<Update_Handler> GAME_UPDATE_HANDLERS
     orientation_handler_update,
     health_bar_update,
     collider_update,
-    main_menu_controls_update,
+    menu_buttons_handler_update,
 };
 
 
@@ -86,8 +88,8 @@ static const map<string, const System_Entity_Handlers> GAME_SYSTEM_ENTITY_HANDLE
     NITO_SYSTEM_ENTITY_HANDLERS(health_bar),
     NITO_SYSTEM_ENTITY_HANDLERS(collider),
     NITO_SYSTEM_ENTITY_HANDLERS(health),
-    NITO_SYSTEM_ENTITY_HANDLERS(main_menu_controls),
     NITO_SYSTEM_ENTITY_HANDLERS(in_game_controls),
+    NITO_SYSTEM_ENTITY_HANDLERS(menu_buttons_handler),
 };
 
 
@@ -190,6 +192,26 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
             get_component_deallocator<string>(),
         }
     },
+    {
+        "menu_buttons_handler",
+        {
+            [](const JSON & data) -> Component
+            {
+                auto menu_buttons_handler = new Menu_Buttons_Handler;
+                vector<string> & button_ids = menu_buttons_handler->button_ids;
+                map<string, function<void()>> & button_handlers = menu_buttons_handler->button_handlers;
+
+                for (const string & button_id : data.get<vector<string>>())
+                {
+                    button_ids.push_back(button_id);
+                    button_handlers[button_id];
+                }
+
+                return menu_buttons_handler;
+            },
+            get_component_deallocator<Menu_Buttons_Handler>(),
+        }
+    }
 };
 
 
