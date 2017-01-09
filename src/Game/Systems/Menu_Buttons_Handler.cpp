@@ -34,7 +34,6 @@ using Nito::Text;
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
 using Nito::get_component;
-using Nito::get_entity;
 using Nito::generate_entity;
 
 // Nito/APIs/Input.hpp
@@ -150,6 +149,33 @@ static Button * generate_button(const string & button_id, int index, int button_
 }
 
 
+string * generate_selection_sprite()
+{
+    static const vector<string> SELECTION_SPRITE_COMPONENTS
+    {
+        "renderer",
+        "sprite_dimensions_handler",
+        "local_transform"
+    };
+
+    auto parent_id = new string("");
+
+    generate_entity(
+        {
+            { "id"              , new string("selection_sprite")                                  },
+            { "parent_id"       , parent_id                                                       },
+            { "render_layer"    , new string("ui")                                                },
+            { "sprite"          , new Sprite { "resources/textures/ui/selection.png", "texture" } },
+            { "dimensions"      , new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) }           },
+            { "transform"       , new Transform { vec3(), vec3(1.0f), 0.0f }                      },
+            { "local_transform" , new Transform { vec3(0.0f, 0.0f, 1.0f), vec3(1.0f), 0.0f }      },
+        },
+        SELECTION_SPRITE_COMPONENTS);
+
+    return parent_id;
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Interface
@@ -163,7 +189,7 @@ void menu_buttons_handler_subscribe(Entity entity)
     }
 
     entity_menu_buttons_handler = (Menu_Buttons_Handler *)get_component(entity, "menu_buttons_handler");
-    selection_sprite_parent_id = (string *)get_component(get_entity("selection_sprite"), "parent_id");
+    selection_sprite_parent_id = generate_selection_sprite();
     const function<void()> & back_handler = entity_menu_buttons_handler->back_handler;
     const vector<string> & button_ids = entity_menu_buttons_handler->button_ids;
     const map<string, function<void()>> & button_handlers = entity_menu_buttons_handler->button_handlers;

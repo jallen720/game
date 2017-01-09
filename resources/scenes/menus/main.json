@@ -22,28 +22,6 @@
     {
         "components":
         {
-            "id": "selection_sprite",
-            "parent_id": "",
-            "render_layer": "ui",
-            "sprite":
-            {
-                "texture_path": "resources/textures/ui/selection.png",
-                "shader_pipeline_name": "texture"
-            },
-            "dimensions":
-            {
-                "origin": { "x": 0.5, "y": 0.5 }
-            },
-            "transform": {},
-            "local_transform":
-            {
-                "position": { "z": 1 }
-            }
-        }
-    },
-    {
-        "components":
-        {
             "dimensions":
             {
                 "origin": { "x": 0.5, "y": 0.5 }
