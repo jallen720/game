@@ -34,7 +34,7 @@ namespace Game
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static const string PAUSE_HANDLER_ID = "in_game_controls pause";
-static bool paused;
+static bool entity_paused;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -42,10 +42,16 @@ static bool paused;
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+static void set_paused(bool paused)
+{
+    entity_paused = paused;
+    set_time_scale(entity_paused ? 0.0f : 1.0f);
+}
+
+
 static void toggle_paused()
 {
-    paused = !paused;
-    set_time_scale(paused ? 0.0f : 1.0f);
+    set_paused(!entity_paused);
 }
 
 
@@ -56,7 +62,7 @@ static void toggle_paused()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void in_game_controls_subscribe(Entity /*entity*/)
 {
-    paused = false;
+    entity_paused = false;
     set_key_handler(PAUSE_HANDLER_ID, Keys::ESCAPE, Button_Actions::PRESS, toggle_paused);
     set_controller_button_handler(PAUSE_HANDLER_ID, DS4_Buttons::START, Button_Actions::PRESS, toggle_paused);
 }
@@ -64,6 +70,7 @@ void in_game_controls_subscribe(Entity /*entity*/)
 
 void in_game_controls_unsubscribe(Entity /*entity*/)
 {
+    set_paused(false);
     remove_key_handler(PAUSE_HANDLER_ID);
     remove_controller_button_handler(PAUSE_HANDLER_ID);
 }

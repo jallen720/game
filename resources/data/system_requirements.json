@@ -46,5 +46,9 @@
     "main_menu":
     [
         "menu_buttons_handler"
+    ],
+    "in_game_menu":
+    [
+        "menu_buttons_handler"
     ]
 }

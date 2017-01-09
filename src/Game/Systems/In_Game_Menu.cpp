@@ -31,6 +31,7 @@ namespace Game
 // Data
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+static const auto DUD = []() -> void {};
 static Menu_Buttons_Handler * entity_menu_buttons_handler;
 
 
@@ -48,7 +49,7 @@ void in_game_menu_subscribe(Entity entity)
 
     if (entity_menu_buttons_handler != nullptr)
     {
-        throw runtime_error("ERROR: only one entity is allowed to be subscribed to the in_game_menu system per scene!");
+        throw runtime_error("ERROR: only one entity is allowed to subscribed to the in_game_menu system per scene!");
     }
 
     entity_menu_buttons_handler = (Menu_Buttons_Handler *)get_component(entity, "menu_buttons_handler");
@@ -60,18 +61,15 @@ void in_game_menu_subscribe(Entity entity)
         set_scene_to_load("default");
     };
 
-    entity_menu_buttons_handler->back_handler = CONTINUE_HANDLER;
+    entity_menu_buttons_handler->back_handler = DUD;
 }
 
 
 void in_game_menu_unsubscribe(Entity /*entity*/)
 {
-    static const auto DUD = []() -> void {};
-
     map<string, function<void()>> & button_handlers = entity_menu_buttons_handler->button_handlers;
     button_handlers["Continue"] = DUD;
     button_handlers["Quit"] = DUD;
-    entity_menu_buttons_handler->back_handler = DUD;
     entity_menu_buttons_handler = nullptr;
 }
 
