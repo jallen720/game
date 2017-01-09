@@ -166,6 +166,7 @@ void menu_buttons_handler_subscribe(Entity entity)
     selection_sprite_parent_id = (string *)get_component(get_entity("selection_sprite"), "parent_id");
     const function<void()> & back_handler = entity_menu_buttons_handler->back_handler;
     const vector<string> & button_ids = entity_menu_buttons_handler->button_ids;
+    const map<string, function<void()>> & button_handlers = entity_menu_buttons_handler->button_handlers;
     button_count = button_ids.size();
 
 
@@ -181,7 +182,12 @@ void menu_buttons_handler_subscribe(Entity entity)
 
         button->click_handler = [&]() -> void
         {
-            entity_menu_buttons_handler->button_handlers.at(button_id)();
+            if (!contains_key(button_handlers, button_id))
+            {
+                throw runtime_error("ERROR: no handler set for the \"" + button_id + "\" button!");
+            }
+
+            button_handlers.at(button_id)();
         };
     }
 

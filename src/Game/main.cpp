@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <functional>
 #include <glm/glm.hpp>
 #include "Nito/Engine.hpp"
 #include "Nito/APIs/ECS.hpp"
@@ -29,7 +28,6 @@
 using std::string;
 using std::vector;
 using std::map;
-using std::function;
 
 // glm/glm.hpp
 using glm::vec3;
@@ -201,12 +199,10 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
             {
                 auto menu_buttons_handler = new Menu_Buttons_Handler;
                 vector<string> & button_ids = menu_buttons_handler->button_ids;
-                map<string, function<void()>> & button_handlers = menu_buttons_handler->button_handlers;
 
                 for (const string & button_id : data.get<vector<string>>())
                 {
                     button_ids.push_back(button_id);
-                    button_handlers[button_id];
                 }
 
                 return menu_buttons_handler;
