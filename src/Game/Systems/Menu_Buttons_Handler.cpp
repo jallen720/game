@@ -94,7 +94,7 @@ static void select_menu_button(int index)
 }
 
 
-static Button * generate_button(const string & button_id, int index, int button_count)
+static Button * generate_button(const string & button_id, const string & menu_id, int index, int button_count)
 {
     static const vector<string> BUTTON_SYSTEMS
     {
@@ -123,7 +123,7 @@ static Button * generate_button(const string & button_id, int index, int button_
     generate_entity(
         {
             { "id"                      , new string(button_id)                                          },
-            { "parent_id"               , new string("menu")                                             },
+            { "parent_id"               , new string(menu_id)                                            },
             { "render_layer"            , new string("ui")                                               },
             { "button"                  , button                                                         },
             { "sprite"                  , new Sprite { "resources/textures/ui/button.png", "texture" }   },
@@ -194,6 +194,7 @@ void menu_buttons_handler_subscribe(Entity entity)
     const vector<string> & button_ids = entity_menu_buttons_handler->button_ids;
     const map<string, function<void()>> & button_handlers = entity_menu_buttons_handler->button_handlers;
     button_count = button_ids.size();
+    const auto menu_id = (string *)get_component(entity, "id");
 
 
     // Load buttons.
@@ -203,7 +204,7 @@ void menu_buttons_handler_subscribe(Entity entity)
 
 
         // Set button up to call its associated handler in entity's Menu_Buttons_Handler component.
-        auto button = generate_button(button_id, i, button_count);
+        auto button = generate_button(button_id, *menu_id, i, button_count);
         buttons[button_id] = button;
 
         button->click_handler = [&]() -> void
@@ -260,7 +261,7 @@ void menu_buttons_handler_unsubscribe(Entity /*entity*/)
 
 void menu_buttons_handler_update()
 {
-    static bool should_read_input = true;
+    static bool dpad_reset = true;
 
     if (!entity_subscribed())
     {
@@ -271,14 +272,14 @@ void menu_buttons_handler_update()
 
 
     // When user is no longer holding d-pad down, allow for next input to be read.
-    if (!should_read_input && d_pad_y == 0.0f)
+    if (!dpad_reset && d_pad_y == 0.0f)
     {
-        should_read_input = true;
+        dpad_reset = true;
     }
 
 
-    // Ignore checking for user input if user still hasn't released d-pad from last input.
-    if (!should_read_input)
+    // Ignore checking for input if user still hasn't released d-pad from last input.
+    if (!dpad_reset)
     {
         return;
     }
@@ -308,7 +309,7 @@ void menu_buttons_handler_update()
 
         // Now that user input has been read to change the menu selection, wait until user releases d-pad to read next
         // input, preventing changing selection once per frame for every frame the d-pad is held down.
-        should_read_input = false;
+        dpad_reset = false;
     }
 }
 

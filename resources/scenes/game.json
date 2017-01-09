@@ -1,5 +1,25 @@
 [
     {
+        "components":
+        {
+            "id": "pause_menu",
+            "transform": {},
+            "ui_transform":
+            {
+                "anchor": { "x": 0.5, "y": 0.5 }
+            },
+            "menu_buttons_handler":
+            [
+                "Continue",
+                "Quit"
+            ]
+        },
+        "systems":
+        [
+            "in_game_menu"
+        ]
+    },
+    {
         "systems":
         [
             "room_generator",
