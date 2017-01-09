@@ -42,5 +42,9 @@
     "menu_buttons_handler":
     [
         "menu_buttons_handler"
+    ],
+    "main_menu":
+    [
+        "menu_buttons_handler"
     ]
 }
