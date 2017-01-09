@@ -58,7 +58,7 @@ void main_menu_subscribe(Entity entity)
         set_scene_to_load("game");
     };
 
-    button_handlers["Quit"] = close_window;
+    button_handlers["Exit"] = close_window;
     entity_menu_buttons_handler->back_handler = close_window;
 }
 
@@ -69,7 +69,7 @@ void main_menu_unsubscribe(Entity /*entity*/)
 
     map<string, function<void()>> & button_handlers = entity_menu_buttons_handler->button_handlers;
     button_handlers["Play"] = DUD;
-    button_handlers["Quit"] = DUD;
+    button_handlers["Exit"] = DUD;
     entity_menu_buttons_handler->back_handler = DUD;
     entity_menu_buttons_handler = nullptr;
 }
