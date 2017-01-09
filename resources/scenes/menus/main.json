@@ -40,11 +40,7 @@
                 "position": { "x": 0, "y": 0.6 }
             },
             "ui_mouse_event_handlers": {}
-        },
-        "systems":
-        [
-            "play_button"
-        ]
+        }
     },
     {
         "components":
@@ -93,11 +89,7 @@
                 "position": { "x": 0, "y": -0.6 }
             },
             "ui_mouse_event_handlers": {}
-        },
-        "systems":
-        [
-            "quit_button"
-        ]
+        }
     },
     {
         "components":

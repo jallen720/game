@@ -38,13 +38,5 @@
     "health":
     [
         "health"
-    ],
-    "play_button":
-    [
-        "button"
-    ],
-    "quit_button":
-    [
-        "button"
     ]
 }
