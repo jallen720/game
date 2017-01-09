@@ -71,6 +71,7 @@ void main_menu_unsubscribe(Entity /*entity*/)
     button_handlers["Play"] = DUD;
     button_handlers["Quit"] = DUD;
     entity_menu_buttons_handler->back_handler = DUD;
+    entity_menu_buttons_handler = nullptr;
 }
 
 
