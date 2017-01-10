@@ -78,19 +78,12 @@ static map<Entity, Turret_State> entity_states;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void turret_subscribe(Entity entity)
 {
-    static vec3 * target_position;
-
-    if (target_position == nullptr)
-    {
-        target_position = &((Transform *)get_component(get_entity("Player"), "transform"))->position;
-    }
-
     entity_states[entity] =
     {
         (Transform *)get_component(entity, "transform"),
         (Orientation_Handler *)get_component(entity, "orientation_handler"),
         (Health *)get_component(entity, "health"),
-        target_position,
+        &((Transform *)get_component(get_entity("Player"), "transform"))->position,
         0.0f,
     };
 }
