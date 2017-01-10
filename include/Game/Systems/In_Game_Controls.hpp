@@ -15,6 +15,7 @@ namespace Game
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void in_game_controls_subscribe(Nito::Entity entity);
 void in_game_controls_unsubscribe(Nito::Entity entity);
+void in_game_controls_set_paused(bool paused);
 
 
 } // namespace Game

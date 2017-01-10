@@ -37,15 +37,12 @@ using Nito::get_component;
 using Nito::generate_entity;
 
 // Nito/APIs/Input.hpp
-using Nito::Keys;
 using Nito::DS4_Axes;
 using Nito::DS4_Buttons;
 using Nito::Button_Actions;
 using Nito::get_controller_axis;
 using Nito::set_controller_button_handler;
 using Nito::remove_controller_button_handler;
-using Nito::set_key_handler;
-using Nito::remove_key_handler;
 
 // Cpp_Utils/Collection.hpp
 using Cpp_Utils::for_each;
@@ -65,7 +62,6 @@ namespace Game
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static const string SELECT_HANDLER_ID = "menu_buttons_handler select";
-static const string BACK_HANDLER_ID = "menu_buttons_handler back";
 static const Menu_Buttons_Handler * entity_menu_buttons_handler;
 static string * selection_sprite_parent_id;
 static map<string, Button *> buttons;
@@ -190,7 +186,6 @@ void menu_buttons_handler_subscribe(Entity entity)
 
     entity_menu_buttons_handler = (Menu_Buttons_Handler *)get_component(entity, "menu_buttons_handler");
     selection_sprite_parent_id = generate_selection_sprite();
-    const function<void()> & back_handler = entity_menu_buttons_handler->back_handler;
     const vector<string> & button_ids = entity_menu_buttons_handler->button_ids;
     const map<string, function<void()>> & button_handlers = entity_menu_buttons_handler->button_handlers;
     button_count = button_ids.size();
@@ -225,9 +220,6 @@ void menu_buttons_handler_subscribe(Entity entity)
         selected_button->click_handler();
     });
 
-    set_controller_button_handler(BACK_HANDLER_ID, DS4_Buttons::CIRCLE, Button_Actions::PRESS, back_handler);
-    set_key_handler(BACK_HANDLER_ID, Keys::ESCAPE, Button_Actions::PRESS, back_handler);
-
 
     // By default, select the first button provided.
     select_menu_button(0);
@@ -254,8 +246,6 @@ void menu_buttons_handler_unsubscribe(Entity /*entity*/)
 
     // Remove input handlers.
     remove_controller_button_handler(SELECT_HANDLER_ID);
-    remove_controller_button_handler(BACK_HANDLER_ID);
-    remove_key_handler(BACK_HANDLER_ID);
 }
 
 

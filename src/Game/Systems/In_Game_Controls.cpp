@@ -4,6 +4,8 @@
 #include "Nito/Engine.hpp"
 #include "Nito/APIs/Input.hpp"
 
+#include "Game/Systems/In_Game_Menu.hpp"
+
 
 using std::string;
 
@@ -42,16 +44,9 @@ static bool entity_paused;
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static void set_paused(bool paused)
-{
-    entity_paused = paused;
-    set_time_scale(entity_paused ? 0.0f : 1.0f);
-}
-
-
 static void toggle_paused()
 {
-    set_paused(!entity_paused);
+    in_game_controls_set_paused(!entity_paused);
 }
 
 
@@ -70,9 +65,17 @@ void in_game_controls_subscribe(Entity /*entity*/)
 
 void in_game_controls_unsubscribe(Entity /*entity*/)
 {
-    set_paused(false);
+    in_game_controls_set_paused(false);
     remove_key_handler(PAUSE_HANDLER_ID);
     remove_controller_button_handler(PAUSE_HANDLER_ID);
+}
+
+
+void in_game_controls_set_paused(bool paused)
+{
+    entity_paused = paused;
+    set_time_scale(entity_paused ? 0.0f : 1.0f);
+    in_game_menu_set_on(paused);
 }
 
 
