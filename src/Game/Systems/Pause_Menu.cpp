@@ -1,4 +1,4 @@
-#include "Game/Systems/In_Game_Menu.hpp"
+#include "Game/Systems/Pause_Menu.hpp"
 
 #include <map>
 #include <string>
@@ -47,7 +47,7 @@ namespace Game
 // Data
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static const string UNPAUSE_HANDLER_ID = "in_game_menu unpause";
+static const string UNPAUSE_HANDLER_ID = "pause_menu unpause";
 static Menu_Buttons_Handler * entity_menu_buttons_handler;
 static Transform * entity_transform;
 static bool entity_on;
@@ -72,11 +72,11 @@ void unpause()
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void in_game_menu_subscribe(Entity entity)
+void pause_menu_subscribe(Entity entity)
 {
     if (entity_menu_buttons_handler != nullptr)
     {
-        throw runtime_error("ERROR: only one entity is allowed to subscribed to the in_game_menu system per scene!");
+        throw runtime_error("ERROR: only one entity is allowed to subscribed to the pause_menu system per scene!");
     }
 
     entity_menu_buttons_handler = (Menu_Buttons_Handler *)get_component(entity, "menu_buttons_handler");
@@ -90,11 +90,11 @@ void in_game_menu_subscribe(Entity entity)
     };
 
     set_controller_button_handler(UNPAUSE_HANDLER_ID, DS4_Buttons::CIRCLE, Button_Actions::PRESS, unpause);
-    in_game_menu_set_on(false);
+    pause_menu_set_on(false);
 }
 
 
-void in_game_menu_unsubscribe(Entity /*entity*/)
+void pause_menu_unsubscribe(Entity /*entity*/)
 {
     static const auto DUD = []() -> void {};
 
@@ -106,7 +106,7 @@ void in_game_menu_unsubscribe(Entity /*entity*/)
 }
 
 
-void in_game_menu_set_on(bool on)
+void pause_menu_set_on(bool on)
 {
     static const vec3 ON_SCALE(1.0f);
     static const vec3 OFF_SCALE(0.0f);

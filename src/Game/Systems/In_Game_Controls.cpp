@@ -4,7 +4,7 @@
 #include "Nito/Engine.hpp"
 #include "Nito/APIs/Input.hpp"
 
-#include "Game/Systems/In_Game_Menu.hpp"
+#include "Game/Systems/Pause_Menu.hpp"
 
 
 using std::string;
@@ -75,7 +75,7 @@ void in_game_controls_set_paused(bool paused)
 {
     entity_paused = paused;
     set_time_scale(entity_paused ? 0.0f : 1.0f);
-    in_game_menu_set_on(paused);
+    pause_menu_set_on(paused);
 }
 
 
