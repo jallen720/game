@@ -167,6 +167,7 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
                 {
                     data,
                     data,
+                    {},
                 };
             },
             get_component_deallocator<Health>(),

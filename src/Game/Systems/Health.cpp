@@ -1,7 +1,6 @@
 #include "Game/Systems/Health.hpp"
 
 #include <map>
-#include <stdexcept>
 #include "Cpp_Utils/Map.hpp"
 #include "Cpp_Utils/String.hpp"
 
@@ -9,7 +8,6 @@
 
 
 using std::map;
-using std::runtime_error;
 
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
@@ -54,13 +52,23 @@ void health_unsubscribe(Entity entity)
 
 void damage_entity(Entity entity, float amount)
 {
-    if (!contains_key(entity_healths, entity))
+    Health * entity_health = entity_healths[entity];
+    float & current_health = entity_health->current;
+
+
+    // If health is already 0, don't damage any further and don't trigger death handler again.
+    if (current_health == 0)
     {
-        throw runtime_error("ERROR: entity " + to_string(entity) + " is not subscribed to the health system!");
+        return;
     }
 
-    float & current_health = entity_healths[entity]->current;
+
     current_health -= current_health < amount ? current_health : amount;
+
+    if (current_health == 0)
+    {
+        entity_health->death_handler();
+    }
 }
 
 

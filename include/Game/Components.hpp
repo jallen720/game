@@ -69,6 +69,7 @@ struct Health
 {
     float max;
     float current;
+    std::function<void()> death_handler;
 };
 
 
