@@ -65,6 +65,7 @@ void unpause()
     if (entity_on)
     {
         in_game_controls_unpause();
+        pause_menu_set_on(false);
     }
 }
 
@@ -90,7 +91,10 @@ void pause_menu_subscribe(Entity _entity)
 
     button_handlers["Quit"] = []() -> void
     {
-        set_scene_to_load("default");
+        if (entity_on)
+        {
+            set_scene_to_load("default");
+        }
     };
 
     set_controller_button_handler(UNPAUSE_HANDLER_ID, DS4_Buttons::CIRCLE, Button_Actions::PRESS, unpause);
