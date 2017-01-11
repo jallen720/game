@@ -248,6 +248,7 @@ void menu_buttons_handler_update()
         const float d_pad_y = get_controller_axis(DS4_Axes::D_PAD_Y);
         bool & dpad_reset = entity_state.dpad_reset;
         const int selected_button_index = entity_state.selected_button_index;
+        const int button_count = entity_state.button_count;
 
 
         // When user is no longer holding d-pad down, allow for next input to be read.
@@ -277,17 +278,25 @@ void menu_buttons_handler_update()
         }
 
 
-        // Ensure the new selected index is different than the current selected index, and is within range of the number of
-        // buttons in the menu before switching the selected button.
-        if (new_selected_button_index != selected_button_index &&
-            new_selected_button_index >= 0 &&
-            new_selected_button_index < entity_state.button_count)
+        // Ensure the new selected index is different than the current selected index.
+        if (new_selected_button_index != selected_button_index)
         {
+            // Wrap new index within the range of buttons.
+            if (new_selected_button_index >= button_count)
+            {
+                new_selected_button_index = 0;
+            }
+            else if (new_selected_button_index < 0)
+            {
+                new_selected_button_index = button_count - 1;
+            }
+
+
             menu_buttons_handler_select_button(entity, new_selected_button_index);
 
 
-            // Now that user input has been read to change the menu selection, wait until user releases d-pad to read next
-            // input, preventing changing selection once per frame for every frame the d-pad is held down.
+            // Now that user input has been read to change the menu selection, wait until user releases d-pad to read
+            // next input, preventing changing selection once per frame for every frame the d-pad is held down.
             dpad_reset = false;
         }
     });
