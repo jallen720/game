@@ -50,5 +50,9 @@
     "pause_menu":
     [
         "menu_buttons_handler"
+    ],
+    "menu_controller":
+    [
+        "transform"
     ]
 }

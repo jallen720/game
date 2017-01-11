@@ -24,6 +24,7 @@
 #include "Game/Systems/Menu_Buttons_Handler.hpp"
 #include "Game/Systems/Main_Menu.hpp"
 #include "Game/Systems/Pause_Menu.hpp"
+#include "Game/Systems/Menu_Controller.hpp"
 
 
 using std::string;
@@ -92,6 +93,7 @@ static const map<string, const System_Entity_Handlers> GAME_SYSTEM_ENTITY_HANDLE
     NITO_SYSTEM_ENTITY_HANDLERS(menu_buttons_handler),
     NITO_SYSTEM_ENTITY_HANDLERS(main_menu),
     NITO_SYSTEM_ENTITY_HANDLERS(pause_menu),
+    NITO_SYSTEM_ENTITY_HANDLERS(menu_controller),
 };
 
 

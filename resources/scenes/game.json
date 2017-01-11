@@ -16,6 +16,7 @@
         },
         "systems":
         [
+            "menu_controller",
             "pause_menu"
         ]
     },

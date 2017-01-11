@@ -4,26 +4,18 @@
 #include <string>
 #include <functional>
 #include <stdexcept>
-#include <glm/glm.hpp>
-#include "Nito/Components.hpp"
 #include "Nito/APIs/Scene.hpp"
 #include "Nito/APIs/Input.hpp"
 
 #include "Game/Components.hpp"
 #include "Game/Systems/In_Game_Controls.hpp"
-#include "Game/Systems/Menu_Buttons_Handler.hpp"
+#include "Game/Systems/Menu_Controller.hpp"
 
 
 using std::map;
 using std::string;
 using std::function;
 using std::runtime_error;
-
-// glm/glm.hpp
-using glm::vec3;
-
-// Nito/Components.hpp
-using Nito::Transform;
 
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
@@ -50,7 +42,6 @@ namespace Game
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static const string UNPAUSE_HANDLER_ID = "pause_menu unpause";
 static Menu_Buttons_Handler * entity_menu_buttons_handler;
-static Transform * entity_transform;
 static bool entity_on;
 static Entity entity;
 
@@ -85,7 +76,6 @@ void pause_menu_subscribe(Entity _entity)
     }
 
     entity_menu_buttons_handler = (Menu_Buttons_Handler *)get_component(entity, "menu_buttons_handler");
-    entity_transform = (Transform *)get_component(entity, "transform");
     map<string, function<void()>> & button_handlers = entity_menu_buttons_handler->button_handlers;
     button_handlers["Continue"] = unpause;
 
@@ -110,24 +100,13 @@ void pause_menu_unsubscribe(Entity /*entity*/)
     button_handlers["Continue"] = DUD;
     button_handlers["Quit"] = DUD;
     entity_menu_buttons_handler = nullptr;
-    entity_transform = nullptr;
     remove_controller_button_handler(UNPAUSE_HANDLER_ID);
 }
 
 
 void pause_menu_set_on(bool on)
 {
-    static const vec3 ON_SCALE(1.0f);
-    static const vec3 OFF_SCALE(0.0f);
-
-    entity_transform->scale = (entity_on = on) ? ON_SCALE : OFF_SCALE;
-
-
-    // Default to first button whenever menu is opened.
-    if (entity_on)
-    {
-        menu_buttons_handler_select_button(entity, 0);
-    }
+    menu_controller_set_on(entity, entity_on = on);
 }
 
 
