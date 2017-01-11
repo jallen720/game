@@ -21,6 +21,27 @@
         ]
     },
     {
+        "components":
+        {
+            "id": "game_over_menu",
+            "transform": {},
+            "ui_transform":
+            {
+                "anchor": { "x": 0.5, "y": 0.5 }
+            },
+            "menu_buttons_handler":
+            [
+                "Restart",
+                "Quit"
+            ]
+        },
+        "systems":
+        [
+            "menu_controller",
+            "game_over_menu"
+        ]
+    },
+    {
         "systems":
         [
             "room_generator",

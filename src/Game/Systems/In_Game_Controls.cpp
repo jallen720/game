@@ -4,7 +4,9 @@
 #include "Nito/Engine.hpp"
 #include "Nito/APIs/Input.hpp"
 
+#include "Game/Components.hpp"
 #include "Game/Systems/Pause_Menu.hpp"
+#include "Game/Systems/Game_Over_Menu.hpp"
 
 
 using std::string;
@@ -12,6 +14,7 @@ using std::string;
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
 using Nito::get_component;
+using Nito::get_entity;
 
 // Nito/APIs/Input.hpp
 using Nito::set_key_handler;
@@ -37,6 +40,7 @@ namespace Game
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static const string PAUSE_HANDLER_ID = "in_game_controls pause";
 static bool entity_paused;
+static bool entity_game_over;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -53,8 +57,20 @@ static void set_paused(bool paused)
 
 static void toggle_paused()
 {
-    set_paused(!entity_paused);
-    pause_menu_set_on(entity_paused);
+    // If player gameover'd, don't toggle pause.
+    if (!entity_game_over)
+    {
+        set_paused(!entity_paused);
+        pause_menu_set_on(entity_paused);
+    }
+}
+
+
+static void game_over()
+{
+    entity_game_over = true;
+    set_paused(true);
+    game_over_menu_set_on(true);
 }
 
 
@@ -66,8 +82,10 @@ static void toggle_paused()
 void in_game_controls_subscribe(Entity /*entity*/)
 {
     entity_paused = false;
+    entity_game_over = false;
     set_key_handler(PAUSE_HANDLER_ID, Keys::ESCAPE, Button_Actions::PRESS, toggle_paused);
     set_controller_button_handler(PAUSE_HANDLER_ID, DS4_Buttons::START, Button_Actions::PRESS, toggle_paused);
+    ((Health *)get_component(get_entity("player"), "health"))->death_handler = game_over;
 }
 
 
