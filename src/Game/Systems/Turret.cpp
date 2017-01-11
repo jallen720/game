@@ -7,6 +7,7 @@
 #include "Nito/Engine.hpp"
 #include "Nito/Components.hpp"
 #include "Nito/APIs/Window.hpp"
+#include "Nito/APIs/ECS.hpp"
 #include "Cpp_Utils/Map.hpp"
 #include "Cpp_Utils/Collection.hpp"
 
@@ -34,6 +35,9 @@ using Nito::Transform;
 
 // Nito/APIs/Window.hpp
 using Nito::get_delta_time;
+
+// Nito/APIs/ECS.hpp
+using Nito::flag_entity_for_deletion;
 
 // Cpp_Utils/Map.hpp
 using Cpp_Utils::remove;
@@ -78,13 +82,20 @@ static map<Entity, Turret_State> entity_states;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void turret_subscribe(Entity entity)
 {
+    auto health = (Health *)get_component(entity, "health");
+
     entity_states[entity] =
     {
         (Transform *)get_component(entity, "transform"),
         (Orientation_Handler *)get_component(entity, "orientation_handler"),
-        (Health *)get_component(entity, "health"),
+        health,
         &((Transform *)get_component(get_entity("player"), "transform"))->position,
         0.0f,
+    };
+
+    health->death_handler = [=]() -> void
+    {
+        flag_entity_for_deletion(entity);
     };
 }
 
