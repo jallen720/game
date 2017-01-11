@@ -73,7 +73,7 @@ void in_game_controls_subscribe(Entity /*entity*/)
 
 void in_game_controls_unsubscribe(Entity /*entity*/)
 {
-    set_paused(false);
+    in_game_controls_unpause();
     remove_key_handler(PAUSE_HANDLER_ID);
     remove_controller_button_handler(PAUSE_HANDLER_ID);
 }
