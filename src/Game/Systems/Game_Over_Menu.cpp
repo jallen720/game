@@ -24,8 +24,11 @@ using Nito::get_component;
 using Nito::set_scene_to_load;
 
 // Nito/APIs/Input.hpp
+using Nito::Keys;
 using Nito::DS4_Buttons;
 using Nito::Button_Actions;
+using Nito::set_key_handler;
+using Nito::remove_key_handler;
 using Nito::set_controller_button_handler;
 using Nito::remove_controller_button_handler;
 
@@ -85,6 +88,7 @@ void game_over_menu_subscribe(Entity _entity)
     };
 
     button_handlers["Quit"] = quit_handler;
+    set_key_handler(QUIT_HANDLER_ID, Keys::ESCAPE, Button_Actions::PRESS, quit_handler);
     set_controller_button_handler(QUIT_HANDLER_ID, DS4_Buttons::CIRCLE, Button_Actions::PRESS, quit_handler);
     game_over_menu_set_on(false);
 }
@@ -98,6 +102,7 @@ void game_over_menu_unsubscribe(Entity /*entity*/)
     button_handlers["Restart"] = DUD;
     button_handlers["Quit"] = DUD;
     entity_menu_buttons_handler = nullptr;
+    remove_key_handler(QUIT_HANDLER_ID);
     remove_controller_button_handler(QUIT_HANDLER_ID);
 }
 
