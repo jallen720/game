@@ -48,13 +48,13 @@ static void set_paused(bool paused)
 {
     entity_paused = paused;
     set_time_scale(entity_paused ? 0.0f : 1.0f);
-    pause_menu_set_on(paused);
 }
 
 
 static void toggle_paused()
 {
     set_paused(!entity_paused);
+    pause_menu_set_on(entity_paused);
 }
 
 
