@@ -83,7 +83,7 @@ void turret_subscribe(Entity entity)
         (Transform *)get_component(entity, "transform"),
         (Orientation_Handler *)get_component(entity, "orientation_handler"),
         (Health *)get_component(entity, "health"),
-        &((Transform *)get_component(get_entity("Player"), "transform"))->position,
+        &((Transform *)get_component(get_entity("player"), "transform"))->position,
         0.0f,
     };
 }
