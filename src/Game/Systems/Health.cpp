@@ -1,6 +1,7 @@
 #include "Game/Systems/Health.hpp"
 
 #include <map>
+#include <stdexcept>
 #include "Cpp_Utils/Map.hpp"
 #include "Cpp_Utils/String.hpp"
 
@@ -8,6 +9,7 @@
 
 
 using std::map;
+using std::runtime_error;
 
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
@@ -67,6 +69,11 @@ void damage_entity(Entity entity, float amount)
 
     if (current_health == 0)
     {
+        if (!entity_health->death_handler)
+        {
+            throw runtime_error("ERROR: no death handler set in Health component!");
+        }
+
         entity_health->death_handler();
     }
 }
