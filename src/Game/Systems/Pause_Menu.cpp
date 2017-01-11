@@ -64,7 +64,7 @@ void unpause()
 {
     if (entity_on)
     {
-        in_game_controls_set_paused(false);
+        in_game_controls_unpause();
     }
 }
 
@@ -106,6 +106,7 @@ void pause_menu_unsubscribe(Entity /*entity*/)
     button_handlers["Continue"] = DUD;
     button_handlers["Quit"] = DUD;
     entity_menu_buttons_handler = nullptr;
+    entity_transform = nullptr;
     remove_controller_button_handler(UNPAUSE_HANDLER_ID);
 }
 

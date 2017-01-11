@@ -44,9 +44,17 @@ static bool entity_paused;
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+static void set_paused(bool paused)
+{
+    entity_paused = paused;
+    set_time_scale(entity_paused ? 0.0f : 1.0f);
+    pause_menu_set_on(paused);
+}
+
+
 static void toggle_paused()
 {
-    in_game_controls_set_paused(!entity_paused);
+    set_paused(!entity_paused);
 }
 
 
@@ -65,17 +73,15 @@ void in_game_controls_subscribe(Entity /*entity*/)
 
 void in_game_controls_unsubscribe(Entity /*entity*/)
 {
-    in_game_controls_set_paused(false);
+    set_paused(false);
     remove_key_handler(PAUSE_HANDLER_ID);
     remove_controller_button_handler(PAUSE_HANDLER_ID);
 }
 
 
-void in_game_controls_set_paused(bool paused)
+void in_game_controls_unpause()
 {
-    entity_paused = paused;
-    set_time_scale(entity_paused ? 0.0f : 1.0f);
-    pause_menu_set_on(paused);
+    set_paused(false);
 }
 
 
