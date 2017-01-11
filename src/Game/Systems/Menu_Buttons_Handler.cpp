@@ -91,7 +91,18 @@ static map<Entity, Menu_Buttons_Handler_State> entity_states;
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static Button * generate_button(const string & button_id, const string & menu_id, int index, int button_count)
+static string get_button_id(Entity entity, const string & button_name)
+{
+    return button_name + " " + to_string(entity);
+}
+
+
+static Button * generate_button(
+    Entity entity,
+    const string & button_name,
+    const string & menu_id,
+    int index,
+    int button_count)
 {
     static const vector<string> BUTTON_SYSTEMS
     {
@@ -116,6 +127,7 @@ static Button * generate_button(const string & button_id, const string & menu_id
     };
 
     float button_y = ((button_count - 1) / 2.0f) - (index * 1.2f);
+    string button_id = get_button_id(entity, button_name);
 
     generate_entity(
         {
@@ -133,12 +145,12 @@ static Button * generate_button(const string & button_id, const string & menu_id
 
     generate_entity(
         {
-            { "parent_id"       , new string(button_id)                                              },
-            { "render_layer"    , new string("ui")                                                   },
-            { "text"            , new Text { "resources/fonts/Ubuntu-L.ttf", vec3(0.0f), button_id } },
-            { "transform"       , new Transform { vec3(), vec3(), 0.0f }                             },
-            { "dimensions"      , new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.45f, 0.0f) }             },
-            { "local_transform" , new Transform { vec3(0.0f, 0.0f, -1.0f), vec3(1.0f), 0.0f }        },
+            { "parent_id"       , new string(button_id)                                                },
+            { "render_layer"    , new string("ui")                                                     },
+            { "text"            , new Text { "resources/fonts/Ubuntu-L.ttf", vec3(0.0f), button_name } },
+            { "transform"       , new Transform { vec3(), vec3(), 0.0f }                               },
+            { "dimensions"      , new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.45f, 0.0f) }               },
+            { "local_transform" , new Transform { vec3(0.0f, 0.0f, -1.0f), vec3(1.0f), 0.0f }          },
         },
         BUTTON_TEXT_COMPONENTS);
 
@@ -146,7 +158,7 @@ static Button * generate_button(const string & button_id, const string & menu_id
 }
 
 
-string * generate_selection_sprite()
+string * generate_selection_sprite(Entity entity)
 {
     static const vector<string> SELECTION_SPRITE_COMPONENTS
     {
@@ -159,7 +171,7 @@ string * generate_selection_sprite()
 
     generate_entity(
         {
-            { "id"              , new string("selection_sprite")                                  },
+            { "id"              , new string("selection_sprite " + to_string(entity))             },
             { "parent_id"       , parent_id                                                       },
             { "render_layer"    , new string("ui")                                                },
             { "sprite"          , new Sprite { "resources/textures/ui/selection.png", "texture" } },
@@ -184,11 +196,11 @@ void menu_buttons_handler_subscribe(Entity entity)
 
     auto menu_buttons_handler = (Menu_Buttons_Handler *)get_component(entity, "menu_buttons_handler");
     const string select_handler_id = SELECT_HANDLER_ID_PREFIX + to_string(entity);
-    const vector<string> & button_ids = menu_buttons_handler->button_ids;
-    const int button_count = button_ids.size();
+    const vector<string> & button_names = menu_buttons_handler->button_names;
+    const int button_count = button_names.size();
     Menu_Buttons_Handler_State & entity_state = entity_states[entity];
     entity_state.menu_buttons_handler = menu_buttons_handler;
-    entity_state.selection_sprite_parent_id = generate_selection_sprite();
+    entity_state.selection_sprite_parent_id = generate_selection_sprite(entity);
     entity_state.select_handler_id = select_handler_id;
     entity_state.button_count = button_count;
     entity_state.dpad_reset = true;
@@ -200,21 +212,21 @@ void menu_buttons_handler_subscribe(Entity entity)
     // Load buttons.
     for (int i = 0; i < button_count; i++)
     {
-        const string & button_id = button_ids[i];
+        const string & button_name = button_names[i];
 
 
         // Set button up to call its associated handler in entity's Menu_Buttons_Handler component.
-        auto button = generate_button(button_id, *menu_id, i, button_count);
-        buttons[button_id] = button;
+        auto button = generate_button(entity, button_name, *menu_id, i, button_count);
+        buttons[button_name] = button;
 
         button->click_handler = [&]() -> void
         {
-            if (!contains_key(button_handlers, button_id))
+            if (!contains_key(button_handlers, button_name))
             {
-                throw runtime_error("ERROR: no handler set for the \"" + button_id + "\" button!");
+                throw runtime_error("ERROR: no handler set for the \"" + button_name + "\" button!");
             }
 
-            button_handlers.at(button_id)();
+            button_handlers.at(button_name)();
         };
     }
 
@@ -315,10 +327,10 @@ void menu_buttons_handler_select_button(Entity entity, int index)
             " buttons!");
     }
 
-    const string & button_id = entity_state.menu_buttons_handler->button_ids[index];
+    const string & button_name = entity_state.menu_buttons_handler->button_names[index];
     entity_state.selected_button_index = index;
-    entity_state.selected_button = entity_state.buttons.at(button_id);
-    *entity_state.selection_sprite_parent_id = button_id;
+    entity_state.selected_button = entity_state.buttons.at(button_name);
+    *entity_state.selection_sprite_parent_id = get_button_id(entity, button_name);
 }
 
 

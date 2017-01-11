@@ -203,11 +203,11 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
             [](const JSON & data) -> Component
             {
                 auto menu_buttons_handler = new Menu_Buttons_Handler;
-                vector<string> & button_ids = menu_buttons_handler->button_ids;
+                vector<string> & button_names = menu_buttons_handler->button_names;
 
-                for (const string & button_id : data.get<vector<string>>())
+                for (const string & button_name : data)
                 {
-                    button_ids.push_back(button_id);
+                    button_names.push_back(button_name);
                 }
 
                 return menu_buttons_handler;

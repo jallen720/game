@@ -75,7 +75,7 @@ struct Health
 
 struct Menu_Buttons_Handler
 {
-    std::vector<std::string> button_ids;
+    std::vector<std::string> button_names;
     std::map<std::string, std::function<void()>> button_handlers;
 };
 
