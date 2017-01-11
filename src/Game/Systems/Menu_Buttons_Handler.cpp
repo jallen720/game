@@ -91,15 +91,6 @@ static map<Entity, Menu_Buttons_Handler_State> entity_states;
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static void select_menu_button(Menu_Buttons_Handler_State & entity_state, int index)
-{
-    const string & button_id = entity_state.menu_buttons_handler->button_ids[index];
-    entity_state.selected_button_index = index;
-    entity_state.selected_button = entity_state.buttons.at(button_id);
-    *entity_state.selection_sprite_parent_id = button_id;
-}
-
-
 static Button * generate_button(const string & button_id, const string & menu_id, int index, int button_count)
 {
     static const vector<string> BUTTON_SYSTEMS
@@ -236,7 +227,7 @@ void menu_buttons_handler_subscribe(Entity entity)
 
 
     // By default, select the first button provided.
-    select_menu_button(entity_state, 0);
+    menu_buttons_handler_select_button(entity, 0);
 }
 
 
@@ -252,7 +243,7 @@ void menu_buttons_handler_unsubscribe(Entity entity)
 
 void menu_buttons_handler_update()
 {
-    for_each(entity_states, [](Entity /*entity*/, Menu_Buttons_Handler_State & entity_state) -> void
+    for_each(entity_states, [](Entity entity, Menu_Buttons_Handler_State & entity_state) -> void
     {
         const float d_pad_y = get_controller_axis(DS4_Axes::D_PAD_Y);
         bool & dpad_reset = entity_state.dpad_reset;
@@ -266,7 +257,7 @@ void menu_buttons_handler_update()
         }
 
 
-        // Ignore checking for input if user still hasn't released d-pad from last input.
+        // Ignore checking for input if user hasn't released d-pad from last input.
         if (!dpad_reset)
         {
             return;
@@ -292,7 +283,7 @@ void menu_buttons_handler_update()
             new_selected_button_index >= 0 &&
             new_selected_button_index < entity_state.button_count)
         {
-            select_menu_button(entity_state, new_selected_button_index);
+            menu_buttons_handler_select_button(entity, new_selected_button_index);
 
 
             // Now that user input has been read to change the menu selection, wait until user releases d-pad to read next
@@ -300,6 +291,25 @@ void menu_buttons_handler_update()
             dpad_reset = false;
         }
     });
+}
+
+
+void menu_buttons_handler_select_button(Entity entity, int index)
+{
+    Menu_Buttons_Handler_State & entity_state = entity_states[entity];
+    const int button_count = entity_state.button_count;
+
+    if (index >= button_count)
+    {
+        throw runtime_error(
+            "ERROR: cannot select button at index " + to_string(index) + "; menu only has " + to_string(button_count) +
+            " buttons!");
+    }
+
+    const string & button_id = entity_state.menu_buttons_handler->button_ids[index];
+    entity_state.selected_button_index = index;
+    entity_state.selected_button = entity_state.buttons.at(button_id);
+    *entity_state.selection_sprite_parent_id = button_id;
 }
 
 

@@ -11,6 +11,7 @@
 
 #include "Game/Components.hpp"
 #include "Game/Systems/In_Game_Controls.hpp"
+#include "Game/Systems/Menu_Buttons_Handler.hpp"
 
 
 using std::map;
@@ -51,6 +52,7 @@ static const string UNPAUSE_HANDLER_ID = "pause_menu unpause";
 static Menu_Buttons_Handler * entity_menu_buttons_handler;
 static Transform * entity_transform;
 static bool entity_on;
+static Entity entity;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -72,8 +74,10 @@ void unpause()
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void pause_menu_subscribe(Entity entity)
+void pause_menu_subscribe(Entity _entity)
 {
+    entity = _entity;
+
     if (entity_menu_buttons_handler != nullptr)
     {
         throw runtime_error("ERROR: only one entity is allowed to subscribed to the pause_menu system per scene!");
@@ -112,6 +116,13 @@ void pause_menu_set_on(bool on)
     static const vec3 OFF_SCALE(0.0f);
 
     entity_transform->scale = (entity_on = on) ? ON_SCALE : OFF_SCALE;
+
+
+    // Default to first button whenever menu is opened.
+    if (entity_on)
+    {
+        menu_buttons_handler_select_button(entity, 0);
+    }
 }
 
 

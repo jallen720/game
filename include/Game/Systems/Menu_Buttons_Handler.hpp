@@ -16,6 +16,7 @@ namespace Game
 void menu_buttons_handler_subscribe(Nito::Entity entity);
 void menu_buttons_handler_unsubscribe(Nito::Entity entity);
 void menu_buttons_handler_update();
+void menu_buttons_handler_select_button(Nito::Entity entity, int index);
 
 
 } // namespace Game
