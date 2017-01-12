@@ -118,12 +118,14 @@ void projectile_update()
         const Projectile * projectile = entity_state.projectile;
         float & time_elapsed = entity_state.time_elapsed;
 
+
         // If projectile's duration has expired, flag it for deletion.
         if (time_elapsed > projectile->duration)
         {
             flag_entity_for_deletion(entity);
             return;
         }
+
 
         entity_state.transform->position += projectile->speed * projectile->direction * delta_time;
         time_elapsed += delta_time;
