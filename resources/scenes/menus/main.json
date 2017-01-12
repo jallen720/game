@@ -9,10 +9,13 @@
                 "anchor": { "x": 0.5, "y": 0.5 }
             },
             "menu_buttons_handler":
-            [
-                "Play",
-                "Exit"
-            ]
+            {
+                "button_names":
+                [
+                    "Play",
+                    "Exit"
+                ]
+            }
         },
         "systems":
         [

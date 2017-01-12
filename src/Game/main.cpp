@@ -189,7 +189,7 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
                 auto menu_buttons_handler = new Menu_Buttons_Handler;
                 vector<string> & button_names = menu_buttons_handler->button_names;
 
-                for (const string & button_name : data)
+                for (const string & button_name : data["button_names"])
                 {
                     button_names.push_back(button_name);
                 }

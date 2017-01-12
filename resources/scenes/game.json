@@ -9,10 +9,13 @@
                 "anchor": { "x": 0.5, "y": 0.5 }
             },
             "menu_buttons_handler":
-            [
-                "Continue",
-                "Quit"
-            ]
+            {
+                "button_names":
+                [
+                    "Continue",
+                    "Quit"
+                ]
+            }
         },
         "systems":
         [
@@ -30,10 +33,13 @@
                 "anchor": { "x": 0.5, "y": 0.5 }
             },
             "menu_buttons_handler":
-            [
-                "Restart",
-                "Quit"
-            ]
+            {
+                "button_names":
+                [
+                    "Restart",
+                    "Quit"
+                ]
+            }
         },
         "systems":
         [
