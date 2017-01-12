@@ -18,7 +18,6 @@
 #include "Game/Systems/Turret.hpp"
 #include "Game/Systems/Orientation_Handler.hpp"
 #include "Game/Systems/Health_Bar.hpp"
-#include "Game/Systems/Collider.hpp"
 #include "Game/Systems/Health.hpp"
 #include "Game/Systems/In_Game_Controls.hpp"
 #include "Game/Systems/Menu_Buttons_Handler.hpp"
@@ -74,7 +73,6 @@ static const vector<Update_Handler> GAME_UPDATE_HANDLERS
     turret_update,
     orientation_handler_update,
     health_bar_update,
-    collider_update,
     menu_buttons_handler_update,
 };
 
@@ -88,7 +86,6 @@ static const map<string, const System_Entity_Handlers> GAME_SYSTEM_ENTITY_HANDLE
     NITO_SYSTEM_ENTITY_HANDLERS(turret),
     NITO_SYSTEM_ENTITY_HANDLERS(orientation_handler),
     NITO_SYSTEM_ENTITY_HANDLERS(health_bar),
-    NITO_SYSTEM_ENTITY_HANDLERS(collider),
     NITO_SYSTEM_ENTITY_HANDLERS(health),
     NITO_SYSTEM_ENTITY_HANDLERS(in_game_controls),
     NITO_SYSTEM_ENTITY_HANDLERS(menu_buttons_handler),
@@ -175,21 +172,6 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
                 };
             },
             get_component_deallocator<Health>(),
-        }
-    },
-    {
-        "collider",
-        {
-            [](const JSON & data) -> Component
-            {
-                return new Collider
-                {
-                    data["render"],
-                    data["radius"],
-                    {},
-                };
-            },
-            get_component_deallocator<Collider>(),
         }
     },
     {

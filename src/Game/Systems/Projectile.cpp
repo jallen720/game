@@ -27,6 +27,7 @@ using Nito::get_time_scale;
 
 // Nito/Components.hpp
 using Nito::Transform;
+using Nito::Collider;
 
 // Nito/APIs/Window.hpp
 using Nito::get_delta_time;

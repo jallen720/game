@@ -11,10 +11,6 @@
     [
         "orientation_handler"
     ],
-    "collider":
-    [
-        "collider"
-    ],
     "health":
     [
         "health"

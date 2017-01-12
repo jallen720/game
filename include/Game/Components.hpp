@@ -55,16 +55,6 @@ struct Orientation_Handler
 };
 
 
-struct Collider
-{
-    using Collision_Handler = std::function<void(Nito::Entity)>;
-
-    bool render;
-    float radius;
-    Collision_Handler collision_handler;
-};
-
-
 struct Health
 {
     float max;
