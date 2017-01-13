@@ -2,6 +2,7 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 #include "Nito/Components.hpp"
+#include "Nito/Collider_Component.hpp"
 #include "Nito/APIs/ECS.hpp"
 
 #include "Game/Components.hpp"
@@ -20,8 +21,10 @@ using glm::normalize;
 using Nito::Transform;
 using Nito::Sprite;
 using Nito::Dimensions;
-using Nito::Collider;
 using Nito::Circle_Collider;
+
+// Nito/Collider_Component.hpp
+using Nito::Collider;
 
 // Nito/APIs/ECS.hpp
 using Nito::generate_entity;

@@ -4,6 +4,7 @@
 #include <string>
 #include "Nito/Engine.hpp"
 #include "Nito/Components.hpp"
+#include "Nito/Collider_Component.hpp"
 #include "Nito/APIs/Window.hpp"
 #include "Cpp_Utils/Map.hpp"
 #include "Cpp_Utils/Vector.hpp"
@@ -27,6 +28,8 @@ using Nito::get_time_scale;
 
 // Nito/Components.hpp
 using Nito::Transform;
+
+// Nito/Collider_Component.hpp
 using Nito::Collider;
 
 // Nito/APIs/Window.hpp
