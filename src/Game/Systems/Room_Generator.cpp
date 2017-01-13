@@ -1,6 +1,7 @@
 #include "Game/Systems/Room_Generator.hpp"
 
 #include <string>
+#include <vector>
 #include <map>
 #include <functional>
 #include <glm/glm.hpp>
@@ -9,6 +10,7 @@
 
 
 using std::string;
+using std::vector;
 using std::map;
 using std::function;
 
@@ -91,6 +93,12 @@ static const map<Tile_Types, const string> TILE_TYPE_TEXTURE_PATHS
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static void create_tile(const vec3 & position, const string & texture_path)
 {
+    static const vector<string> TILE_SYSTEMS
+    {
+        "sprite_dimensions_handler",
+        "renderer",
+    };
+
     static const float ROOM_Z = 100.0f;
 
     auto dimensions = new Dimensions { 0.0f, 0.0f, vec3(0.0f) };
@@ -103,10 +111,7 @@ static void create_tile(const vec3 & position, const string & texture_path)
             { "dimensions"   , dimensions                             },
             { "sprite"       , new Sprite { texture_path, "texture" } },
         },
-        {
-            "sprite_dimensions_handler",
-            "renderer",
-        });
+        TILE_SYSTEMS);
 
     transform->position = position * (vec3(dimensions->width, dimensions->height, 0.0f) / get_pixels_per_unit());
     transform->position.z = ROOM_Z;
