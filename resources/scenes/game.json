@@ -106,7 +106,10 @@
             "health": 100,
             "collider":
             {
-                "render": true,
+                "render": true
+            },
+            "circle_collider":
+            {
                 "radius": 0.175
             }
         },
@@ -147,7 +150,10 @@
             },
             "collider":
             {
-                "render": true,
+                "render": true
+            },
+            "circle_collider":
+            {
                 "radius": 0.2
             },
             "health": 100
@@ -188,7 +194,10 @@
             },
             "collider":
             {
-                "render": true,
+                "render": true
+            },
+            "circle_collider":
+            {
                 "radius": 0.2
             },
             "health": 100
