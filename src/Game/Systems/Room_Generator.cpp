@@ -6,6 +6,7 @@
 #include <functional>
 #include <glm/glm.hpp>
 #include "Nito/Components.hpp"
+#include "Nito/Collider_Component.hpp"
 #include "Nito/APIs/Graphics.hpp"
 
 
@@ -19,6 +20,7 @@ using glm::vec3;
 
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
+using Nito::Component;
 using Nito::generate_entity;
 using Nito::get_component;
 
@@ -26,6 +28,10 @@ using Nito::get_component;
 using Nito::Transform;
 using Nito::Dimensions;
 using Nito::Sprite;
+using Nito::Line_Collider;
+
+// Nito/Collider_Component.hpp
+using Nito::Collider;
 
 // Nito/APIs/Graphics.hpp
 using Nito::get_pixels_per_unit;
@@ -42,19 +48,15 @@ namespace Game
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 enum class Tile_Types
 {
-    FLOOR,
+    WALL_BOTTOM,
     WALL_LEFT,
     WALL_TOP,
     WALL_RIGHT,
-    WALL_BOTTOM,
+    WALL_BOTTOM_LEFT,
     WALL_TOP_LEFT,
     WALL_TOP_RIGHT,
     WALL_BOTTOM_RIGHT,
-    WALL_BOTTOM_LEFT,
-    DOOR_LEFT,
-    DOOR_TOP,
-    DOOR_RIGHT,
-    DOOR_BOTTOM,
+    FLOOR,
 };
 
 
@@ -63,27 +65,10 @@ enum class Tile_Types
 // Data
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static const auto ROOM_WIDTH = 13u;
-static const auto ROOM_HEIGHT = 9u;
+static const int ROOM_WIDTH = 13;
+static const int ROOM_HEIGHT = 9;
+static const float ROOM_Z = 100.0f;
 static Tile_Types tile_map[ROOM_WIDTH * ROOM_HEIGHT];
-
-
-static const map<Tile_Types, const string> TILE_TYPE_TEXTURE_PATHS
-{
-    { Tile_Types::FLOOR             , "resources/textures/floor.png"             },
-    { Tile_Types::WALL_LEFT         , "resources/textures/wall_left.png"         },
-    { Tile_Types::WALL_TOP          , "resources/textures/wall_top.png"          },
-    { Tile_Types::WALL_RIGHT        , "resources/textures/wall_right.png"        },
-    { Tile_Types::WALL_BOTTOM       , "resources/textures/wall_bottom.png"       },
-    { Tile_Types::WALL_TOP_LEFT     , "resources/textures/wall_top_left.png"     },
-    { Tile_Types::WALL_TOP_RIGHT    , "resources/textures/wall_top_right.png"    },
-    { Tile_Types::WALL_BOTTOM_RIGHT , "resources/textures/wall_bottom_right.png" },
-    { Tile_Types::WALL_BOTTOM_LEFT  , "resources/textures/wall_bottom_left.png"  },
-    { Tile_Types::DOOR_LEFT         , "resources/textures/floor.png"/*door_left.png"*/         },
-    { Tile_Types::DOOR_TOP          , "resources/textures/floor.png"/*door_top.png"*/          },
-    { Tile_Types::DOOR_RIGHT        , "resources/textures/floor.png"/*door_right.png"*/        },
-    { Tile_Types::DOOR_BOTTOM       , "resources/textures/floor.png"/*door_bottom.png"*/       },
-};
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -91,28 +76,72 @@ static const map<Tile_Types, const string> TILE_TYPE_TEXTURE_PATHS
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static void create_tile(const vec3 & position, const string & texture_path)
+static float get_tile_rotation(Tile_Types tile_type)
 {
-    static const vector<string> TILE_SYSTEMS
+    switch (tile_type)
+    {
+        case Tile_Types::FLOOR:
+        case Tile_Types::WALL_BOTTOM:
+        case Tile_Types::WALL_BOTTOM_LEFT:
+        {
+            return 0.0f;
+        }
+        case Tile_Types::WALL_LEFT:
+        case Tile_Types::WALL_TOP_LEFT:
+        {
+            return 270.0f;
+        }
+        case Tile_Types::WALL_TOP:
+        case Tile_Types::WALL_TOP_RIGHT:
+        {
+            return 180.0f;
+        }
+        case Tile_Types::WALL_RIGHT:
+        case Tile_Types::WALL_BOTTOM_RIGHT:
+        {
+            return 90.0f;
+        }
+        default:
+        {
+            return 0.0f;
+        }
+    }
+}
+
+
+static void create_tile(Tile_Types tile_type, const vec3 & position, const string & texture_path)
+{
+    auto dimensions = new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) };
+    auto transform = new Transform { vec3(), vec3(1.0f), get_tile_rotation(tile_type) };
+
+    map<string, Component> tile_components
+    {
+        { "render_layer" , new string("world")                    },
+        { "transform"    , transform                              },
+        { "dimensions"   , dimensions                             },
+        { "sprite"       , new Sprite { texture_path, "texture" } },
+    };
+
+    vector<string> tile_systems
     {
         "sprite_dimensions_handler",
         "renderer",
     };
 
-    static const float ROOM_Z = 100.0f;
 
-    auto dimensions = new Dimensions { 0.0f, 0.0f, vec3(0.0f) };
-    auto transform = new Transform { vec3(), vec3(1.0f), 0.0f };
+    // Give wall tiles a line collider.
+    if (tile_type == Tile_Types::WALL_BOTTOM ||
+        tile_type == Tile_Types::WALL_LEFT ||
+        tile_type == Tile_Types::WALL_TOP ||
+        tile_type == Tile_Types::WALL_RIGHT)
+    {
+        tile_components["collider"] = new Collider { true, {} };
+        tile_components["line_collider"] = new Line_Collider { 0.5f, vec3(0.0f, 0.25f, 0.0f) };
+        tile_systems.push_back("line_collider");
+    }
 
-    generate_entity(
-        {
-            { "render_layer" , new string("world")                    },
-            { "transform"    , transform                              },
-            { "dimensions"   , dimensions                             },
-            { "sprite"       , new Sprite { texture_path, "texture" } },
-        },
-        TILE_SYSTEMS);
 
+    generate_entity(tile_components, tile_systems);
     transform->position = position * (vec3(dimensions->width, dimensions->height, 0.0f) / get_pixels_per_unit());
     transform->position.z = ROOM_Z;
 }
@@ -120,9 +149,9 @@ static void create_tile(const vec3 & position, const string & texture_path)
 
 static void iterate_tile_map(const function<void(int, int, Tile_Types & tile_type)> & callback)
 {
-    for (auto x = 0u; x < ROOM_WIDTH; x++)
+    for (int x = 0; x < ROOM_WIDTH; x++)
     {
-        for (auto y = 0u; y < ROOM_HEIGHT; y++)
+        for (int y = 0; y < ROOM_HEIGHT; y++)
         {
             callback(x, y, tile_map[(y * ROOM_WIDTH) + x]);
         }
@@ -137,6 +166,12 @@ static void iterate_tile_map(const function<void(int, int, Tile_Types & tile_typ
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void room_generator_subscribe(Entity /*entity*/)
 {
+    static const string WALL_TILE_TEXTURE_PATH = "resources/textures/tiles/wall.png";
+    static const string WALL_CORNER_TILE_TEXTURE_PATH = "resources/textures/tiles/wall_corner.png";
+    static const string FLOOR_TILE_TEXTURE_PATH = "resources/textures/tiles/floor.png";
+
+
+    // Generate tile types for all tiles on map.
     iterate_tile_map([](int x, int y, Tile_Types & tile_type) -> void
     {
         // Left wall
@@ -186,9 +221,36 @@ void room_generator_subscribe(Entity /*entity*/)
         }
     });
 
+
+    // Create tile entities based on each tile's type.
     iterate_tile_map([&](int x, int y, const Tile_Types & tile_type) -> void
     {
-        create_tile(vec3(x, y, 0.0f), TILE_TYPE_TEXTURE_PATHS.at(tile_type));
+        const vec3 tile_position(x, y, 0.0f);
+
+        switch (tile_type)
+        {
+            case Tile_Types::WALL_BOTTOM:
+            case Tile_Types::WALL_LEFT:
+            case Tile_Types::WALL_TOP:
+            case Tile_Types::WALL_RIGHT:
+            {
+                create_tile(tile_type, tile_position, WALL_TILE_TEXTURE_PATH);
+                break;
+            }
+            case Tile_Types::WALL_BOTTOM_LEFT:
+            case Tile_Types::WALL_TOP_LEFT:
+            case Tile_Types::WALL_TOP_RIGHT:
+            case Tile_Types::WALL_BOTTOM_RIGHT:
+            {
+                create_tile(tile_type, tile_position, WALL_CORNER_TILE_TEXTURE_PATH);
+                break;
+            }
+            case Tile_Types::FLOOR:
+            {
+                create_tile(tile_type, tile_position, FLOOR_TILE_TEXTURE_PATH);
+                break;
+            }
+        }
     });
 }
 

@@ -27,26 +27,20 @@
         },
         "paths":
         [
-            "resources/textures/floor.png",
-            "resources/textures/wall_left.png",
-            "resources/textures/wall_top.png",
-            "resources/textures/wall_right.png",
-            "resources/textures/wall_bottom.png",
-            "resources/textures/wall_top_left.png",
-            "resources/textures/wall_top_right.png",
-            "resources/textures/wall_bottom_right.png",
-            "resources/textures/wall_bottom_left.png",
-            "resources/textures/player_up.png",
-            "resources/textures/player_right.png",
+            "resources/textures/tiles/floor.png",
+            "resources/textures/tiles/wall.png",
+            "resources/textures/tiles/wall_corner.png",
+            "resources/textures/ui/health_bar_background.png",
+            "resources/textures/ui/health_bar_foreground.png",
             "resources/textures/player_down.png",
             "resources/textures/player_left.png",
+            "resources/textures/player_right.png",
+            "resources/textures/player_up.png",
             "resources/textures/projectile.png",
             "resources/textures/turret_down.png",
-            "resources/textures/turret_right.png",
             "resources/textures/turret_left.png",
-            "resources/textures/turret_up.png",
-            "resources/textures/ui/health_bar_background.png",
-            "resources/textures/ui/health_bar_foreground.png"
+            "resources/textures/turret_right.png",
+            "resources/textures/turret_up.png"
         ]
     }
 ]
