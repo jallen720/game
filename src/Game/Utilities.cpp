@@ -56,7 +56,7 @@ void fire_projectile(const vec3 & origin, const vec3 & direction, float duration
             { "projectile"      , new Projectile { 3.0f, normalize(direction), duration, target_layers } },
             { "sprite"          , new Sprite { "resources/textures/projectile.png", "texture" }          },
             { "dimensions"      , new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) }                  },
-            { "collider"        , new Collider { true, {} }                                              },
+            { "collider"        , new Collider { true, false, false, {} }                                },
             { "circle_collider" , new Circle_Collider { 0.065f }                                         },
             { "render_layer"    , new string("world")                                                    },
         },
