@@ -135,7 +135,7 @@ static void create_tile(Tile_Types tile_type, const vec3 & position, const strin
         tile_type == Tile_Types::WALL_TOP ||
         tile_type == Tile_Types::WALL_RIGHT)
     {
-        tile_components["collider"] = new Collider { true, true, false, wall_collision_handler };
+        tile_components["collider"] = new Collider { true, true, false, {} };
         tile_components["line_collider"] = new Line_Collider { vec3(-0.25f, 0.25f, 0.0f), vec3(0.25f, 0.25f, 0.0f) };
         tile_systems.push_back("line_collider");
     }
