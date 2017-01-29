@@ -27,6 +27,7 @@
         },
         "paths":
         [
+            "resources/textures/tiles/door.png",
             "resources/textures/tiles/floor.png",
             "resources/textures/tiles/wall.png",
             "resources/textures/tiles/wall_corner.png",

@@ -56,6 +56,10 @@ enum class Tile_Types
     WALL_TOP_LEFT,
     WALL_TOP_RIGHT,
     WALL_BOTTOM_RIGHT,
+    DOOR_BOTTOM,
+    DOOR_LEFT,
+    DOOR_TOP,
+    DOOR_RIGHT,
     FLOOR,
 };
 
@@ -83,21 +87,25 @@ static float get_tile_rotation(Tile_Types tile_type)
         case Tile_Types::FLOOR:
         case Tile_Types::WALL_BOTTOM:
         case Tile_Types::WALL_BOTTOM_LEFT:
+        case Tile_Types::DOOR_BOTTOM:
         {
             return 0.0f;
         }
         case Tile_Types::WALL_LEFT:
         case Tile_Types::WALL_TOP_LEFT:
+        case Tile_Types::DOOR_LEFT:
         {
             return 270.0f;
         }
         case Tile_Types::WALL_TOP:
         case Tile_Types::WALL_TOP_RIGHT:
+        case Tile_Types::DOOR_TOP:
         {
             return 180.0f;
         }
         case Tile_Types::WALL_RIGHT:
         case Tile_Types::WALL_BOTTOM_RIGHT:
+        case Tile_Types::DOOR_RIGHT:
         {
             return 90.0f;
         }
@@ -168,6 +176,7 @@ void room_generator_subscribe(Entity /*entity*/)
 {
     static const string WALL_TILE_TEXTURE_PATH = "resources/textures/tiles/wall.png";
     static const string WALL_CORNER_TILE_TEXTURE_PATH = "resources/textures/tiles/wall_corner.png";
+    static const string DOOR_TILE_TEXTURE_PATH = "resources/textures/tiles/door.png";
     static const string FLOOR_TILE_TEXTURE_PATH = "resources/textures/tiles/floor.png";
 
 
@@ -177,22 +186,50 @@ void room_generator_subscribe(Entity /*entity*/)
         // Left wall
         if (x == 0 && y != 0 && y != ROOM_HEIGHT - 1)
         {
-            tile_type = Tile_Types::WALL_LEFT;
+            if (y == (ROOM_HEIGHT - 1) / 2)
+            {
+                tile_type = Tile_Types::DOOR_LEFT;
+            }
+            else
+            {
+                tile_type = Tile_Types::WALL_LEFT;
+            }
         }
         // Top wall
         else if (y == ROOM_HEIGHT - 1 && x != 0 && x != ROOM_WIDTH - 1)
         {
-            tile_type = Tile_Types::WALL_TOP;
+            if (x == (ROOM_WIDTH - 1) / 2)
+            {
+                tile_type = Tile_Types::DOOR_TOP;
+            }
+            else
+            {
+                tile_type = Tile_Types::WALL_TOP;
+            }
         }
         // Right wall
         else if (x == ROOM_WIDTH - 1 && y != 0 && y != ROOM_HEIGHT - 1)
         {
-            tile_type = Tile_Types::WALL_RIGHT;
+            if (y == (ROOM_HEIGHT - 1) / 2)
+            {
+                tile_type = Tile_Types::DOOR_RIGHT;
+            }
+            else
+            {
+                tile_type = Tile_Types::WALL_RIGHT;
+            }
         }
         // Bottom wall
         else if (y == 0 && x != 0 && x != ROOM_WIDTH - 1)
         {
-            tile_type = Tile_Types::WALL_BOTTOM;
+            if (x == (ROOM_WIDTH - 1) / 2)
+            {
+                tile_type = Tile_Types::DOOR_BOTTOM;
+            }
+            else
+            {
+                tile_type = Tile_Types::WALL_BOTTOM;
+            }
         }
         // Top left wall
         else if (x == 0 && y == ROOM_HEIGHT - 1)
@@ -243,6 +280,14 @@ void room_generator_subscribe(Entity /*entity*/)
             case Tile_Types::WALL_BOTTOM_RIGHT:
             {
                 create_tile(tile_type, tile_position, WALL_CORNER_TILE_TEXTURE_PATH);
+                break;
+            }
+            case Tile_Types::DOOR_BOTTOM:
+            case Tile_Types::DOOR_LEFT:
+            case Tile_Types::DOOR_TOP:
+            case Tile_Types::DOOR_RIGHT:
+            {
+                create_tile(tile_type, tile_position, DOOR_TILE_TEXTURE_PATH);
                 break;
             }
             case Tile_Types::FLOOR:
