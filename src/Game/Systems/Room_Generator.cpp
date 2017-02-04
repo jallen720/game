@@ -29,6 +29,7 @@ using Nito::Transform;
 using Nito::Dimensions;
 using Nito::Sprite;
 using Nito::Line_Collider;
+using Nito::Polygon_Collider;
 
 // Nito/Collider_Component.hpp
 using Nito::Collider;
@@ -119,6 +120,8 @@ static float get_tile_rotation(Tile_Types tile_type)
 
 static void create_tile(Tile_Types tile_type, const vec3 & position, const string & texture_path)
 {
+    const float x = position.x;
+    const float y = position.y;
     auto dimensions = new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) };
     auto transform = new Transform { vec3(), vec3(1.0f), get_tile_rotation(tile_type) };
 
@@ -143,9 +146,87 @@ static void create_tile(Tile_Types tile_type, const vec3 & position, const strin
         tile_type == Tile_Types::WALL_TOP ||
         tile_type == Tile_Types::WALL_RIGHT)
     {
+        bool right_of_door = false;
+        bool left_of_door = false;
+
+        if (y == 0)
+        {
+            if (x == (ROOM_WIDTH - 2) / 2)
+            {
+                right_of_door = true;
+            }
+            else if (x == ((ROOM_WIDTH - 2) / 2) + 2)
+            {
+                left_of_door = true;
+            }
+        }
+        else if (y == ROOM_HEIGHT - 1)
+        {
+            if (x == (ROOM_WIDTH - 2) / 2)
+            {
+                left_of_door = true;
+            }
+            else if (x == ((ROOM_WIDTH - 2) / 2) + 2)
+            {
+                right_of_door = true;
+            }
+        }
+        else if (x == 0)
+        {
+            if (y == (ROOM_HEIGHT - 2) / 2)
+            {
+                left_of_door = true;
+            }
+            else if (y == ((ROOM_HEIGHT - 2) / 2) + 2)
+            {
+                right_of_door = true;
+            }
+        }
+        else if (x == ROOM_WIDTH - 1)
+        {
+            if (y == (ROOM_HEIGHT - 2) / 2)
+            {
+                right_of_door = true;
+            }
+            else if (y == ((ROOM_HEIGHT - 2) / 2) + 2)
+            {
+                left_of_door = true;
+            }
+        }
+
         tile_components["collider"] = new Collider { true, true, false, {} };
-        tile_components["line_collider"] = new Line_Collider { vec3(-0.25f, 0.25f, 0.0f), vec3(0.25f, 0.25f, 0.0f) };
-        tile_systems.push_back("line_collider");
+
+
+        // Door-adjacent walls should have a polygon collider, all other walls shouls have a line collider.
+        if (right_of_door || left_of_door)
+        {
+            static const vector<vec3> RIGHT_WALL_POINTS
+            {
+                vec3(-0.25f, 0.25f, 0.0f),
+                vec3( 0.25f, 0.25f, 0.0f),
+                vec3( 0.25f,-0.25f, 0.0f),
+            };
+
+            static const vector<vec3> LEFT_WALL_POINTS
+            {
+                vec3(-0.25f,-0.25f, 0.0f),
+                vec3(-0.25f, 0.25f, 0.0f),
+                vec3( 0.25f, 0.25f, 0.0f),
+            };
+
+            tile_components["polygon_collider"] = new Polygon_Collider
+            {
+                right_of_door ? RIGHT_WALL_POINTS : LEFT_WALL_POINTS,
+                false,
+            };
+
+            tile_systems.push_back("polygon_collider");
+        }
+        else
+        {
+            tile_components["line_collider"] = new Line_Collider { vec3(-0.25f, 0.25f, 0.0f), vec3(0.25f, 0.25f, 0.0f) };
+            tile_systems.push_back("line_collider");
+        }
     }
 
 
