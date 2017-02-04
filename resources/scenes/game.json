@@ -139,7 +139,7 @@
             },
             "transform":
             {
-                "position": { "x": 2.5, "y": 2 }
+                "position": { "x": 4.4, "y": 2 }
             },
             "orientation_handler":
             {
@@ -184,7 +184,7 @@
             },
             "transform":
             {
-                "position": { "x": 3.0, "y": 2.2 }
+                "position": { "x": 5.0, "y": 2.0 }
             },
             "orientation_handler":
             {
