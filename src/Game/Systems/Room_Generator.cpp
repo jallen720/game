@@ -47,21 +47,21 @@ namespace Game
 // Data Structures
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-enum class Tile_Types
+struct Tile
 {
-    WALL_BOTTOM,
-    WALL_LEFT,
-    WALL_TOP,
-    WALL_RIGHT,
-    WALL_BOTTOM_LEFT,
-    WALL_TOP_LEFT,
-    WALL_TOP_RIGHT,
-    WALL_BOTTOM_RIGHT,
-    DOOR_BOTTOM,
-    DOOR_LEFT,
-    DOOR_TOP,
-    DOOR_RIGHT,
-    FLOOR,
+    enum class Types
+    {
+        WALL,
+        WALL_CORNER,
+        LEFT_DOOR_WALL,
+        RIGHT_DOOR_WALL,
+        DOOR,
+        FLOOR,
+    }
+    type;
+
+    float rotation;
+    const string * texture_path;
 };
 
 
@@ -73,7 +73,7 @@ enum class Tile_Types
 static const int ROOM_WIDTH = 13;
 static const int ROOM_HEIGHT = 9;
 static const float ROOM_Z = 100.0f;
-static Tile_Types tile_map[ROOM_WIDTH * ROOM_HEIGHT];
+static Tile tiles[ROOM_WIDTH * ROOM_HEIGHT];
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -81,168 +81,13 @@ static Tile_Types tile_map[ROOM_WIDTH * ROOM_HEIGHT];
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static float get_tile_rotation(Tile_Types tile_type)
-{
-    switch (tile_type)
-    {
-        case Tile_Types::FLOOR:
-        case Tile_Types::WALL_BOTTOM:
-        case Tile_Types::WALL_BOTTOM_LEFT:
-        case Tile_Types::DOOR_BOTTOM:
-        {
-            return 0.0f;
-        }
-        case Tile_Types::WALL_LEFT:
-        case Tile_Types::WALL_TOP_LEFT:
-        case Tile_Types::DOOR_LEFT:
-        {
-            return 270.0f;
-        }
-        case Tile_Types::WALL_TOP:
-        case Tile_Types::WALL_TOP_RIGHT:
-        case Tile_Types::DOOR_TOP:
-        {
-            return 180.0f;
-        }
-        case Tile_Types::WALL_RIGHT:
-        case Tile_Types::WALL_BOTTOM_RIGHT:
-        case Tile_Types::DOOR_RIGHT:
-        {
-            return 90.0f;
-        }
-        default:
-        {
-            return 0.0f;
-        }
-    }
-}
-
-
-static void create_tile(Tile_Types tile_type, const vec3 & position, const string & texture_path)
-{
-    const float x = position.x;
-    const float y = position.y;
-    auto dimensions = new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) };
-    auto transform = new Transform { vec3(), vec3(1.0f), get_tile_rotation(tile_type) };
-
-    map<string, Component> tile_components
-    {
-        { "render_layer" , new string("world")                    },
-        { "transform"    , transform                              },
-        { "dimensions"   , dimensions                             },
-        { "sprite"       , new Sprite { texture_path, "texture" } },
-    };
-
-    vector<string> tile_systems
-    {
-        "sprite_dimensions_handler",
-        "renderer",
-    };
-
-
-    // Give wall tiles a line collider.
-    if (tile_type == Tile_Types::WALL_BOTTOM ||
-        tile_type == Tile_Types::WALL_LEFT ||
-        tile_type == Tile_Types::WALL_TOP ||
-        tile_type == Tile_Types::WALL_RIGHT)
-    {
-        bool right_of_door = false;
-        bool left_of_door = false;
-
-        if (y == 0)
-        {
-            if (x == (ROOM_WIDTH - 2) / 2)
-            {
-                right_of_door = true;
-            }
-            else if (x == ((ROOM_WIDTH - 2) / 2) + 2)
-            {
-                left_of_door = true;
-            }
-        }
-        else if (y == ROOM_HEIGHT - 1)
-        {
-            if (x == (ROOM_WIDTH - 2) / 2)
-            {
-                left_of_door = true;
-            }
-            else if (x == ((ROOM_WIDTH - 2) / 2) + 2)
-            {
-                right_of_door = true;
-            }
-        }
-        else if (x == 0)
-        {
-            if (y == (ROOM_HEIGHT - 2) / 2)
-            {
-                left_of_door = true;
-            }
-            else if (y == ((ROOM_HEIGHT - 2) / 2) + 2)
-            {
-                right_of_door = true;
-            }
-        }
-        else if (x == ROOM_WIDTH - 1)
-        {
-            if (y == (ROOM_HEIGHT - 2) / 2)
-            {
-                right_of_door = true;
-            }
-            else if (y == ((ROOM_HEIGHT - 2) / 2) + 2)
-            {
-                left_of_door = true;
-            }
-        }
-
-        tile_components["collider"] = new Collider { true, true, false, {} };
-
-
-        // Door-adjacent walls should have a polygon collider, all other walls shouls have a line collider.
-        if (right_of_door || left_of_door)
-        {
-            static const vector<vec3> RIGHT_WALL_POINTS
-            {
-                vec3(-0.25f, 0.25f, 0.0f),
-                vec3( 0.25f, 0.25f, 0.0f),
-                vec3( 0.25f,-0.25f, 0.0f),
-            };
-
-            static const vector<vec3> LEFT_WALL_POINTS
-            {
-                vec3(-0.25f,-0.25f, 0.0f),
-                vec3(-0.25f, 0.25f, 0.0f),
-                vec3( 0.25f, 0.25f, 0.0f),
-            };
-
-            tile_components["polygon_collider"] = new Polygon_Collider
-            {
-                right_of_door ? RIGHT_WALL_POINTS : LEFT_WALL_POINTS,
-                false,
-            };
-
-            tile_systems.push_back("polygon_collider");
-        }
-        else
-        {
-            tile_components["line_collider"] = new Line_Collider { vec3(-0.25f, 0.25f, 0.0f), vec3(0.25f, 0.25f, 0.0f) };
-            tile_systems.push_back("line_collider");
-        }
-    }
-
-
-    generate_entity(tile_components, tile_systems);
-    transform->position = position * (vec3(dimensions->width, dimensions->height, 0.0f) / get_pixels_per_unit());
-    transform->position.z = ROOM_Z;
-}
-
-
-static void iterate_tile_map(const function<void(int, int, Tile_Types & tile_type)> & callback)
+static void iterate_tile_map(const function<void(int, int, Tile &)> & callback)
 {
     for (int x = 0; x < ROOM_WIDTH; x++)
     {
         for (int y = 0; y < ROOM_HEIGHT; y++)
         {
-            callback(x, y, tile_map[(y * ROOM_WIDTH) + x]);
+            callback(x, y, tiles[(y * ROOM_WIDTH) + x]);
         }
     }
 }
@@ -262,121 +107,213 @@ void room_generator_subscribe(Entity /*entity*/)
 
 
     // Generate tile types for all tiles on map.
-    iterate_tile_map([](int x, int y, Tile_Types & tile_type) -> void
+    iterate_tile_map([](int x, int y, Tile & tile) -> void
     {
-        // Left wall
-        if (x == 0 && y != 0 && y != ROOM_HEIGHT - 1)
+        // Floor
+        if (x > 0 && x < ROOM_WIDTH - 1 &&
+            y > 0 && y < ROOM_HEIGHT - 1)
         {
-            if (y == (ROOM_HEIGHT - 1) / 2)
-            {
-                tile_type = Tile_Types::DOOR_LEFT;
-            }
-            else
-            {
-                tile_type = Tile_Types::WALL_LEFT;
-            }
-        }
-        // Top wall
-        else if (y == ROOM_HEIGHT - 1 && x != 0 && x != ROOM_WIDTH - 1)
-        {
-            if (x == (ROOM_WIDTH - 1) / 2)
-            {
-                tile_type = Tile_Types::DOOR_TOP;
-            }
-            else
-            {
-                tile_type = Tile_Types::WALL_TOP;
-            }
-        }
-        // Right wall
-        else if (x == ROOM_WIDTH - 1 && y != 0 && y != ROOM_HEIGHT - 1)
-        {
-            if (y == (ROOM_HEIGHT - 1) / 2)
-            {
-                tile_type = Tile_Types::DOOR_RIGHT;
-            }
-            else
-            {
-                tile_type = Tile_Types::WALL_RIGHT;
-            }
+            tile.type = Tile::Types::FLOOR;
+            tile.texture_path = &FLOOR_TILE_TEXTURE_PATH;
+            tile.rotation = 0.0f;
         }
         // Bottom wall
-        else if (y == 0 && x != 0 && x != ROOM_WIDTH - 1)
+        else if (y == 0 && x != ROOM_WIDTH - 1)
         {
             if (x == (ROOM_WIDTH - 1) / 2)
             {
-                tile_type = Tile_Types::DOOR_BOTTOM;
+                tile.type = Tile::Types::DOOR;
+                tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
+            }
+            else if (x == (ROOM_WIDTH - 2) / 2)
+            {
+                tile.type = Tile::Types::RIGHT_DOOR_WALL;
+                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+            }
+            else if (x == ((ROOM_WIDTH - 2) / 2) + 2)
+            {
+                tile.type = Tile::Types::LEFT_DOOR_WALL;
+                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+            }
+            else if (x == 0)
+            {
+                tile.type = Tile::Types::WALL_CORNER;
+                tile.texture_path = &WALL_CORNER_TILE_TEXTURE_PATH;
             }
             else
             {
-                tile_type = Tile_Types::WALL_BOTTOM;
+                tile.type = Tile::Types::WALL;
+                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
             }
+
+            tile.rotation = 0.0f;
         }
-        // Top left wall
-        else if (x == 0 && y == ROOM_HEIGHT - 1)
+        // Left wall
+        else if (x == 0 && y != 0)
         {
-            tile_type = Tile_Types::WALL_TOP_LEFT;
+            if (y == (ROOM_HEIGHT - 1) / 2)
+            {
+                tile.type = Tile::Types::DOOR;
+                tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
+            }
+            else if (y == (ROOM_HEIGHT - 2) / 2)
+            {
+                tile.type = Tile::Types::LEFT_DOOR_WALL;
+                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+            }
+            else if (y == ((ROOM_HEIGHT - 2) / 2) + 2)
+            {
+                tile.type = Tile::Types::RIGHT_DOOR_WALL;
+                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+            }
+            else if (y == ROOM_HEIGHT - 1)
+            {
+                tile.type = Tile::Types::WALL_CORNER;
+                tile.texture_path = &WALL_CORNER_TILE_TEXTURE_PATH;
+            }
+            else
+            {
+                tile.type = Tile::Types::WALL;
+                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+            }
+
+            tile.rotation = 270.0f;
         }
-        // Top right wall
-        else if (x == ROOM_WIDTH - 1 && y == ROOM_HEIGHT - 1)
+        // Top wall
+        else if (y == ROOM_HEIGHT - 1 && x != 0)
         {
-            tile_type = Tile_Types::WALL_TOP_RIGHT;
+            if (x == (ROOM_WIDTH - 1) / 2)
+            {
+                tile.type = Tile::Types::DOOR;
+                tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
+            }
+            else if (x == (ROOM_WIDTH - 2) / 2)
+            {
+                tile.type = Tile::Types::LEFT_DOOR_WALL;
+                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+            }
+            else if (x == ((ROOM_WIDTH - 2) / 2) + 2)
+            {
+                tile.type = Tile::Types::RIGHT_DOOR_WALL;
+                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+            }
+            else if (x == ROOM_WIDTH - 1)
+            {
+                tile.type = Tile::Types::WALL_CORNER;
+                tile.texture_path = &WALL_CORNER_TILE_TEXTURE_PATH;
+            }
+            else
+            {
+                tile.type = Tile::Types::WALL;
+                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+            }
+
+            tile.rotation = 180.0f;
         }
-        // Bottom right wall
-        else if (x == ROOM_WIDTH - 1 && y == 0)
+        // Right wall
+        else if (x == ROOM_WIDTH - 1 && y != ROOM_HEIGHT - 1)
         {
-            tile_type = Tile_Types::WALL_BOTTOM_RIGHT;
-        }
-        // Bottom left wall
-        else if (x == 0 && y == 0)
-        {
-            tile_type = Tile_Types::WALL_BOTTOM_LEFT;
-        }
-        // Floor
-        else
-        {
-            tile_type = Tile_Types::FLOOR;
+            if (y == (ROOM_HEIGHT - 1) / 2)
+            {
+                tile.type = Tile::Types::DOOR;
+                tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
+            }
+            else if (y == (ROOM_HEIGHT - 2) / 2)
+            {
+                tile.type = Tile::Types::RIGHT_DOOR_WALL;
+                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+            }
+            else if (y == ((ROOM_HEIGHT - 2) / 2) + 2)
+            {
+                tile.type = Tile::Types::LEFT_DOOR_WALL;
+                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+            }
+            else if (y == 0)
+            {
+                tile.type = Tile::Types::WALL_CORNER;
+                tile.texture_path = &WALL_CORNER_TILE_TEXTURE_PATH;
+            }
+            else
+            {
+                tile.type = Tile::Types::WALL;
+                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+            }
+
+            tile.rotation = 90.0f;
         }
     });
 
 
     // Create tile entities based on each tile's type.
-    iterate_tile_map([&](int x, int y, const Tile_Types & tile_type) -> void
+    iterate_tile_map([](int tile_x, int tile_y, const Tile & tile) -> void
     {
-        const vec3 tile_position(x, y, 0.0f);
+        auto dimensions = new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) };
+        auto transform = new Transform { vec3(), vec3(1.0f), tile.rotation };
+        const Tile::Types tile_type = tile.type;
 
-        switch (tile_type)
+        map<string, Component> tile_components
         {
-            case Tile_Types::WALL_BOTTOM:
-            case Tile_Types::WALL_LEFT:
-            case Tile_Types::WALL_TOP:
-            case Tile_Types::WALL_RIGHT:
+            { "render_layer" , new string("world")                          },
+            { "transform"    , transform                                    },
+            { "dimensions"   , dimensions                                   },
+            { "sprite"       , new Sprite { *tile.texture_path, "texture" } },
+        };
+
+        vector<string> tile_systems
+        {
+            "sprite_dimensions_handler",
+            "renderer",
+        };
+
+
+        // Give wall tiles a line collider.
+        if (tile_type == Tile::Types::WALL ||
+            tile_type == Tile::Types::RIGHT_DOOR_WALL ||
+            tile_type == Tile::Types::LEFT_DOOR_WALL)
+        {
+            tile_components["collider"] = new Collider { true, true, false, {} };
+
+
+            // Door-adjacent walls should have a polygon collider, all other walls shouls have a line collider.
+            if (tile_type == Tile::Types::RIGHT_DOOR_WALL ||
+                tile_type == Tile::Types::LEFT_DOOR_WALL)
             {
-                create_tile(tile_type, tile_position, WALL_TILE_TEXTURE_PATH);
-                break;
+                static const vector<vec3> RIGHT_DOOR_WALL_POINTS
+                {
+                    vec3(-0.25f, 0.25f, 0.0f),
+                    vec3( 0.25f, 0.25f, 0.0f),
+                    vec3( 0.25f,-0.25f, 0.0f),
+                };
+
+                static const vector<vec3> LEFT_DOOR_WALL_POINTS
+                {
+                    vec3(-0.25f,-0.25f, 0.0f),
+                    vec3(-0.25f, 0.25f, 0.0f),
+                    vec3( 0.25f, 0.25f, 0.0f),
+                };
+
+                tile_components["polygon_collider"] = new Polygon_Collider
+                {
+                    tile_type == Tile::Types::RIGHT_DOOR_WALL ? RIGHT_DOOR_WALL_POINTS : LEFT_DOOR_WALL_POINTS,
+                    false,
+                };
+
+                tile_systems.push_back("polygon_collider");
             }
-            case Tile_Types::WALL_BOTTOM_LEFT:
-            case Tile_Types::WALL_TOP_LEFT:
-            case Tile_Types::WALL_TOP_RIGHT:
-            case Tile_Types::WALL_BOTTOM_RIGHT:
+            else
             {
-                create_tile(tile_type, tile_position, WALL_CORNER_TILE_TEXTURE_PATH);
-                break;
-            }
-            case Tile_Types::DOOR_BOTTOM:
-            case Tile_Types::DOOR_LEFT:
-            case Tile_Types::DOOR_TOP:
-            case Tile_Types::DOOR_RIGHT:
-            {
-                create_tile(tile_type, tile_position, DOOR_TILE_TEXTURE_PATH);
-                break;
-            }
-            case Tile_Types::FLOOR:
-            {
-                create_tile(tile_type, tile_position, FLOOR_TILE_TEXTURE_PATH);
-                break;
+                tile_components["line_collider"] = new Line_Collider { vec3(-0.25f, 0.25f, 0.0f), vec3(0.25f, 0.25f, 0.0f) };
+                tile_systems.push_back("line_collider");
             }
         }
+
+
+        generate_entity(tile_components, tile_systems);
+
+        transform->position =
+            vec3(tile_x, tile_y, 0.0f) * (vec3(dimensions->width, dimensions->height, 0.0f) / get_pixels_per_unit());
+
+        transform->position.z = ROOM_Z;
     });
 }
 
