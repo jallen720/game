@@ -302,7 +302,12 @@ void room_generator_subscribe(Entity /*entity*/)
             }
             else
             {
-                tile_components["line_collider"] = new Line_Collider { vec3(-0.25f, 0.25f, 0.0f), vec3(0.25f, 0.25f, 0.0f) };
+                tile_components["line_collider"] = new Line_Collider
+                {
+                    vec3(-0.25f, 0.25f, 0.0f),
+                    vec3(0.25f, 0.25f, 0.0f),
+                };
+
                 tile_systems.push_back("line_collider");
             }
         }
