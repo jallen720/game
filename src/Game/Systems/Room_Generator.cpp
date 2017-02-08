@@ -73,7 +73,7 @@ struct Tile
 static const int ROOM_WIDTH = 13;
 static const int ROOM_HEIGHT = 9;
 static const float ROOM_Z = 100.0f;
-static Tile tiles[ROOM_WIDTH * ROOM_HEIGHT];
+static Tile room[ROOM_WIDTH * ROOM_HEIGHT];
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -87,7 +87,7 @@ static void iterate_tile_map(const function<void(int, int, Tile &)> & callback)
     {
         for (int y = 0; y < ROOM_HEIGHT; y++)
         {
-            callback(x, y, tiles[(y * ROOM_WIDTH) + x]);
+            callback(x, y, room[(y * ROOM_WIDTH) + x]);
         }
     }
 }
