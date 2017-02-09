@@ -81,15 +81,22 @@ static Tile room[ROOM_WIDTH * ROOM_HEIGHT];
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static void iterate_tile_map(const function<void(int, int, Tile &)> & callback)
+template<typename T>
+static void iterate_map(T * map, int width, int height, const function<void(int, int, T &)> & callback)
 {
-    for (int x = 0; x < ROOM_WIDTH; x++)
+    for (int x = 0; x < width; x++)
     {
-        for (int y = 0; y < ROOM_HEIGHT; y++)
+        for (int y = 0; y < height; y++)
         {
-            callback(x, y, room[(y * ROOM_WIDTH) + x]);
+            callback(x, y, map[(y * width) + x]);
         }
     }
+}
+
+
+static void iterate_room(const function<void(int, int, Tile &)> & callback)
+{
+    iterate_map(room, ROOM_WIDTH, ROOM_HEIGHT, callback);
 }
 
 
@@ -107,7 +114,7 @@ void room_generator_subscribe(Entity /*entity*/)
 
 
     // Generate tile types for all tiles on map.
-    iterate_tile_map([](int x, int y, Tile & tile) -> void
+    iterate_room([](int x, int y, Tile & tile) -> void
     {
         // Floor
         if (x > 0 && x < ROOM_WIDTH - 1 &&
@@ -245,7 +252,7 @@ void room_generator_subscribe(Entity /*entity*/)
 
 
     // Create tile entities based on each tile's type.
-    iterate_tile_map([](int tile_x, int tile_y, const Tile & tile) -> void
+    iterate_room([](int tile_x, int tile_y, const Tile & tile) -> void
     {
         auto dimensions = new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) };
         auto transform = new Transform { vec3(), vec3(1.0f), tile.rotation };
