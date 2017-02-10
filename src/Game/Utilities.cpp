@@ -1,6 +1,8 @@
 #include "Game/Utilities.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <cstdio>
+#include <ctime>
 #include "Nito/Components.hpp"
 #include "Nito/Collider_Component.hpp"
 #include "Nito/APIs/ECS.hpp"
@@ -61,6 +63,21 @@ void fire_projectile(const vec3 & origin, const vec3 & direction, float duration
             { "render_layer"    , new string("world")                                                    },
         },
         PROJECTILE_SYSTEMS);
+}
+
+
+int random(int min, int max)
+{
+    static bool srand_set = false;
+
+    if (!srand_set)
+    {
+        srand(time(NULL));
+        srand_set = true;
+    }
+
+    return (rand() % (max - min)) + min;
+
 }
 
 

@@ -21,5 +21,7 @@ void fire_projectile(
     float duration,
     const std::vector<std::string> & target_layers);
 
+int random(int min, int max);
+
 
 } // namespace Game
