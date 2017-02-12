@@ -8,6 +8,9 @@
 #include "Nito/Components.hpp"
 #include "Nito/Collider_Component.hpp"
 #include "Nito/APIs/Graphics.hpp"
+#include "Cpp_Utils/Map.hpp"
+
+#include "Game/Utilities.hpp"
 
 
 using std::string;
@@ -17,6 +20,7 @@ using std::function;
 
 // glm/glm.hpp
 using glm::vec3;
+using glm::ivec2;
 
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
@@ -36,6 +40,10 @@ using Nito::Collider;
 
 // Nito/APIs/Graphics.hpp
 using Nito::get_pixels_per_unit;
+
+// Cpp_Utils/Map.hpp
+using Cpp_Utils::contains_key;
+using Cpp_Utils::remove;
 
 
 namespace Game
@@ -65,6 +73,28 @@ struct Tile
 };
 
 
+using Possible_Rooms = map<char *, ivec2>;
+
+
+struct Floor
+{
+    const int size;
+    char * rooms;
+    Possible_Rooms possible_rooms;
+
+    Floor(int size)
+        : size(size)
+    {
+        rooms = new char[size * size];
+    }
+
+    ~Floor()
+    {
+        delete[] rooms;
+    }
+};
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Data
@@ -82,13 +112,20 @@ static Tile room[ROOM_WIDTH * ROOM_HEIGHT];
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename T>
+T * map_at(T * map, int width, int x, int y)
+{
+    return &map[(y * width) + x];
+}
+
+
+template<typename T>
 static void iterate_map(T * map, int width, int height, const function<void(int, int, T &)> & callback)
 {
     for (int x = 0; x < width; x++)
     {
         for (int y = 0; y < height; y++)
         {
-            callback(x, y, map[(y * width) + x]);
+            callback(x, y, *map_at(map, width, x, y));
         }
     }
 }
@@ -97,6 +134,90 @@ static void iterate_map(T * map, int width, int height, const function<void(int,
 static void iterate_room(const function<void(int, int, Tile &)> & callback)
 {
     iterate_map(room, ROOM_WIDTH, ROOM_HEIGHT, callback);
+}
+
+
+static void iterate_floor(Floor & floor, const function<void(int, int, char &)> & callback)
+{
+    iterate_map(floor.rooms, floor.size, floor.size, callback);
+}
+
+
+static void check_possible_room(Floor & floor, int x, int y)
+{
+    Possible_Rooms & possible_rooms = floor.possible_rooms;
+    char * room = map_at(floor.rooms, floor.size, x, y);
+
+    if (*room == 0 && !contains_key(possible_rooms, room))
+    {
+        possible_rooms[room] = ivec2(x, y);
+    }
+}
+
+
+static void set_room(Floor & floor, int x, int y, char id)
+{
+    Possible_Rooms & possible_rooms = floor.possible_rooms;
+    char * tile = map_at(floor.rooms, floor.size, x, y);
+    *tile = id;
+
+    if (contains_key(possible_rooms, tile))
+    {
+        remove(possible_rooms, tile);
+    }
+
+    check_possible_room(floor, x + 1, y);
+    check_possible_room(floor, x - 1, y);
+    check_possible_room(floor, x, y + 1);
+    check_possible_room(floor, x, y - 1);
+}
+
+
+static void generate_room(Floor & floor, int x, int y, char id, int max_size)
+{
+    const int room_size = random(1, max_size + 1);
+    int room_generated = 1;
+    set_room(floor, x, y, id);
+
+    while (room_generated < room_size)
+    {
+
+        room_generated++;
+    }
+}
+
+
+static void debug_floor(Floor & floor)
+{
+    const int size = floor.size;
+    const char * rooms = floor.rooms;
+
+    for (int i = 0; i < size + 2; i++)
+    {
+        printf("=");
+    }
+
+    printf("\n");
+
+    for (int y = 0; y < size; y++)
+    {
+        printf("=");
+
+        for (int x = 0; x < size; x++)
+        {
+            printf("%c", rooms[(y * size) + x]);
+        }
+
+        printf("=");
+        printf("\n");
+    }
+
+    for (int i = 0; i < size + 2; i++)
+    {
+        printf("=");
+    }
+
+    printf("\n\n");
 }
 
 
@@ -111,6 +232,23 @@ void room_generator_subscribe(Entity /*entity*/)
     static const string WALL_CORNER_TILE_TEXTURE_PATH = "resources/textures/tiles/wall_corner.png";
     static const string DOOR_TILE_TEXTURE_PATH = "resources/textures/tiles/door.png";
     static const string FLOOR_TILE_TEXTURE_PATH = "resources/textures/tiles/floor.png";
+
+
+    // Generate floor
+    const int floor_size = 8;
+    Floor floor(floor_size);
+    const int root_room_x = random(0, floor_size);
+    const int root_room_y = random(0, floor_size);
+
+    iterate_floor(floor, [](int /*x*/, int /*y*/, char & floor_tile) -> void { floor_tile = '0'; });
+
+    map<char *, ivec2> possible_rooms
+    {
+        { map_at(floor.rooms, floor_size, root_room_x, root_room_y), ivec2(root_room_x, root_room_y) }
+    };
+
+    generate_room(floor, root_room_x, root_room_y, '1', 1);
+    debug_floor(floor);
 
 
     // Generate tile types for all tiles on map.
