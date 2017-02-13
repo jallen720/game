@@ -76,8 +76,7 @@ int random(int min, int max)
         srand_set = true;
     }
 
-    return (rand() % (max - min)) + min;
-
+    return min == max ? min : (rand() % (max - min)) + min;
 }
 
 
