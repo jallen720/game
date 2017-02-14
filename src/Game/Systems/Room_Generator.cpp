@@ -44,6 +44,7 @@ using Nito::get_pixels_per_unit;
 // Cpp_Utils/Map.hpp
 using Cpp_Utils::contains_key;
 using Cpp_Utils::remove;
+using Cpp_Utils::at_index;
 
 
 namespace Game
@@ -143,45 +144,64 @@ static void iterate_floor(Floor & floor, const function<void(int, int, char &)> 
 }
 
 
-static void check_possible_room(Floor & floor, int x, int y)
+static void check_possible_room(Floor & floor, Possible_Rooms & room_extensions, int x, int y)
 {
-    Possible_Rooms & possible_rooms = floor.possible_rooms;
-    char * room = map_at(floor.rooms, floor.size, x, y);
+    const int size = floor.size;
 
-    if (*room == 0 && !contains_key(possible_rooms, room))
+    if (x < 0 || x >= size ||
+        y < 0 || y >= size)
     {
-        possible_rooms[room] = ivec2(x, y);
+        return;
+    }
+
+    char * room = map_at(floor.rooms, size, x, y);
+
+    if (*room == '0' && !contains_key(room_extensions, room))
+    {
+        ivec2 room_coordinates(x, y);
+        room_extensions[room] = room_coordinates;
+        floor.possible_rooms[room] = room_coordinates;
     }
 }
 
 
-static void set_room(Floor & floor, int x, int y, char id)
+static void set_room(Floor & floor, Possible_Rooms & room_extensions, int x, int y, char id)
 {
-    Possible_Rooms & possible_rooms = floor.possible_rooms;
     char * tile = map_at(floor.rooms, floor.size, x, y);
     *tile = id;
 
-    if (contains_key(possible_rooms, tile))
+    if (contains_key(room_extensions, tile))
     {
-        remove(possible_rooms, tile);
+        remove(room_extensions, tile);
     }
 
-    check_possible_room(floor, x + 1, y);
-    check_possible_room(floor, x - 1, y);
-    check_possible_room(floor, x, y + 1);
-    check_possible_room(floor, x, y - 1);
+    remove(floor.possible_rooms, tile);
+    check_possible_room(floor, room_extensions, x + 1, y);
+    check_possible_room(floor, room_extensions, x - 1, y);
+    check_possible_room(floor, room_extensions, x, y + 1);
+    check_possible_room(floor, room_extensions, x, y - 1);
 }
 
 
 static void generate_room(Floor & floor, int x, int y, char id, int max_size)
 {
+    Possible_Rooms room_extensions;
     const int room_size = random(1, max_size + 1);
     int room_generated = 1;
-    set_room(floor, x, y, id);
+    set_room(floor, room_extensions, x, y, id);
+
+
+    // Return if no room extensions could be found (room root is surrounded by other rooms or on the edge of the floor).
+    if (room_extensions.size() == 0)
+    {
+        return;
+    }
+
 
     while (room_generated < room_size)
     {
-
+        ivec2 room_coordinates = at_index(room_extensions, random(0, room_extensions.size())).second;
+        set_room(floor, room_extensions, room_coordinates.x, room_coordinates.y, id);
         room_generated++;
     }
 }
@@ -239,15 +259,23 @@ void room_generator_subscribe(Entity /*entity*/)
     Floor floor(floor_size);
     const int root_room_x = random(0, floor_size);
     const int root_room_y = random(0, floor_size);
+    Possible_Rooms & possible_rooms = floor.possible_rooms;
 
     iterate_floor(floor, [](int /*x*/, int /*y*/, char & floor_tile) -> void { floor_tile = '0'; });
 
-    map<char *, ivec2> possible_rooms
+    possible_rooms =
     {
         { map_at(floor.rooms, floor_size, root_room_x, root_room_y), ivec2(root_room_x, root_room_y) }
     };
 
     generate_room(floor, root_room_x, root_room_y, '1', 1);
+
+    for (char i = '2'; i < '9'; i++)
+    {
+        ivec2 room_coordinates = at_index(possible_rooms, random(0, possible_rooms.size())).second;
+        generate_room(floor, room_coordinates.x, room_coordinates.y, i, 4);
+    }
+
     debug_floor(floor);
 
 
