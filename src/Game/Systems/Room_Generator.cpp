@@ -167,15 +167,19 @@ static void check_possible_room(Floor & floor, Possible_Rooms & room_extensions,
 
 static void set_room(Floor & floor, Possible_Rooms & room_extensions, int x, int y, char id)
 {
-    char * tile = map_at(floor.rooms, floor.size, x, y);
-    *tile = id;
+    char * room = map_at(floor.rooms, floor.size, x, y);
+    *room = id;
 
-    if (contains_key(room_extensions, tile))
+    if (contains_key(room_extensions, room))
     {
-        remove(room_extensions, tile);
+        remove(room_extensions, room);
     }
 
-    remove(floor.possible_rooms, tile);
+    if (contains_key(floor.possible_rooms, room))
+    {
+        remove(floor.possible_rooms, room);
+    }
+
     check_possible_room(floor, room_extensions, x + 1, y);
     check_possible_room(floor, room_extensions, x - 1, y);
     check_possible_room(floor, room_extensions, x, y + 1);
@@ -260,14 +264,7 @@ void room_generator_subscribe(Entity /*entity*/)
     const int root_room_x = random(0, floor_size);
     const int root_room_y = random(0, floor_size);
     Possible_Rooms & possible_rooms = floor.possible_rooms;
-
     iterate_floor(floor, [](int /*x*/, int /*y*/, char & floor_tile) -> void { floor_tile = '0'; });
-
-    possible_rooms =
-    {
-        { map_at(floor.rooms, floor_size, root_room_x, root_room_y), ivec2(root_room_x, root_room_y) }
-    };
-
     generate_room(floor, root_room_x, root_room_y, '1', 1);
 
     for (char i = '2'; i < '9'; i++)
