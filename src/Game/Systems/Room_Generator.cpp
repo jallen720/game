@@ -79,20 +79,9 @@ using Possible_Rooms = map<char *, ivec2>;
 
 struct Floor
 {
-    const int size;
+    int size;
     char * rooms;
     Possible_Rooms possible_rooms;
-
-    Floor(int size)
-        : size(size)
-    {
-        rooms = new char[size * size];
-    }
-
-    ~Floor()
-    {
-        delete[] rooms;
-    }
 };
 
 
@@ -244,6 +233,15 @@ static void debug_floor(Floor & floor)
 }
 
 
+Floor create_floor(int size)
+{
+    Floor floor;
+    floor.size = size;
+    floor.rooms = new char[size * size];
+    return floor;
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Interface
@@ -259,7 +257,7 @@ void room_generator_subscribe(Entity /*entity*/)
 
     // Generate floor
     const int floor_size = 8;
-    Floor floor(floor_size);
+    Floor floor = create_floor(floor_size);
     const int root_room_x = random(0, floor_size);
     const int root_room_y = random(0, floor_size);
     Possible_Rooms & possible_rooms = floor.possible_rooms;
