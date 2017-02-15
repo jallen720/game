@@ -18,4 +18,4 @@ void depth_handler_unsubscribe(Nito::Entity entity);
 void depth_handler_update();
 
 
-} // namespace Nito_Game
+} // namespace Game
