@@ -57,11 +57,14 @@
     {
         "components":
         {
-            "dimensions": {},
+            "dimensions":
+            {
+                "origin": { "x": 0.5, "y": 0.5 }
+            },
             "camera":
             {
-                "z_near": -100,
-                "z_far": 100
+                "z_near": -1000,
+                "z_far": 1000
             },
             "transform":
             {
