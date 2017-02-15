@@ -194,16 +194,14 @@ static void generate_room(Floor & floor, int x, int y, char id, int max_size)
     int room_generated = 1;
     set_room(floor, room_extensions, x, y, id);
 
-
-    // Return if no room extensions could be found (room root is surrounded by other rooms or on the edge of the floor).
-    if (room_extensions.size() == 0)
-    {
-        return;
-    }
-
-
     while (room_generated < room_size)
     {
+        // Return if no room extensions could be found (room root is surrounded by other rooms or on the edge of the floor).
+        if (room_extensions.size() == 0)
+        {
+            return;
+        }
+
         ivec2 room_coordinates = at_index(room_extensions, random(0, room_extensions.size())).second;
         set_room(floor, room_extensions, room_coordinates.x, room_coordinates.y, id);
         room_generated++;
@@ -269,6 +267,12 @@ void room_generator_subscribe(Entity /*entity*/)
 
     for (char i = '2'; i < '9'; i++)
     {
+        // No possible rooms available
+        if (possible_rooms.size() == 0)
+        {
+            break;
+        }
+
         ivec2 room_coordinates = at_index(possible_rooms, random(0, possible_rooms.size())).second;
         generate_room(floor, room_coordinates.x, room_coordinates.y, i, 4);
     }
