@@ -102,7 +102,7 @@ static Tile room[ROOM_TILE_WIDTH * ROOM_TILE_HEIGHT];
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename T>
-T * map_at(T * map, int width, int x, int y)
+static T * map_at(T * map, int width, int x, int y)
 {
     return &map[(y * width) + x];
 }
