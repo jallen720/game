@@ -101,10 +101,10 @@ struct Floor
 // Data
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static const int ROOM_WIDTH = 13;
-static const int ROOM_HEIGHT = 9;
+static const int ROOM_TILE_WIDTH = 13;
+static const int ROOM_TILE_HEIGHT = 9;
 static const float ROOM_Z = 100.0f;
-static Tile room[ROOM_WIDTH * ROOM_HEIGHT];
+static Tile room[ROOM_TILE_WIDTH * ROOM_TILE_HEIGHT];
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -134,7 +134,7 @@ static void iterate_map(T * map, int width, int height, const function<void(int,
 
 static void iterate_room(const function<void(int, int, Tile &)> & callback)
 {
-    iterate_map(room, ROOM_WIDTH, ROOM_HEIGHT, callback);
+    iterate_map(room, ROOM_TILE_WIDTH, ROOM_TILE_HEIGHT, callback);
 }
 
 
@@ -196,7 +196,8 @@ static void generate_room(Floor & floor, int x, int y, char id, int max_size)
 
     while (room_generated < room_size)
     {
-        // Return if no room extensions could be found (room root is surrounded by other rooms or on the edge of the floor).
+        // Return if no room extensions could be found (room root is surrounded by other rooms or on the edge of the
+        // floor).
         if (room_extensions.size() == 0)
         {
             return;
@@ -284,27 +285,27 @@ void room_generator_subscribe(Entity /*entity*/)
     iterate_room([](int x, int y, Tile & tile) -> void
     {
         // Floor
-        if (x > 0 && x < ROOM_WIDTH - 1 &&
-            y > 0 && y < ROOM_HEIGHT - 1)
+        if (x > 0 && x < ROOM_TILE_WIDTH - 1 &&
+            y > 0 && y < ROOM_TILE_HEIGHT - 1)
         {
             tile.type = Tile::Types::FLOOR;
             tile.texture_path = &FLOOR_TILE_TEXTURE_PATH;
             tile.rotation = 0.0f;
         }
         // Bottom wall
-        else if (y == 0 && x != ROOM_WIDTH - 1)
+        else if (y == 0 && x != ROOM_TILE_WIDTH - 1)
         {
-            if (x == (ROOM_WIDTH - 1) / 2)
+            if (x == (ROOM_TILE_WIDTH - 1) / 2)
             {
                 tile.type = Tile::Types::DOOR;
                 tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
             }
-            else if (x == (ROOM_WIDTH - 2) / 2)
+            else if (x == (ROOM_TILE_WIDTH - 2) / 2)
             {
                 tile.type = Tile::Types::RIGHT_DOOR_WALL;
                 tile.texture_path = &WALL_TILE_TEXTURE_PATH;
             }
-            else if (x == ((ROOM_WIDTH - 2) / 2) + 2)
+            else if (x == ((ROOM_TILE_WIDTH - 2) / 2) + 2)
             {
                 tile.type = Tile::Types::LEFT_DOOR_WALL;
                 tile.texture_path = &WALL_TILE_TEXTURE_PATH;
@@ -325,22 +326,22 @@ void room_generator_subscribe(Entity /*entity*/)
         // Left wall
         else if (x == 0 && y != 0)
         {
-            if (y == (ROOM_HEIGHT - 1) / 2)
+            if (y == (ROOM_TILE_HEIGHT - 1) / 2)
             {
                 tile.type = Tile::Types::DOOR;
                 tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
             }
-            else if (y == (ROOM_HEIGHT - 2) / 2)
+            else if (y == (ROOM_TILE_HEIGHT - 2) / 2)
             {
                 tile.type = Tile::Types::LEFT_DOOR_WALL;
                 tile.texture_path = &WALL_TILE_TEXTURE_PATH;
             }
-            else if (y == ((ROOM_HEIGHT - 2) / 2) + 2)
+            else if (y == ((ROOM_TILE_HEIGHT - 2) / 2) + 2)
             {
                 tile.type = Tile::Types::RIGHT_DOOR_WALL;
                 tile.texture_path = &WALL_TILE_TEXTURE_PATH;
             }
-            else if (y == ROOM_HEIGHT - 1)
+            else if (y == ROOM_TILE_HEIGHT - 1)
             {
                 tile.type = Tile::Types::WALL_CORNER;
                 tile.texture_path = &WALL_CORNER_TILE_TEXTURE_PATH;
@@ -354,24 +355,24 @@ void room_generator_subscribe(Entity /*entity*/)
             tile.rotation = 270.0f;
         }
         // Top wall
-        else if (y == ROOM_HEIGHT - 1 && x != 0)
+        else if (y == ROOM_TILE_HEIGHT - 1 && x != 0)
         {
-            if (x == (ROOM_WIDTH - 1) / 2)
+            if (x == (ROOM_TILE_WIDTH - 1) / 2)
             {
                 tile.type = Tile::Types::DOOR;
                 tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
             }
-            else if (x == (ROOM_WIDTH - 2) / 2)
+            else if (x == (ROOM_TILE_WIDTH - 2) / 2)
             {
                 tile.type = Tile::Types::LEFT_DOOR_WALL;
                 tile.texture_path = &WALL_TILE_TEXTURE_PATH;
             }
-            else if (x == ((ROOM_WIDTH - 2) / 2) + 2)
+            else if (x == ((ROOM_TILE_WIDTH - 2) / 2) + 2)
             {
                 tile.type = Tile::Types::RIGHT_DOOR_WALL;
                 tile.texture_path = &WALL_TILE_TEXTURE_PATH;
             }
-            else if (x == ROOM_WIDTH - 1)
+            else if (x == ROOM_TILE_WIDTH - 1)
             {
                 tile.type = Tile::Types::WALL_CORNER;
                 tile.texture_path = &WALL_CORNER_TILE_TEXTURE_PATH;
@@ -385,19 +386,19 @@ void room_generator_subscribe(Entity /*entity*/)
             tile.rotation = 180.0f;
         }
         // Right wall
-        else if (x == ROOM_WIDTH - 1 && y != ROOM_HEIGHT - 1)
+        else if (x == ROOM_TILE_WIDTH - 1 && y != ROOM_TILE_HEIGHT - 1)
         {
-            if (y == (ROOM_HEIGHT - 1) / 2)
+            if (y == (ROOM_TILE_HEIGHT - 1) / 2)
             {
                 tile.type = Tile::Types::DOOR;
                 tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
             }
-            else if (y == (ROOM_HEIGHT - 2) / 2)
+            else if (y == (ROOM_TILE_HEIGHT - 2) / 2)
             {
                 tile.type = Tile::Types::RIGHT_DOOR_WALL;
                 tile.texture_path = &WALL_TILE_TEXTURE_PATH;
             }
-            else if (y == ((ROOM_HEIGHT - 2) / 2) + 2)
+            else if (y == ((ROOM_TILE_HEIGHT - 2) / 2) + 2)
             {
                 tile.type = Tile::Types::LEFT_DOOR_WALL;
                 tile.texture_path = &WALL_TILE_TEXTURE_PATH;
