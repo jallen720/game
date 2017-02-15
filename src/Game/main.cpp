@@ -25,6 +25,7 @@
 #include "Game/Systems/Pause_Menu.hpp"
 #include "Game/Systems/Game_Over_Menu.hpp"
 #include "Game/Systems/Menu_Controller.hpp"
+#include "Game/Systems/Camera_Controller.hpp"
 
 
 using std::string;
@@ -74,6 +75,7 @@ static const vector<Update_Handler> GAME_UPDATE_HANDLERS
     orientation_handler_update,
     health_bar_update,
     menu_buttons_handler_update,
+    camera_controller_update,
 };
 
 
@@ -93,6 +95,7 @@ static const map<string, const System_Entity_Handlers> GAME_SYSTEM_ENTITY_HANDLE
     NITO_SYSTEM_ENTITY_HANDLERS(pause_menu),
     NITO_SYSTEM_ENTITY_HANDLERS(game_over_menu),
     NITO_SYSTEM_ENTITY_HANDLERS(menu_controller),
+    NITO_SYSTEM_ENTITY_HANDLERS(camera_controller),
 };
 
 
@@ -176,6 +179,13 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
     },
     {
         "layer",
+        {
+            get_component_allocator<string>(),
+            get_component_deallocator<string>(),
+        }
+    },
+    {
+        "target_id",
         {
             get_component_allocator<string>(),
             get_component_deallocator<string>(),

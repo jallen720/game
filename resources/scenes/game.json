@@ -65,9 +65,9 @@
             },
             "transform":
             {
-                "position": { "x": -0.25, "y": -0.25 },
                 "scale": { "x": 2, "y": 2 }
-            }
+            },
+            "target_id": "player"
         }
     },
     {

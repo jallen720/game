@@ -54,5 +54,10 @@
     "menu_controller":
     [
         "transform"
+    ],
+    "camera_controller":
+    [
+        "transform",
+        "target_id"
     ]
 }
