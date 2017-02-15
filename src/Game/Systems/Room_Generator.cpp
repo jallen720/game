@@ -256,7 +256,7 @@ void room_generator_subscribe(Entity /*entity*/)
 
 
     // Generate floor
-    const int floor_size = 8;
+    const int floor_size = 6;
     Floor floor = create_floor(floor_size);
     const int root_room_x = random(0, floor_size);
     const int root_room_y = random(0, floor_size);
