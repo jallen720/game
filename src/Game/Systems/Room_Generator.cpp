@@ -66,6 +66,7 @@ struct Tile
         RIGHT_DOOR_WALL,
         DOOR,
         FLOOR,
+        NONE,
     }
     type;
 
@@ -81,6 +82,7 @@ struct Floor
 {
     int size;
     char * rooms;
+    Tile * room_tiles;
     Possible_Rooms possible_rooms;
 };
 
@@ -93,7 +95,7 @@ struct Floor
 static const int ROOM_TILE_WIDTH = 13;
 static const int ROOM_TILE_HEIGHT = 9;
 static const float ROOM_Z = 100.0f;
-static Tile room[ROOM_TILE_WIDTH * ROOM_TILE_HEIGHT];
+// static Tile room[ROOM_TILE_WIDTH * ROOM_TILE_HEIGHT];
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -109,27 +111,58 @@ static T * map_at(T * map, int width, int x, int y)
 
 
 template<typename T>
-static void iterate_map(T * map, int width, int height, const function<void(int, int, T &)> & callback)
+static void iterate_map(
+    T * map,
+    int width,
+    int start_x,
+    int start_y,
+    int sub_width,
+    int sub_height,
+    const function<void(int, int, T &)> & callback)
 {
-    for (int x = 0; x < width; x++)
+    for (int x = start_x; x < start_x + sub_width; x++)
     {
-        for (int y = 0; y < height; y++)
+        for (int y = start_y; y < start_y + sub_height; y++)
         {
-            callback(x, y, *map_at(map, width, x, y));
+            callback(x - start_x, y - start_y, *map_at(map, width, x, y));
         }
     }
 }
 
 
-static void iterate_room(const function<void(int, int, Tile &)> & callback)
+template<typename T>
+static void iterate_map(T * map, int width, int height, const function<void(int, int, T &)> & callback)
 {
-    iterate_map(room, ROOM_TILE_WIDTH, ROOM_TILE_HEIGHT, callback);
+    iterate_map(map, width, 0, 0, width, height, callback);
 }
 
 
-static void iterate_floor(Floor & floor, const function<void(int, int, char &)> & callback)
+static void iterate_rooms(Floor & floor, const function<void(int, int, char &)> & callback)
 {
     iterate_map(floor.rooms, floor.size, floor.size, callback);
+}
+
+
+static void iterate_room_tiles(Floor & floor, const function<void(int, int, Tile &)> & callback)
+{
+    iterate_map(floor.room_tiles, floor.size * ROOM_TILE_WIDTH, floor.size * ROOM_TILE_HEIGHT, callback);
+}
+
+
+static void iterate_room_tiles(
+    Floor & floor,
+    int room_x,
+    int room_y,
+    const function<void(int, int, Tile &)> & callback)
+{
+    iterate_map(
+        floor.room_tiles,
+        floor.size * ROOM_TILE_WIDTH,
+        room_x * ROOM_TILE_WIDTH,
+        room_y * ROOM_TILE_HEIGHT,
+        ROOM_TILE_WIDTH,
+        ROOM_TILE_HEIGHT,
+        callback);
 }
 
 
@@ -238,6 +271,7 @@ static Floor create_floor(int size)
     Floor floor;
     floor.size = size;
     floor.rooms = new char[size * size];
+    floor.room_tiles = new Tile[(size * ROOM_TILE_WIDTH) * (size * ROOM_TILE_HEIGHT)];
     return floor;
 }
 
@@ -255,13 +289,22 @@ void room_generator_subscribe(Entity /*entity*/)
     static const string FLOOR_TILE_TEXTURE_PATH = "resources/textures/tiles/floor.png";
 
 
-    // Generate floor
+    // Create floor.
     const int floor_size = 6;
     Floor floor = create_floor(floor_size);
     const int root_room_x = random(0, floor_size);
     const int root_room_y = random(0, floor_size);
     Possible_Rooms & possible_rooms = floor.possible_rooms;
-    iterate_floor(floor, [](int /*x*/, int /*y*/, char & floor_tile) -> void { floor_tile = '0'; });
+    iterate_rooms(floor, [](int /*x*/, int /*y*/, char & room) -> void { room = '0'; });
+
+    iterate_room_tiles(floor, [](int /*x*/, int /*y*/, Tile & room_tile) -> void
+    {
+        room_tile.type = Tile::Types::NONE;
+        room_tile.rotation = 0.0f;
+    });
+
+
+    // Generate rooms.
     generate_room(floor, root_room_x, root_room_y, '1', 1);
 
     for (char i = '2'; i < '9'; i++)
@@ -279,147 +322,198 @@ void room_generator_subscribe(Entity /*entity*/)
     debug_floor(floor);
 
 
-    // Generate tile types for all tiles on map.
-    iterate_room([](int x, int y, Tile & tile) -> void
+    // Generate room tiles.
+    iterate_rooms(floor, [&](int room_x, int room_y, char & room) -> void
     {
-        // Floor
-        if (x > 0 && x < ROOM_TILE_WIDTH - 1 &&
-            y > 0 && y < ROOM_TILE_HEIGHT - 1)
+        // Don't generate tiles for empty rooms.
+        if (room == '0')
         {
-            tile.type = Tile::Types::FLOOR;
-            tile.texture_path = &FLOOR_TILE_TEXTURE_PATH;
-            tile.rotation = 0.0f;
+            return;
         }
-        // Bottom wall
-        else if (y == 0 && x != ROOM_TILE_WIDTH - 1)
-        {
-            if (x == (ROOM_TILE_WIDTH - 1) / 2)
-            {
-                tile.type = Tile::Types::DOOR;
-                tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
-            }
-            else if (x == (ROOM_TILE_WIDTH - 2) / 2)
-            {
-                tile.type = Tile::Types::RIGHT_DOOR_WALL;
-                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-            }
-            else if (x == ((ROOM_TILE_WIDTH - 2) / 2) + 2)
-            {
-                tile.type = Tile::Types::LEFT_DOOR_WALL;
-                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-            }
-            else if (x == 0)
-            {
-                tile.type = Tile::Types::WALL_CORNER;
-                tile.texture_path = &WALL_CORNER_TILE_TEXTURE_PATH;
-            }
-            else
-            {
-                tile.type = Tile::Types::WALL;
-                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-            }
 
-            tile.rotation = 0.0f;
-        }
-        // Left wall
-        else if (x == 0 && y != 0)
-        {
-            if (y == (ROOM_TILE_HEIGHT - 1) / 2)
-            {
-                tile.type = Tile::Types::DOOR;
-                tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
-            }
-            else if (y == (ROOM_TILE_HEIGHT - 2) / 2)
-            {
-                tile.type = Tile::Types::LEFT_DOOR_WALL;
-                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-            }
-            else if (y == ((ROOM_TILE_HEIGHT - 2) / 2) + 2)
-            {
-                tile.type = Tile::Types::RIGHT_DOOR_WALL;
-                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-            }
-            else if (y == ROOM_TILE_HEIGHT - 1)
-            {
-                tile.type = Tile::Types::WALL_CORNER;
-                tile.texture_path = &WALL_CORNER_TILE_TEXTURE_PATH;
-            }
-            else
-            {
-                tile.type = Tile::Types::WALL;
-                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-            }
 
-            tile.rotation = 270.0f;
-        }
-        // Top wall
-        else if (y == ROOM_TILE_HEIGHT - 1 && x != 0)
+        iterate_room_tiles(floor, room_x, room_y, [&](int x, int y, Tile & tile) -> void
         {
-            if (x == (ROOM_TILE_WIDTH - 1) / 2)
+            // Floor
+            if (x > 0 && x < ROOM_TILE_WIDTH - 1 &&
+                y > 0 && y < ROOM_TILE_HEIGHT - 1)
             {
-                tile.type = Tile::Types::DOOR;
-                tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
+                tile.type = Tile::Types::FLOOR;
+                tile.texture_path = &FLOOR_TILE_TEXTURE_PATH;
+                tile.rotation = 0.0f;
             }
-            else if (x == (ROOM_TILE_WIDTH - 2) / 2)
+            // Bottom wall
+            else if (y == 0 && x != ROOM_TILE_WIDTH - 1)
             {
-                tile.type = Tile::Types::LEFT_DOOR_WALL;
-                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-            }
-            else if (x == ((ROOM_TILE_WIDTH - 2) / 2) + 2)
-            {
-                tile.type = Tile::Types::RIGHT_DOOR_WALL;
-                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-            }
-            else if (x == ROOM_TILE_WIDTH - 1)
-            {
-                tile.type = Tile::Types::WALL_CORNER;
-                tile.texture_path = &WALL_CORNER_TILE_TEXTURE_PATH;
-            }
-            else
-            {
-                tile.type = Tile::Types::WALL;
-                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-            }
+                if (room_y > 0 && *map_at(floor.rooms, floor.size, room_x, room_y - 1) == room)
+                {
+                    tile.type = Tile::Types::FLOOR;
+                    tile.texture_path = &FLOOR_TILE_TEXTURE_PATH;
+                    tile.rotation = 0.0f;
+                }
+                else
+                {
+                    if (x == (ROOM_TILE_WIDTH - 1) / 2)
+                    {
+                        tile.type = Tile::Types::DOOR;
+                        tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
+                    }
+                    else if (x == (ROOM_TILE_WIDTH - 2) / 2)
+                    {
+                        tile.type = Tile::Types::RIGHT_DOOR_WALL;
+                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+                    }
+                    else if (x == ((ROOM_TILE_WIDTH - 2) / 2) + 2)
+                    {
+                        tile.type = Tile::Types::LEFT_DOOR_WALL;
+                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+                    }
+                    else if (x == 0)
+                    {
+                        tile.type = Tile::Types::WALL_CORNER;
+                        tile.texture_path = &WALL_CORNER_TILE_TEXTURE_PATH;
+                    }
+                    else
+                    {
+                        tile.type = Tile::Types::WALL;
+                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+                    }
 
-            tile.rotation = 180.0f;
-        }
-        // Right wall
-        else if (x == ROOM_TILE_WIDTH - 1 && y != ROOM_TILE_HEIGHT - 1)
-        {
-            if (y == (ROOM_TILE_HEIGHT - 1) / 2)
-            {
-                tile.type = Tile::Types::DOOR;
-                tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
+                    tile.rotation = 0.0f;
+                }
             }
-            else if (y == (ROOM_TILE_HEIGHT - 2) / 2)
+            // Left wall
+            else if (x == 0 && y != 0)
             {
-                tile.type = Tile::Types::RIGHT_DOOR_WALL;
-                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-            }
-            else if (y == ((ROOM_TILE_HEIGHT - 2) / 2) + 2)
-            {
-                tile.type = Tile::Types::LEFT_DOOR_WALL;
-                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-            }
-            else if (y == 0)
-            {
-                tile.type = Tile::Types::WALL_CORNER;
-                tile.texture_path = &WALL_CORNER_TILE_TEXTURE_PATH;
-            }
-            else
-            {
-                tile.type = Tile::Types::WALL;
-                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-            }
+                if (room_x > 0 && *map_at(floor.rooms, floor.size, room_x - 1, room_y) == room)
+                {
+                    tile.type = Tile::Types::FLOOR;
+                    tile.texture_path = &FLOOR_TILE_TEXTURE_PATH;
+                    tile.rotation = 0.0f;
+                }
+                else
+                {
+                    if (y == (ROOM_TILE_HEIGHT - 1) / 2)
+                    {
+                        tile.type = Tile::Types::DOOR;
+                        tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
+                    }
+                    else if (y == (ROOM_TILE_HEIGHT - 2) / 2)
+                    {
+                        tile.type = Tile::Types::LEFT_DOOR_WALL;
+                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+                    }
+                    else if (y == ((ROOM_TILE_HEIGHT - 2) / 2) + 2)
+                    {
+                        tile.type = Tile::Types::RIGHT_DOOR_WALL;
+                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+                    }
+                    else if (y == ROOM_TILE_HEIGHT - 1)
+                    {
+                        tile.type = Tile::Types::WALL_CORNER;
+                        tile.texture_path = &WALL_CORNER_TILE_TEXTURE_PATH;
+                    }
+                    else
+                    {
+                        tile.type = Tile::Types::WALL;
+                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+                    }
 
-            tile.rotation = 90.0f;
-        }
+                    tile.rotation = 270.0f;
+                }
+            }
+            // Top wall
+            else if (y == ROOM_TILE_HEIGHT - 1 && x != 0)
+            {
+                if (room_y < floor_size - 1 && *map_at(floor.rooms, floor.size, room_x, room_y + 1) == room)
+                {
+                    tile.type = Tile::Types::FLOOR;
+                    tile.texture_path = &FLOOR_TILE_TEXTURE_PATH;
+                    tile.rotation = 0.0f;
+                }
+                else
+                {
+                    if (x == (ROOM_TILE_WIDTH - 1) / 2)
+                    {
+                        tile.type = Tile::Types::DOOR;
+                        tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
+                    }
+                    else if (x == (ROOM_TILE_WIDTH - 2) / 2)
+                    {
+                        tile.type = Tile::Types::LEFT_DOOR_WALL;
+                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+                    }
+                    else if (x == ((ROOM_TILE_WIDTH - 2) / 2) + 2)
+                    {
+                        tile.type = Tile::Types::RIGHT_DOOR_WALL;
+                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+                    }
+                    else if (x == ROOM_TILE_WIDTH - 1)
+                    {
+                        tile.type = Tile::Types::WALL_CORNER;
+                        tile.texture_path = &WALL_CORNER_TILE_TEXTURE_PATH;
+                    }
+                    else
+                    {
+                        tile.type = Tile::Types::WALL;
+                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+                    }
+
+                    tile.rotation = 180.0f;
+                }
+            }
+            // Right wall
+            else if (x == ROOM_TILE_WIDTH - 1 && y != ROOM_TILE_HEIGHT - 1)
+            {
+                if (room_x < floor_size - 1 && *map_at(floor.rooms, floor.size, room_x + 1, room_y) == room)
+                {
+                    tile.type = Tile::Types::FLOOR;
+                    tile.texture_path = &FLOOR_TILE_TEXTURE_PATH;
+                    tile.rotation = 0.0f;
+                }
+                else
+                {
+                    if (y == (ROOM_TILE_HEIGHT - 1) / 2)
+                    {
+                        tile.type = Tile::Types::DOOR;
+                        tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
+                    }
+                    else if (y == (ROOM_TILE_HEIGHT - 2) / 2)
+                    {
+                        tile.type = Tile::Types::RIGHT_DOOR_WALL;
+                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+                    }
+                    else if (y == ((ROOM_TILE_HEIGHT - 2) / 2) + 2)
+                    {
+                        tile.type = Tile::Types::LEFT_DOOR_WALL;
+                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+                    }
+                    else if (y == 0)
+                    {
+                        tile.type = Tile::Types::WALL_CORNER;
+                        tile.texture_path = &WALL_CORNER_TILE_TEXTURE_PATH;
+                    }
+                    else
+                    {
+                        tile.type = Tile::Types::WALL;
+                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+                    }
+
+                    tile.rotation = 90.0f;
+                }
+            }
+        });
     });
 
 
     // Create tile entities based on each tile's type.
-    iterate_room([](int tile_x, int tile_y, const Tile & tile) -> void
+    iterate_room_tiles(floor, [](int tile_x, int tile_y, const Tile & tile) -> void
     {
+        if (tile.type == Tile::Types::NONE)
+        {
+            return;
+        }
+
         auto dimensions = new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) };
         auto transform = new Transform { vec3(), vec3(1.0f), tile.rotation };
         const Tile::Types tile_type = tile.type;
