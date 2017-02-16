@@ -211,7 +211,7 @@ static void debug_floor(Floor & floor)
 
     printf("\n");
 
-    for (int y = 0; y < size; y++)
+    for (int y = size - 1; y >= 0; y--)
     {
         printf("=");
 
