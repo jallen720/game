@@ -233,7 +233,7 @@ static void debug_floor(Floor & floor)
 }
 
 
-Floor create_floor(int size)
+static Floor create_floor(int size)
 {
     Floor floor;
     floor.size = size;
