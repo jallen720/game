@@ -96,6 +96,10 @@ static const int ROOM_TILE_WIDTH = 13;
 static const int ROOM_TILE_HEIGHT = 9;
 static const float ROOM_Z = 100.0f;
 // static Tile room[ROOM_TILE_WIDTH * ROOM_TILE_HEIGHT];
+static const string WALL_TILE_TEXTURE_PATH = "resources/textures/tiles/wall.png";
+static const string WALL_CORNER_TILE_TEXTURE_PATH = "resources/textures/tiles/wall_corner.png";
+static const string DOOR_TILE_TEXTURE_PATH = "resources/textures/tiles/door.png";
+static const string FLOOR_TILE_TEXTURE_PATH = "resources/textures/tiles/floor.png";
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -276,32 +280,10 @@ static Floor create_floor(int size)
 }
 
 
-static void generate_wall_tile(Tile & tile, int coordinate, int dimension_size, bool inverted = false)
+static void check_wall(Tile & tile, int coordinate, int dimension_size, bool inverted)
 {
-    static const string WALL_TILE_TEXTURE_PATH = "resources/textures/tiles/wall.png";
-    static const string WALL_CORNER_TILE_TEXTURE_PATH = "resources/textures/tiles/wall_corner.png";
-    static const string DOOR_TILE_TEXTURE_PATH = "resources/textures/tiles/door.png";
-
-    // Door
-    if (coordinate == (dimension_size - 1) / 2)
-    {
-        tile.type = Tile::Types::DOOR;
-        tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
-    }
-    // Door-adjacent wall
-    else if (coordinate == (dimension_size - 2) / 2)
-    {
-        tile.type = inverted ? Tile::Types::LEFT_DOOR_WALL : Tile::Types::RIGHT_DOOR_WALL;
-        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-    }
-    // Door-adjacent wall
-    else if (coordinate == ((dimension_size - 2) / 2) + 2)
-    {
-        tile.type = inverted ? Tile::Types::RIGHT_DOOR_WALL : Tile::Types::LEFT_DOOR_WALL;
-        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-    }
     // Corner
-    else if ((inverted && coordinate == dimension_size - 1) || coordinate == 0)
+    if ((inverted && coordinate == dimension_size - 1) || coordinate == 0)
     {
         tile.type = Tile::Types::WALL_CORNER;
         tile.texture_path = &WALL_CORNER_TILE_TEXTURE_PATH;
@@ -315,6 +297,47 @@ static void generate_wall_tile(Tile & tile, int coordinate, int dimension_size, 
 }
 
 
+static void generate_wall_tile(
+    Tile & tile,
+    int coordinate,
+    int dimension_size,
+    bool needs_door,
+    bool inverted = false)
+{
+    if (needs_door)
+    {
+        // Door
+        if (coordinate == (dimension_size - 1) / 2)
+        {
+            tile.type = Tile::Types::DOOR;
+            tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
+        }
+        // Door-adjacent wall
+        else if (coordinate == (dimension_size - 2) / 2)
+        {
+            tile.type = inverted ? Tile::Types::LEFT_DOOR_WALL : Tile::Types::RIGHT_DOOR_WALL;
+            tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+        }
+        // Door-adjacent wall
+        else if (coordinate == ((dimension_size - 2) / 2) + 2)
+        {
+            tile.type = inverted ? Tile::Types::RIGHT_DOOR_WALL : Tile::Types::LEFT_DOOR_WALL;
+            tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+        }
+        // Wall or corner
+        else
+        {
+            check_wall(tile, coordinate, dimension_size, inverted);
+        }
+    }
+    // Wall or corner
+    else
+    {
+        check_wall(tile, coordinate, dimension_size, inverted);
+    }
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Interface
@@ -322,12 +345,6 @@ static void generate_wall_tile(Tile & tile, int coordinate, int dimension_size, 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void room_generator_subscribe(Entity /*entity*/)
 {
-    static const string WALL_TILE_TEXTURE_PATH = "resources/textures/tiles/wall.png";
-    static const string WALL_CORNER_TILE_TEXTURE_PATH = "resources/textures/tiles/wall_corner.png";
-    static const string DOOR_TILE_TEXTURE_PATH = "resources/textures/tiles/door.png";
-    static const string FLOOR_TILE_TEXTURE_PATH = "resources/textures/tiles/floor.png";
-
-
     // Create floor.
     const int floor_size = 6;
     Floor floor = create_floor(floor_size);
@@ -384,7 +401,12 @@ void room_generator_subscribe(Entity /*entity*/)
             // Bottom wall
             else if (y == 0 && x != ROOM_TILE_WIDTH - 1)
             {
-                if (room_y > 0 && *map_at(floor.rooms, floor.size, room_x, room_y - 1) == room)
+                const char neighbour =
+                    room_y > 0
+                    ? *map_at(floor.rooms, floor.size, room_x, room_y - 1)
+                    : '0';
+
+                if (neighbour == room)
                 {
                     tile.type = Tile::Types::FLOOR;
                     tile.texture_path = &FLOOR_TILE_TEXTURE_PATH;
@@ -392,14 +414,19 @@ void room_generator_subscribe(Entity /*entity*/)
                 }
                 else
                 {
-                    generate_wall_tile(tile, x, ROOM_TILE_WIDTH);
+                    generate_wall_tile(tile, x, ROOM_TILE_WIDTH, neighbour != '0' && neighbour != room);
                     tile.rotation = 0.0f;
                 }
             }
             // Left wall
             else if (x == 0 && y != 0)
             {
-                if (room_x > 0 && *map_at(floor.rooms, floor.size, room_x - 1, room_y) == room)
+                const char neighbour =
+                    room_x > 0
+                    ? *map_at(floor.rooms, floor.size, room_x - 1, room_y)
+                    : '0';
+
+                if (neighbour == room)
                 {
                     tile.type = Tile::Types::FLOOR;
                     tile.texture_path = &FLOOR_TILE_TEXTURE_PATH;
@@ -407,14 +434,19 @@ void room_generator_subscribe(Entity /*entity*/)
                 }
                 else
                 {
-                    generate_wall_tile(tile, y, ROOM_TILE_HEIGHT, true);
+                    generate_wall_tile(tile, y, ROOM_TILE_HEIGHT, neighbour != '0' && neighbour != room, true);
                     tile.rotation = 270.0f;
                 }
             }
             // Top wall
             else if (y == ROOM_TILE_HEIGHT - 1 && x != 0)
             {
-                if (room_y < floor_size - 1 && *map_at(floor.rooms, floor.size, room_x, room_y + 1) == room)
+                const char neighbour =
+                    room_y < floor_size - 1
+                    ? *map_at(floor.rooms, floor.size, room_x, room_y + 1)
+                    : '0';
+
+                if (neighbour == room)
                 {
                     tile.type = Tile::Types::FLOOR;
                     tile.texture_path = &FLOOR_TILE_TEXTURE_PATH;
@@ -422,14 +454,19 @@ void room_generator_subscribe(Entity /*entity*/)
                 }
                 else
                 {
-                    generate_wall_tile(tile, x, ROOM_TILE_WIDTH, true);
+                    generate_wall_tile(tile, x, ROOM_TILE_WIDTH, neighbour != '0' && neighbour != room, true);
                     tile.rotation = 180.0f;
                 }
             }
             // Right wall
             else if (x == ROOM_TILE_WIDTH - 1 && y != ROOM_TILE_HEIGHT - 1)
             {
-                if (room_x < floor_size - 1 && *map_at(floor.rooms, floor.size, room_x + 1, room_y) == room)
+                const char neighbour =
+                    room_x < floor_size - 1
+                    ? *map_at(floor.rooms, floor.size, room_x + 1, room_y)
+                    : '0';
+
+                if (neighbour == room)
                 {
                     tile.type = Tile::Types::FLOOR;
                     tile.texture_path = &FLOOR_TILE_TEXTURE_PATH;
@@ -437,7 +474,7 @@ void room_generator_subscribe(Entity /*entity*/)
                 }
                 else
                 {
-                    generate_wall_tile(tile, y, ROOM_TILE_HEIGHT);
+                    generate_wall_tile(tile, y, ROOM_TILE_HEIGHT, neighbour != '0' && neighbour != room);
                     tile.rotation = 90.0f;
                 }
             }
