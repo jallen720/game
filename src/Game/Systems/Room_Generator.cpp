@@ -276,6 +276,45 @@ static Floor create_floor(int size)
 }
 
 
+static void generate_wall_tile(Tile & tile, int coordinate, int dimension_size, bool inverted = false)
+{
+    static const string WALL_TILE_TEXTURE_PATH = "resources/textures/tiles/wall.png";
+    static const string WALL_CORNER_TILE_TEXTURE_PATH = "resources/textures/tiles/wall_corner.png";
+    static const string DOOR_TILE_TEXTURE_PATH = "resources/textures/tiles/door.png";
+
+    // Door
+    if (coordinate == (dimension_size - 1) / 2)
+    {
+        tile.type = Tile::Types::DOOR;
+        tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
+    }
+    // Door-adjacent wall
+    else if (coordinate == (dimension_size - 2) / 2)
+    {
+        tile.type = inverted ? Tile::Types::LEFT_DOOR_WALL : Tile::Types::RIGHT_DOOR_WALL;
+        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+    }
+    // Door-adjacent wall
+    else if (coordinate == ((dimension_size - 2) / 2) + 2)
+    {
+        tile.type = inverted ? Tile::Types::RIGHT_DOOR_WALL : Tile::Types::LEFT_DOOR_WALL;
+        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+    }
+    // Corner
+    else if ((inverted && coordinate == dimension_size - 1) || coordinate == 0)
+    {
+        tile.type = Tile::Types::WALL_CORNER;
+        tile.texture_path = &WALL_CORNER_TILE_TEXTURE_PATH;
+    }
+    // Normal
+    else
+    {
+        tile.type = Tile::Types::WALL;
+        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+    }
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Interface
@@ -353,32 +392,7 @@ void room_generator_subscribe(Entity /*entity*/)
                 }
                 else
                 {
-                    if (x == (ROOM_TILE_WIDTH - 1) / 2)
-                    {
-                        tile.type = Tile::Types::DOOR;
-                        tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
-                    }
-                    else if (x == (ROOM_TILE_WIDTH - 2) / 2)
-                    {
-                        tile.type = Tile::Types::RIGHT_DOOR_WALL;
-                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-                    }
-                    else if (x == ((ROOM_TILE_WIDTH - 2) / 2) + 2)
-                    {
-                        tile.type = Tile::Types::LEFT_DOOR_WALL;
-                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-                    }
-                    else if (x == 0)
-                    {
-                        tile.type = Tile::Types::WALL_CORNER;
-                        tile.texture_path = &WALL_CORNER_TILE_TEXTURE_PATH;
-                    }
-                    else
-                    {
-                        tile.type = Tile::Types::WALL;
-                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-                    }
-
+                    generate_wall_tile(tile, x, ROOM_TILE_WIDTH);
                     tile.rotation = 0.0f;
                 }
             }
@@ -393,32 +407,7 @@ void room_generator_subscribe(Entity /*entity*/)
                 }
                 else
                 {
-                    if (y == (ROOM_TILE_HEIGHT - 1) / 2)
-                    {
-                        tile.type = Tile::Types::DOOR;
-                        tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
-                    }
-                    else if (y == (ROOM_TILE_HEIGHT - 2) / 2)
-                    {
-                        tile.type = Tile::Types::LEFT_DOOR_WALL;
-                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-                    }
-                    else if (y == ((ROOM_TILE_HEIGHT - 2) / 2) + 2)
-                    {
-                        tile.type = Tile::Types::RIGHT_DOOR_WALL;
-                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-                    }
-                    else if (y == ROOM_TILE_HEIGHT - 1)
-                    {
-                        tile.type = Tile::Types::WALL_CORNER;
-                        tile.texture_path = &WALL_CORNER_TILE_TEXTURE_PATH;
-                    }
-                    else
-                    {
-                        tile.type = Tile::Types::WALL;
-                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-                    }
-
+                    generate_wall_tile(tile, y, ROOM_TILE_HEIGHT, true);
                     tile.rotation = 270.0f;
                 }
             }
@@ -433,32 +422,7 @@ void room_generator_subscribe(Entity /*entity*/)
                 }
                 else
                 {
-                    if (x == (ROOM_TILE_WIDTH - 1) / 2)
-                    {
-                        tile.type = Tile::Types::DOOR;
-                        tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
-                    }
-                    else if (x == (ROOM_TILE_WIDTH - 2) / 2)
-                    {
-                        tile.type = Tile::Types::LEFT_DOOR_WALL;
-                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-                    }
-                    else if (x == ((ROOM_TILE_WIDTH - 2) / 2) + 2)
-                    {
-                        tile.type = Tile::Types::RIGHT_DOOR_WALL;
-                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-                    }
-                    else if (x == ROOM_TILE_WIDTH - 1)
-                    {
-                        tile.type = Tile::Types::WALL_CORNER;
-                        tile.texture_path = &WALL_CORNER_TILE_TEXTURE_PATH;
-                    }
-                    else
-                    {
-                        tile.type = Tile::Types::WALL;
-                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-                    }
-
+                    generate_wall_tile(tile, x, ROOM_TILE_WIDTH, true);
                     tile.rotation = 180.0f;
                 }
             }
@@ -473,32 +437,7 @@ void room_generator_subscribe(Entity /*entity*/)
                 }
                 else
                 {
-                    if (y == (ROOM_TILE_HEIGHT - 1) / 2)
-                    {
-                        tile.type = Tile::Types::DOOR;
-                        tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
-                    }
-                    else if (y == (ROOM_TILE_HEIGHT - 2) / 2)
-                    {
-                        tile.type = Tile::Types::RIGHT_DOOR_WALL;
-                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-                    }
-                    else if (y == ((ROOM_TILE_HEIGHT - 2) / 2) + 2)
-                    {
-                        tile.type = Tile::Types::LEFT_DOOR_WALL;
-                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-                    }
-                    else if (y == 0)
-                    {
-                        tile.type = Tile::Types::WALL_CORNER;
-                        tile.texture_path = &WALL_CORNER_TILE_TEXTURE_PATH;
-                    }
-                    else
-                    {
-                        tile.type = Tile::Types::WALL;
-                        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-                    }
-
+                    generate_wall_tile(tile, y, ROOM_TILE_HEIGHT);
                     tile.rotation = 90.0f;
                 }
             }
