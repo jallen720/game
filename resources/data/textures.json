@@ -31,6 +31,7 @@
             "resources/textures/tiles/floor.png",
             "resources/textures/tiles/wall.png",
             "resources/textures/tiles/wall_corner.png",
+            "resources/textures/tiles/wall_corner_inner.png",
             "resources/textures/ui/health_bar_background.png",
             "resources/textures/ui/health_bar_foreground.png",
             "resources/textures/player_down.png",
