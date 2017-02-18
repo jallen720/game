@@ -95,7 +95,6 @@ struct Floor
 static const int ROOM_TILE_WIDTH = 13;
 static const int ROOM_TILE_HEIGHT = 9;
 static const float ROOM_Z = 100.0f;
-// static Tile room[ROOM_TILE_WIDTH * ROOM_TILE_HEIGHT];
 static const string WALL_TILE_TEXTURE_PATH = "resources/textures/tiles/wall.png";
 static const string WALL_CORNER_TILE_TEXTURE_PATH = "resources/textures/tiles/wall_corner.png";
 static const string DOOR_TILE_TEXTURE_PATH = "resources/textures/tiles/door.png";
