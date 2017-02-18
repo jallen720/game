@@ -62,6 +62,7 @@ struct Tile
     {
         WALL,
         WALL_CORNER,
+        WALL_CORNER_INNER,
         LEFT_DOOR_WALL,
         RIGHT_DOOR_WALL,
         DOOR,
@@ -97,6 +98,7 @@ static const int ROOM_TILE_HEIGHT = 9;
 static const float ROOM_Z = 100.0f;
 static const string WALL_TILE_TEXTURE_PATH = "resources/textures/tiles/wall.png";
 static const string WALL_CORNER_TILE_TEXTURE_PATH = "resources/textures/tiles/wall_corner.png";
+static const string WALL_CORNER_INNER_TILE_TEXTURE_PATH = "resources/textures/tiles/wall_corner_inner.png";
 static const string DOOR_TILE_TEXTURE_PATH = "resources/textures/tiles/door.png";
 static const string FLOOR_TILE_TEXTURE_PATH = "resources/textures/tiles/floor.png";
 
@@ -279,73 +281,87 @@ static Floor create_floor(int size)
 }
 
 
-static void check_wall(Tile & tile, int coordinate, int dimension_size, bool inverted)
-{
-    // Corner
-    if ((inverted && coordinate == dimension_size - 1) || coordinate == 0)
-    {
-        tile.type = Tile::Types::WALL_CORNER;
-        tile.texture_path = &WALL_CORNER_TILE_TEXTURE_PATH;
-    }
-    // Normal
-    else
-    {
-        tile.type = Tile::Types::WALL;
-        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-    }
-}
-
-
 static void generate_wall_tile(
     Tile & tile,
     int coordinate,
     int dimension_size,
     char room,
     char neighbour,
+    char clockwise_neighbour,
     float rotation,
     bool inverted = false)
 {
-    if (neighbour == room)
+    tile.rotation = rotation;
+
+    // Corner
+    if ((inverted && coordinate == dimension_size - 1) || coordinate == 0)
+    {
+        // Inner corner
+        if (neighbour == room && clockwise_neighbour == room)
+        {
+            tile.type = Tile::Types::WALL_CORNER_INNER;
+            tile.texture_path = &WALL_CORNER_INNER_TILE_TEXTURE_PATH;
+        }
+        // Wall to neighbour
+        else if (neighbour == room)
+        {
+            tile.type = Tile::Types::WALL;
+            tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+            tile.rotation -= 90.0f;
+        }
+        // Wall to clockwise_neighbour
+        else if (clockwise_neighbour == room)
+        {
+            tile.type = Tile::Types::WALL;
+            tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+        }
+        // Outer corner
+        else
+        {
+            tile.type = Tile::Types::WALL_CORNER;
+            tile.texture_path = &WALL_CORNER_TILE_TEXTURE_PATH;
+        }
+    }
+    // Floor between rooms
+    else if (neighbour == room)
     {
         tile.type = Tile::Types::FLOOR;
         tile.texture_path = &FLOOR_TILE_TEXTURE_PATH;
+        tile.rotation = 0.0f;
     }
-    else
+    // Wall
+    else if (neighbour != '0')
     {
-        // Only set rotation if tile is a wall tile.
-        tile.rotation = rotation;
-
-        if (neighbour != '0')
+        // Door
+        if (coordinate == (dimension_size - 1) / 2)
         {
-            // Door
-            if (coordinate == (dimension_size - 1) / 2)
-            {
-                tile.type = Tile::Types::DOOR;
-                tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
-            }
-            // Door-adjacent wall
-            else if (coordinate == (dimension_size - 2) / 2)
-            {
-                tile.type = inverted ? Tile::Types::LEFT_DOOR_WALL : Tile::Types::RIGHT_DOOR_WALL;
-                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-            }
-            // Door-adjacent wall
-            else if (coordinate == ((dimension_size - 2) / 2) + 2)
-            {
-                tile.type = inverted ? Tile::Types::RIGHT_DOOR_WALL : Tile::Types::LEFT_DOOR_WALL;
-                tile.texture_path = &WALL_TILE_TEXTURE_PATH;
-            }
-            // Wall or corner
-            else
-            {
-                check_wall(tile, coordinate, dimension_size, inverted);
-            }
+            tile.type = Tile::Types::DOOR;
+            tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
         }
-        // Wall or corner
+        // Door-adjacent wall
+        else if (coordinate == (dimension_size - 2) / 2)
+        {
+            tile.type = inverted ? Tile::Types::LEFT_DOOR_WALL : Tile::Types::RIGHT_DOOR_WALL;
+            tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+        }
+        // Door-adjacent wall
+        else if (coordinate == ((dimension_size - 2) / 2) + 2)
+        {
+            tile.type = inverted ? Tile::Types::RIGHT_DOOR_WALL : Tile::Types::LEFT_DOOR_WALL;
+            tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+        }
+        // Normal wall
         else
         {
-            check_wall(tile, coordinate, dimension_size, inverted);
+            tile.type = Tile::Types::WALL;
+            tile.texture_path = &WALL_TILE_TEXTURE_PATH;
         }
+    }
+    // Normal wall
+    else
+    {
+        tile.type = Tile::Types::WALL;
+        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
     }
 }
 
@@ -410,45 +426,49 @@ void room_generator_subscribe(Entity /*entity*/)
                 tile.texture_path = &FLOOR_TILE_TEXTURE_PATH;
                 tile.rotation = 0.0f;
             }
-            // Bottom wall
-            else if (y == 0 && x != ROOM_TILE_WIDTH - 1)
+            // Wall
+            else
             {
-                const char neighbour =
+                const char bottom_neighbour =
                     room_y > 0
                     ? *map_at(floor.rooms, floor.size, room_x, room_y - 1)
                     : '0';
 
-                generate_wall_tile(tile, x, ROOM_TILE_WIDTH, room, neighbour, 0.0f);
-            }
-            // Left wall
-            else if (x == 0 && y != 0)
-            {
-                const char neighbour =
+                const char left_neighbour =
                     room_x > 0
                     ? *map_at(floor.rooms, floor.size, room_x - 1, room_y)
                     : '0';
 
-                generate_wall_tile(tile, y, ROOM_TILE_HEIGHT, room, neighbour, 270.0f, true);
-            }
-            // Top wall
-            else if (y == ROOM_TILE_HEIGHT - 1 && x != 0)
-            {
-                const char neighbour =
+                const char top_neighbour =
                     room_y < floor_size - 1
                     ? *map_at(floor.rooms, floor.size, room_x, room_y + 1)
                     : '0';
 
-                generate_wall_tile(tile, x, ROOM_TILE_WIDTH, room, neighbour, 180.0f, true);
-            }
-            // Right wall
-            else if (x == ROOM_TILE_WIDTH - 1 && y != ROOM_TILE_HEIGHT - 1)
-            {
-                const char neighbour =
+                const char right_neighbour =
                     room_x < floor_size - 1
                     ? *map_at(floor.rooms, floor.size, room_x + 1, room_y)
                     : '0';
 
-                generate_wall_tile(tile, y, ROOM_TILE_HEIGHT, room, neighbour, 90.0f);
+                // Bottom wall
+                if (y == 0 && x != ROOM_TILE_WIDTH - 1)
+                {
+                    generate_wall_tile(tile, x, ROOM_TILE_WIDTH, room, bottom_neighbour, left_neighbour, 0.0f);
+                }
+                // Left wall
+                else if (x == 0 && y != 0)
+                {
+                    generate_wall_tile(tile, y, ROOM_TILE_HEIGHT, room, left_neighbour, top_neighbour, 270.0f, true);
+                }
+                // Top wall
+                else if (y == ROOM_TILE_HEIGHT - 1 && x != 0)
+                {
+                    generate_wall_tile(tile, x, ROOM_TILE_WIDTH, room, top_neighbour, right_neighbour, 180.0f, true);
+                }
+                // Right wall
+                else if (x == ROOM_TILE_WIDTH - 1 && y != ROOM_TILE_HEIGHT - 1)
+                {
+                    generate_wall_tile(tile, y, ROOM_TILE_HEIGHT, room, right_neighbour, bottom_neighbour, 90.0f);
+                }
             }
         });
     });
@@ -484,35 +504,47 @@ void room_generator_subscribe(Entity /*entity*/)
         // Give wall tiles a line collider.
         if (tile_type == Tile::Types::WALL ||
             tile_type == Tile::Types::RIGHT_DOOR_WALL ||
-            tile_type == Tile::Types::LEFT_DOOR_WALL)
+            tile_type == Tile::Types::LEFT_DOOR_WALL ||
+            tile_type == Tile::Types::WALL_CORNER_INNER)
         {
             tile_components["collider"] = new Collider { true, true, false, {} };
 
 
             // Door-adjacent walls should have a polygon collider, all other walls shouls have a line collider.
             if (tile_type == Tile::Types::RIGHT_DOOR_WALL ||
-                tile_type == Tile::Types::LEFT_DOOR_WALL)
+                tile_type == Tile::Types::LEFT_DOOR_WALL ||
+                tile_type == Tile::Types::WALL_CORNER_INNER)
             {
-                static const vector<vec3> RIGHT_DOOR_WALL_POINTS
+                static const map<Tile::Types, const vector<vec3>> POINTS
                 {
-                    vec3(-0.25f, 0.25f, 0.0f),
-                    vec3( 0.25f, 0.25f, 0.0f),
-                    vec3( 0.25f,-0.25f, 0.0f),
+                    {
+                        Tile::Types::RIGHT_DOOR_WALL,
+                        {
+                            vec3(-0.25f, 0.25f, 0.0f),
+                            vec3( 0.25f, 0.25f, 0.0f),
+                            vec3( 0.25f,-0.25f, 0.0f),
+                        }
+                    },
+                    {
+                        Tile::Types::LEFT_DOOR_WALL,
+                        {
+                            vec3(-0.25f,-0.25f, 0.0f),
+                            vec3(-0.25f, 0.25f, 0.0f),
+                            vec3( 0.25f, 0.25f, 0.0f),
+                        }
+                    },
+                    {
+                        Tile::Types::WALL_CORNER_INNER,
+                        {
+                            vec3(-0.25f , 0.25f , 0.0f),
+                            vec3( 0.05f , 0.25f , 0.0f),
+                            vec3( 0.25f , 0.05f , 0.0f),
+                            vec3( 0.25f ,-0.25f , 0.0f),
+                        }
+                    },
                 };
 
-                static const vector<vec3> LEFT_DOOR_WALL_POINTS
-                {
-                    vec3(-0.25f,-0.25f, 0.0f),
-                    vec3(-0.25f, 0.25f, 0.0f),
-                    vec3( 0.25f, 0.25f, 0.0f),
-                };
-
-                tile_components["polygon_collider"] = new Polygon_Collider
-                {
-                    tile_type == Tile::Types::RIGHT_DOOR_WALL ? RIGHT_DOOR_WALL_POINTS : LEFT_DOOR_WALL_POINTS,
-                    false,
-                };
-
+                tile_components["polygon_collider"] = new Polygon_Collider { POINTS.at(tile_type), false };
                 tile_systems.push_back("polygon_collider");
             }
             else
