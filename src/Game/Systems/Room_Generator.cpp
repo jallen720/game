@@ -96,11 +96,6 @@ struct Floor
 static const int ROOM_TILE_WIDTH = 13;
 static const int ROOM_TILE_HEIGHT = 9;
 static const float ROOM_Z = 100.0f;
-static const string WALL_TILE_TEXTURE_PATH = "resources/textures/tiles/wall.png";
-static const string WALL_CORNER_TILE_TEXTURE_PATH = "resources/textures/tiles/wall_corner.png";
-static const string WALL_CORNER_INNER_TILE_TEXTURE_PATH = "resources/textures/tiles/wall_corner_inner.png";
-static const string DOOR_TILE_TEXTURE_PATH = "resources/textures/tiles/door.png";
-static const string FLOOR_TILE_TEXTURE_PATH = "resources/textures/tiles/floor.png";
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -281,6 +276,30 @@ static Floor create_floor(int size)
 }
 
 
+static void set_tile_type(Tile & tile, Tile::Types type)
+{
+    static const string WALL_TEXTURE_PATH = "resources/textures/tiles/wall.png";
+    static const string WALL_CORNER_TEXTURE_PATH = "resources/textures/tiles/wall_corner.png";
+    static const string WALL_CORNER_INNER_TEXTURE_PATH ="resources/textures/tiles/wall_corner_inner.png";
+    static const string DOOR_TEXTURE_PATH = "resources/textures/tiles/door.png";
+    static const string FLOOR_TEXTURE_PATH = "resources/textures/tiles/floor.png";
+
+    static const map<Tile::Types, const string *> TILE_TYPE_TEXTURE_PATHS
+    {
+        { Tile::Types::WALL              , &WALL_TEXTURE_PATH              },
+        { Tile::Types::WALL_CORNER       , &WALL_CORNER_TEXTURE_PATH       },
+        { Tile::Types::WALL_CORNER_INNER , &WALL_CORNER_INNER_TEXTURE_PATH },
+        { Tile::Types::DOOR              , &DOOR_TEXTURE_PATH              },
+        { Tile::Types::FLOOR             , &FLOOR_TEXTURE_PATH             },
+        { Tile::Types::LEFT_DOOR_WALL    , &WALL_TEXTURE_PATH              },
+        { Tile::Types::RIGHT_DOOR_WALL   , &WALL_TEXTURE_PATH              },
+    };
+
+    tile.type = type;
+    tile.texture_path = TILE_TYPE_TEXTURE_PATHS.at(type);
+}
+
+
 static void generate_wall_tile(
     Tile & tile,
     int coordinate,
@@ -299,34 +318,29 @@ static void generate_wall_tile(
         // Inner corner
         if (neighbour == room && clockwise_neighbour == room)
         {
-            tile.type = Tile::Types::WALL_CORNER_INNER;
-            tile.texture_path = &WALL_CORNER_INNER_TILE_TEXTURE_PATH;
+            set_tile_type(tile, Tile::Types::WALL_CORNER_INNER);
         }
         // Wall to neighbour
         else if (neighbour == room)
         {
-            tile.type = Tile::Types::WALL;
-            tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+            set_tile_type(tile, Tile::Types::WALL);
             tile.rotation -= 90.0f;
         }
         // Wall to clockwise_neighbour
         else if (clockwise_neighbour == room)
         {
-            tile.type = Tile::Types::WALL;
-            tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+            set_tile_type(tile, Tile::Types::WALL);
         }
         // Outer corner
         else
         {
-            tile.type = Tile::Types::WALL_CORNER;
-            tile.texture_path = &WALL_CORNER_TILE_TEXTURE_PATH;
+            set_tile_type(tile, Tile::Types::WALL_CORNER);
         }
     }
     // Floor between rooms
     else if (neighbour == room)
     {
-        tile.type = Tile::Types::FLOOR;
-        tile.texture_path = &FLOOR_TILE_TEXTURE_PATH;
+        set_tile_type(tile, Tile::Types::FLOOR);
         tile.rotation = 0.0f;
     }
     // Wall
@@ -335,33 +349,28 @@ static void generate_wall_tile(
         // Door
         if (coordinate == (dimension_size - 1) / 2)
         {
-            tile.type = Tile::Types::DOOR;
-            tile.texture_path = &DOOR_TILE_TEXTURE_PATH;
+            set_tile_type(tile, Tile::Types::DOOR);
         }
         // Door-adjacent wall
         else if (coordinate == (dimension_size - 2) / 2)
         {
-            tile.type = inverted ? Tile::Types::LEFT_DOOR_WALL : Tile::Types::RIGHT_DOOR_WALL;
-            tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+            set_tile_type(tile, inverted ? Tile::Types::LEFT_DOOR_WALL : Tile::Types::RIGHT_DOOR_WALL);
         }
         // Door-adjacent wall
         else if (coordinate == ((dimension_size - 2) / 2) + 2)
         {
-            tile.type = inverted ? Tile::Types::RIGHT_DOOR_WALL : Tile::Types::LEFT_DOOR_WALL;
-            tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+            set_tile_type(tile, inverted ? Tile::Types::RIGHT_DOOR_WALL : Tile::Types::LEFT_DOOR_WALL);
         }
         // Normal wall
         else
         {
-            tile.type = Tile::Types::WALL;
-            tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+            set_tile_type(tile, Tile::Types::WALL);
         }
     }
     // Normal wall
     else
     {
-        tile.type = Tile::Types::WALL;
-        tile.texture_path = &WALL_TILE_TEXTURE_PATH;
+        set_tile_type(tile, Tile::Types::WALL);
     }
 }
 
@@ -422,8 +431,7 @@ void room_generator_subscribe(Entity /*entity*/)
             if (x > 0 && x < ROOM_TILE_WIDTH - 1 &&
                 y > 0 && y < ROOM_TILE_HEIGHT - 1)
             {
-                tile.type = Tile::Types::FLOOR;
-                tile.texture_path = &FLOOR_TILE_TEXTURE_PATH;
+                set_tile_type(tile, Tile::Types::FLOOR);
                 tile.rotation = 0.0f;
             }
             // Wall
