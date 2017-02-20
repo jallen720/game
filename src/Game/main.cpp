@@ -26,6 +26,7 @@
 #include "Game/Systems/Game_Over_Menu.hpp"
 #include "Game/Systems/Menu_Controller.hpp"
 #include "Game/Systems/Camera_Controller.hpp"
+#include "Game/Systems/Game_Manager.hpp"
 
 
 using std::string;
@@ -96,6 +97,7 @@ static const map<string, const System_Entity_Handlers> GAME_SYSTEM_ENTITY_HANDLE
     NITO_SYSTEM_ENTITY_HANDLERS(game_over_menu),
     NITO_SYSTEM_ENTITY_HANDLERS(menu_controller),
     NITO_SYSTEM_ENTITY_HANDLERS(camera_controller),
+    NITO_SYSTEM_ENTITY_HANDLERS(game_manager),
 };
 
 

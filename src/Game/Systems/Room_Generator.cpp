@@ -4,7 +4,6 @@
 #include <vector>
 #include <map>
 #include <functional>
-#include <glm/glm.hpp>
 #include "Nito/Components.hpp"
 #include "Nito/Collider_Component.hpp"
 #include "Nito/APIs/Graphics.hpp"
@@ -20,6 +19,7 @@ using std::function;
 
 // glm/glm.hpp
 using glm::vec3;
+using glm::vec2;
 using glm::ivec2;
 
 // Nito/APIs/ECS.hpp
@@ -96,6 +96,8 @@ struct Floor
 static const int ROOM_TILE_WIDTH = 13;
 static const int ROOM_TILE_HEIGHT = 9;
 static const float ROOM_Z = 100.0f;
+static const vec3 ROOM_TILE_TEXTURE_SCALE(0.5f, 0.5f, 1.0f);
+static vec2 spawn_position;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -382,11 +384,15 @@ static void generate_wall_tile(
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void room_generator_subscribe(Entity /*entity*/)
 {
+
+}
+
+
+void room_generator_run()
+{
     // Create floor.
     const int floor_size = 6;
     Floor floor = create_floor(floor_size);
-    const int root_room_x = random(0, floor_size);
-    const int root_room_y = random(0, floor_size);
     Possible_Rooms & possible_rooms = floor.possible_rooms;
     iterate_rooms(floor, [](int /*x*/, int /*y*/, char & room) -> void { room = '0'; });
 
@@ -398,6 +404,8 @@ void room_generator_subscribe(Entity /*entity*/)
 
 
     // Generate rooms.
+    const int root_room_x = random(0, floor_size);
+    const int root_room_y = random(0, floor_size);
     generate_room(floor, root_room_x, root_room_y, '1', 1);
 
     for (char i = '2'; i < '9'; i++)
@@ -413,6 +421,11 @@ void room_generator_subscribe(Entity /*entity*/)
     }
 
     debug_floor(floor);
+
+
+    // Set spawn position
+    spawn_position.x = ((root_room_x * ROOM_TILE_WIDTH) + (ROOM_TILE_WIDTH / 2)) * ROOM_TILE_TEXTURE_SCALE.x;
+    spawn_position.y = ((root_room_y * ROOM_TILE_HEIGHT) + (ROOM_TILE_HEIGHT / 2)) * ROOM_TILE_TEXTURE_SCALE.y;
 
 
     // Generate room tiles.
@@ -490,16 +503,15 @@ void room_generator_subscribe(Entity /*entity*/)
             return;
         }
 
-        auto dimensions = new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) };
         auto transform = new Transform { vec3(), vec3(1.0f), tile.rotation };
         const Tile::Types tile_type = tile.type;
 
         map<string, Component> tile_components
         {
-            { "render_layer" , new string("world")                          },
-            { "transform"    , transform                                    },
-            { "dimensions"   , dimensions                                   },
-            { "sprite"       , new Sprite { *tile.texture_path, "texture" } },
+            { "render_layer" , new string("world")                                   },
+            { "transform"    , transform                                             },
+            { "dimensions"   , new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) } },
+            { "sprite"       , new Sprite { *tile.texture_path, "texture" }          },
         };
 
         vector<string> tile_systems
@@ -569,16 +581,19 @@ void room_generator_subscribe(Entity /*entity*/)
 
 
         generate_entity(tile_components, tile_systems);
-
-        transform->position =
-            vec3(tile_x, tile_y, 0.0f) * (vec3(dimensions->width, dimensions->height, 0.0f) / get_pixels_per_unit());
-
+        transform->position = vec3(tile_x, tile_y, 0.0f) * ROOM_TILE_TEXTURE_SCALE;
         transform->position.z = ROOM_Z;
     });
 }
 
 
 void room_generator_unsubscribe(Entity /*entity*/) {}
+
+
+const vec2 & room_generator_get_spawn_position()
+{
+    return spawn_position;
+}
 
 
 } // namespace Game
