@@ -1,5 +1,12 @@
 [
     {
+        "systems":
+        [
+            "room_generator",
+            "in_game_controls"
+        ]
+    },
+    {
         "components":
         {
             "id": "pause_menu",
@@ -45,13 +52,6 @@
         [
             "menu_controller",
             "game_over_menu"
-        ]
-    },
-    {
-        "systems":
-        [
-            "room_generator",
-            "in_game_controls"
         ]
     },
     {
