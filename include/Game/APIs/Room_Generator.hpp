@@ -3,8 +3,6 @@
 
 #include <glm/glm.hpp>
 
-#include "Nito/APIs/ECS.hpp"
-
 
 namespace Game
 {
@@ -15,8 +13,6 @@ namespace Game
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void room_generator_subscribe(Nito::Entity entity);
-void room_generator_unsubscribe(Nito::Entity entity);
 void room_generator_run();
 const glm::vec2 & room_generator_get_spawn_position();
 

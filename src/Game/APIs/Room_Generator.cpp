@@ -1,4 +1,4 @@
-#include "Game/Systems/Room_Generator.hpp"
+#include "Game/APIs/Room_Generator.hpp"
 
 #include <string>
 #include <vector>
@@ -6,6 +6,7 @@
 #include <functional>
 #include "Nito/Components.hpp"
 #include "Nito/Collider_Component.hpp"
+#include "Nito/APIs/ECS.hpp"
 #include "Nito/APIs/Graphics.hpp"
 #include "Cpp_Utils/Map.hpp"
 
@@ -23,10 +24,8 @@ using glm::vec2;
 using glm::ivec2;
 
 // Nito/APIs/ECS.hpp
-using Nito::Entity;
 using Nito::Component;
 using Nito::generate_entity;
-using Nito::get_component;
 
 // Nito/Components.hpp
 using Nito::Transform;
@@ -382,12 +381,6 @@ static void generate_wall_tile(
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void room_generator_subscribe(Entity /*entity*/)
-{
-
-}
-
-
 void room_generator_run()
 {
     // Create floor.
@@ -407,6 +400,13 @@ void room_generator_run()
     const int root_room_x = random(0, floor_size);
     const int root_room_y = random(0, floor_size);
     generate_room(floor, root_room_x, root_room_y, '1', 1);
+    // generate_room(floor, 0, 1, '2', 1);
+    // generate_room(floor, 1, 1, '3', 1);
+    // // generate_room(floor, 1, 1, '3', 1);
+    // generate_room(floor, 2, 0, '3', 1);
+    // generate_room(floor, 2, 1, '3', 1);
+    // generate_room(floor, 2, 2, '3', 1);
+    // generate_room(floor, 3, 1, '3', 1);
 
     for (char i = '2'; i < '9'; i++)
     {
@@ -585,9 +585,6 @@ void room_generator_run()
         transform->position.z = ROOM_Z;
     });
 }
-
-
-void room_generator_unsubscribe(Entity /*entity*/) {}
 
 
 const vec2 & room_generator_get_spawn_position()

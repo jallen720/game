@@ -2,7 +2,6 @@
     {
         "systems":
         [
-            "room_generator",
             "game_manager",
             "in_game_controls"
         ]

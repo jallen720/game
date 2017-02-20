@@ -11,7 +11,6 @@
 #include "Cpp_Utils/JSON.hpp"
 
 #include "Game/Components.hpp"
-#include "Game/Systems/Room_Generator.hpp"
 #include "Game/Systems/Player_Controller.hpp"
 #include "Game/Systems/Projectile.hpp"
 #include "Game/Systems/Depth_Handler.hpp"
@@ -82,7 +81,6 @@ static const vector<Update_Handler> GAME_UPDATE_HANDLERS
 
 static const map<string, const System_Entity_Handlers> GAME_SYSTEM_ENTITY_HANDLERS
 {
-    NITO_SYSTEM_ENTITY_HANDLERS(room_generator),
     NITO_SYSTEM_ENTITY_HANDLERS(player_controller),
     NITO_SYSTEM_ENTITY_HANDLERS(projectile),
     NITO_SYSTEM_ENTITY_HANDLERS(depth_handler),
