@@ -1,4 +1,4 @@
-#include "Game/APIs/Room_Generator.hpp"
+#include "Game/APIs/Floor_Generator.hpp"
 
 #include <string>
 #include <vector>
@@ -381,7 +381,7 @@ static void generate_wall_tile(
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void room_generator_run()
+void generate_floor()
 {
     // Create floor.
     const int floor_size = 6;
@@ -400,13 +400,6 @@ void room_generator_run()
     const int root_room_x = random(0, floor_size);
     const int root_room_y = random(0, floor_size);
     generate_room(floor, root_room_x, root_room_y, '1', 1);
-    // generate_room(floor, 0, 1, '2', 1);
-    // generate_room(floor, 1, 1, '3', 1);
-    // // generate_room(floor, 1, 1, '3', 1);
-    // generate_room(floor, 2, 0, '3', 1);
-    // generate_room(floor, 2, 1, '3', 1);
-    // generate_room(floor, 2, 2, '3', 1);
-    // generate_room(floor, 3, 1, '3', 1);
 
     for (char i = '2'; i < '9'; i++)
     {
@@ -587,7 +580,7 @@ void room_generator_run()
 }
 
 
-const vec2 & room_generator_get_spawn_position()
+const vec2 & get_spawn_position()
 {
     return spawn_position;
 }

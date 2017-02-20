@@ -13,8 +13,8 @@ namespace Game
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void room_generator_run();
-const glm::vec2 & room_generator_get_spawn_position();
+void generate_floor();
+const glm::vec2 & get_spawn_position();
 
 
 } // namespace Game

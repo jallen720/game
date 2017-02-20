@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include "Nito/Components.hpp"
 
-#include "Game/APIs/Room_Generator.hpp"
+#include "Game/APIs/Floor_Generator.hpp"
 
 
 // glm/glm.hpp
@@ -31,8 +31,8 @@ namespace Game
 void game_manager_subscribe(Entity /*entity*/)
 {
     vec3 & player_position = ((Transform *)get_component(get_entity("player"), "transform"))->position;
-    const vec2 & spawn_position = room_generator_get_spawn_position();
-    room_generator_run();
+    const vec2 & spawn_position = get_spawn_position();
+    generate_floor();
     player_position.x = spawn_position.x;
     player_position.y = spawn_position.y;
 }
