@@ -97,6 +97,8 @@ static const int ROOM_TILE_HEIGHT = 9;
 static const float ROOM_Z = 100.0f;
 static const vec3 ROOM_TILE_TEXTURE_SCALE(0.5f, 0.5f, 1.0f);
 static vec2 spawn_position;
+static map<char, Room_Data> room_datas;
+static Floor current_floor;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -210,9 +212,24 @@ static void set_room(Floor & floor, Possible_Rooms & room_extensions, int x, int
 }
 
 
+static vec2 get_room_center(int room_x, int room_y)
+{
+    return vec2(
+        ((room_x * ROOM_TILE_WIDTH) + (ROOM_TILE_WIDTH / 2)) * ROOM_TILE_TEXTURE_SCALE.x,
+        ((room_y * ROOM_TILE_HEIGHT) + (ROOM_TILE_HEIGHT / 2)) * ROOM_TILE_TEXTURE_SCALE.y);
+}
+
+
 static void generate_room(Floor & floor, int x, int y, char id, int max_size)
 {
     Possible_Rooms room_extensions;
+    Room_Data & room_data = room_datas[id];
+    vec2 & room_origin = room_data.origin;
+    vec2 & room_bounds = room_data.bounds;
+    int room_origin_x = x;
+    int room_origin_y = y;
+    int room_bounds_x = x;
+    int room_bounds_y = y;
     const int room_size = random(1, max_size + 1);
     int room_generated = 1;
     set_room(floor, room_extensions, x, y, id);
@@ -227,9 +244,36 @@ static void generate_room(Floor & floor, int x, int y, char id, int max_size)
         }
 
         ivec2 room_coordinates = at_index(room_extensions, random(0, room_extensions.size())).second;
-        set_room(floor, room_extensions, room_coordinates.x, room_coordinates.y, id);
+        float room_coordinates_x = room_coordinates.x;
+        float room_coordinates_y = room_coordinates.y;
+        set_room(floor, room_extensions, room_coordinates_x, room_coordinates_y, id);
         room_generated++;
+
+
+        // Update room origin and bounds.
+        if (room_coordinates_x < room_origin_x)
+        {
+            room_origin_x = room_coordinates_x;
+        }
+        else if (room_coordinates_x > room_bounds_x)
+        {
+            room_bounds_x = room_coordinates_x;
+        }
+
+        if (room_coordinates_y < room_origin_y)
+        {
+            room_origin_y = room_coordinates_y;
+        }
+        else if (room_coordinates_y > room_bounds_y)
+        {
+            room_bounds_y = room_coordinates_y;
+        }
     }
+
+
+    // Adjust room origin and bounds based on tile size.
+    room_origin = get_room_center(room_origin_x, room_origin_y);
+    room_bounds = get_room_center(room_bounds_x, room_bounds_y);
 }
 
 
@@ -385,11 +429,11 @@ void generate_floor()
 {
     // Create floor.
     const int floor_size = 6;
-    Floor floor = create_floor(floor_size);
-    Possible_Rooms & possible_rooms = floor.possible_rooms;
-    iterate_rooms(floor, [](int /*x*/, int /*y*/, char & room) -> void { room = '0'; });
+    current_floor = create_floor(floor_size);
+    Possible_Rooms & possible_rooms = current_floor.possible_rooms;
+    iterate_rooms(current_floor, [](int /*x*/, int /*y*/, char & room) -> void { room = '0'; });
 
-    iterate_room_tiles(floor, [](int /*x*/, int /*y*/, Tile & room_tile) -> void
+    iterate_room_tiles(current_floor, [](int /*x*/, int /*y*/, Tile & room_tile) -> void
     {
         room_tile.type = Tile::Types::NONE;
         room_tile.rotation = 0.0f;
@@ -399,7 +443,7 @@ void generate_floor()
     // Generate rooms.
     const int root_room_x = random(0, floor_size);
     const int root_room_y = random(0, floor_size);
-    generate_room(floor, root_room_x, root_room_y, '1', 1);
+    generate_room(current_floor, root_room_x, root_room_y, '1', 1);
 
     for (char i = '2'; i < '9'; i++)
     {
@@ -410,19 +454,15 @@ void generate_floor()
         }
 
         ivec2 room_coordinates = at_index(possible_rooms, random(0, possible_rooms.size())).second;
-        generate_room(floor, room_coordinates.x, room_coordinates.y, i, 4);
+        generate_room(current_floor, room_coordinates.x, room_coordinates.y, i, 4);
     }
 
-    debug_floor(floor);
-
-
-    // Set spawn position
-    spawn_position.x = ((root_room_x * ROOM_TILE_WIDTH) + (ROOM_TILE_WIDTH / 2)) * ROOM_TILE_TEXTURE_SCALE.x;
-    spawn_position.y = ((root_room_y * ROOM_TILE_HEIGHT) + (ROOM_TILE_HEIGHT / 2)) * ROOM_TILE_TEXTURE_SCALE.y;
+    spawn_position = get_room_center(root_room_x, root_room_y);
+    debug_floor(current_floor);
 
 
     // Generate room tiles.
-    iterate_rooms(floor, [&](int room_x, int room_y, char & room) -> void
+    iterate_rooms(current_floor, [&](int room_x, int room_y, char & room) -> void
     {
         // Don't generate tiles for empty rooms.
         if (room == '0')
@@ -431,7 +471,7 @@ void generate_floor()
         }
 
 
-        iterate_room_tiles(floor, room_x, room_y, [&](int x, int y, Tile & tile) -> void
+        iterate_room_tiles(current_floor, room_x, room_y, [&](int x, int y, Tile & tile) -> void
         {
             // Floor
             if (x > 0 && x < ROOM_TILE_WIDTH - 1 &&
@@ -445,22 +485,22 @@ void generate_floor()
             {
                 const char bottom_neighbour =
                     room_y > 0
-                    ? *array_2d_at(floor.rooms, floor.size, room_x, room_y - 1)
+                    ? *array_2d_at(current_floor.rooms, current_floor.size, room_x, room_y - 1)
                     : '0';
 
                 const char left_neighbour =
                     room_x > 0
-                    ? *array_2d_at(floor.rooms, floor.size, room_x - 1, room_y)
+                    ? *array_2d_at(current_floor.rooms, current_floor.size, room_x - 1, room_y)
                     : '0';
 
                 const char top_neighbour =
                     room_y < floor_size - 1
-                    ? *array_2d_at(floor.rooms, floor.size, room_x, room_y + 1)
+                    ? *array_2d_at(current_floor.rooms, current_floor.size, room_x, room_y + 1)
                     : '0';
 
                 const char right_neighbour =
                     room_x < floor_size - 1
-                    ? *array_2d_at(floor.rooms, floor.size, room_x + 1, room_y)
+                    ? *array_2d_at(current_floor.rooms, current_floor.size, room_x + 1, room_y)
                     : '0';
 
                 // Bottom wall
@@ -489,7 +529,7 @@ void generate_floor()
 
 
     // Create tile entities based on each tile's type.
-    iterate_room_tiles(floor, [](int tile_x, int tile_y, const Tile & tile) -> void
+    iterate_room_tiles(current_floor, [](int tile_x, int tile_y, const Tile & tile) -> void
     {
         if (tile.type == Tile::Types::NONE)
         {
@@ -583,6 +623,22 @@ void generate_floor()
 const vec2 & get_spawn_position()
 {
     return spawn_position;
+}
+
+
+char get_room(const vec3 & position)
+{
+    return *array_2d_at(
+        current_floor.rooms,
+        current_floor.size,
+        (position.x + (ROOM_TILE_TEXTURE_SCALE.x / 2.0f)) / (ROOM_TILE_WIDTH * ROOM_TILE_TEXTURE_SCALE.x),
+        (position.y + (ROOM_TILE_TEXTURE_SCALE.y / 2.0f)) / (ROOM_TILE_HEIGHT * ROOM_TILE_TEXTURE_SCALE.y));
+}
+
+
+const Room_Data & get_room_data(char room)
+{
+    return room_datas.at(room);
 }
 
 

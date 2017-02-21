@@ -2,13 +2,20 @@
 
 #include <map>
 #include <string>
+#include <glm/glm.hpp>
 #include "Nito/Components.hpp"
 #include "Cpp_Utils/Collection.hpp"
 #include "Cpp_Utils/Map.hpp"
 
+#include "Game/APIs/Floor_Generator.hpp"
+
 
 using std::map;
 using std::string;
+
+// glm/glm.hpp
+using glm::vec3;
+using glm::vec2;
 
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
@@ -76,7 +83,36 @@ void camera_controller_update()
 {
     for_each(entity_states, [](const Entity /*entity*/, Entity_State & entity_state) -> void
     {
-        entity_state.transform->position = entity_state.target_transform->position;
+        vec3 & position = entity_state.transform->position;
+        const vec3 & target_position = entity_state.target_transform->position;
+        float & position_x = position.x;
+        float & position_y = position.y;
+        const Room_Data & target_room_data = get_room_data(get_room(target_position));
+        const vec2 & target_room_origin = target_room_data.origin;
+        const vec2 & target_room_bounds = target_room_data.bounds;
+        const float target_room_origin_x = target_room_origin.x;
+        const float target_room_origin_y = target_room_origin.y;
+        const float target_room_bounds_x = target_room_bounds.x;
+        const float target_room_bounds_y = target_room_bounds.y;
+        position = target_position;
+
+        if (position_x < target_room_origin_x)
+        {
+            position_x = target_room_origin_x;
+        }
+        else if (position_x > target_room_bounds_x)
+        {
+            position_x = target_room_bounds_x;
+        }
+
+        if (position_y < target_room_origin_y)
+        {
+            position_y = target_room_origin_y;
+        }
+        else if (position_y > target_room_bounds_y)
+        {
+            position_y = target_room_bounds_y;
+        }
     });
 }
 
