@@ -105,15 +105,15 @@ static vec2 spawn_position;
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 template<typename T>
-static T * map_at(T * map, int width, int x, int y)
+static T * array_2d_at(T * array_2d, int width, int x, int y)
 {
-    return &map[(y * width) + x];
+    return &array_2d[(y * width) + x];
 }
 
 
 template<typename T>
-static void iterate_map(
-    T * map,
+static void iterate_array_2d(
+    T * array_2d,
     int width,
     int start_x,
     int start_y,
@@ -125,28 +125,28 @@ static void iterate_map(
     {
         for (int y = start_y; y < start_y + sub_height; y++)
         {
-            callback(x - start_x, y - start_y, *map_at(map, width, x, y));
+            callback(x - start_x, y - start_y, *array_2d_at(array_2d, width, x, y));
         }
     }
 }
 
 
 template<typename T>
-static void iterate_map(T * map, int width, int height, const function<void(int, int, T &)> & callback)
+static void iterate_array_2d(T * array_2d, int width, int height, const function<void(int, int, T &)> & callback)
 {
-    iterate_map(map, width, 0, 0, width, height, callback);
+    iterate_array_2d(array_2d, width, 0, 0, width, height, callback);
 }
 
 
 static void iterate_rooms(Floor & floor, const function<void(int, int, char &)> & callback)
 {
-    iterate_map(floor.rooms, floor.size, floor.size, callback);
+    iterate_array_2d(floor.rooms, floor.size, floor.size, callback);
 }
 
 
 static void iterate_room_tiles(Floor & floor, const function<void(int, int, Tile &)> & callback)
 {
-    iterate_map(floor.room_tiles, floor.size * ROOM_TILE_WIDTH, floor.size * ROOM_TILE_HEIGHT, callback);
+    iterate_array_2d(floor.room_tiles, floor.size * ROOM_TILE_WIDTH, floor.size * ROOM_TILE_HEIGHT, callback);
 }
 
 
@@ -156,7 +156,7 @@ static void iterate_room_tiles(
     int room_y,
     const function<void(int, int, Tile &)> & callback)
 {
-    iterate_map(
+    iterate_array_2d(
         floor.room_tiles,
         floor.size * ROOM_TILE_WIDTH,
         room_x * ROOM_TILE_WIDTH,
@@ -177,7 +177,7 @@ static void check_possible_room(Floor & floor, Possible_Rooms & room_extensions,
         return;
     }
 
-    char * room = map_at(floor.rooms, size, x, y);
+    char * room = array_2d_at(floor.rooms, size, x, y);
 
     if (*room == '0' && !contains_key(room_extensions, room))
     {
@@ -190,7 +190,7 @@ static void check_possible_room(Floor & floor, Possible_Rooms & room_extensions,
 
 static void set_room(Floor & floor, Possible_Rooms & room_extensions, int x, int y, char id)
 {
-    char * room = map_at(floor.rooms, floor.size, x, y);
+    char * room = array_2d_at(floor.rooms, floor.size, x, y);
     *room = id;
 
     if (contains_key(room_extensions, room))
@@ -281,7 +281,7 @@ static void set_tile_type(Tile & tile, Tile::Types type)
 {
     static const string WALL_TEXTURE_PATH = "resources/textures/tiles/wall.png";
     static const string WALL_CORNER_TEXTURE_PATH = "resources/textures/tiles/wall_corner.png";
-    static const string WALL_CORNER_INNER_TEXTURE_PATH ="resources/textures/tiles/wall_corner_inner.png";
+    static const string WALL_CORNER_INNER_TEXTURE_PATH = "resources/textures/tiles/wall_corner_inner.png";
     static const string DOOR_TEXTURE_PATH = "resources/textures/tiles/door.png";
     static const string FLOOR_TEXTURE_PATH = "resources/textures/tiles/floor.png";
 
@@ -445,22 +445,22 @@ void generate_floor()
             {
                 const char bottom_neighbour =
                     room_y > 0
-                    ? *map_at(floor.rooms, floor.size, room_x, room_y - 1)
+                    ? *array_2d_at(floor.rooms, floor.size, room_x, room_y - 1)
                     : '0';
 
                 const char left_neighbour =
                     room_x > 0
-                    ? *map_at(floor.rooms, floor.size, room_x - 1, room_y)
+                    ? *array_2d_at(floor.rooms, floor.size, room_x - 1, room_y)
                     : '0';
 
                 const char top_neighbour =
                     room_y < floor_size - 1
-                    ? *map_at(floor.rooms, floor.size, room_x, room_y + 1)
+                    ? *array_2d_at(floor.rooms, floor.size, room_x, room_y + 1)
                     : '0';
 
                 const char right_neighbour =
                     room_x < floor_size - 1
-                    ? *map_at(floor.rooms, floor.size, room_x + 1, room_y)
+                    ? *array_2d_at(floor.rooms, floor.size, room_x + 1, room_y)
                     : '0';
 
                 // Bottom wall
