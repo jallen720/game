@@ -42,7 +42,9 @@
             "resources/textures/turret_down.png",
             "resources/textures/turret_left.png",
             "resources/textures/turret_right.png",
-            "resources/textures/turret_up.png"
+            "resources/textures/turret_up.png",
+            "resources/textures/ui/minimap_room.png",
+            "resources/textures/ui/minimap_room_connector.png"
         ]
     }
 ]
