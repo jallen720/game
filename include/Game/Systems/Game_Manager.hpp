@@ -15,6 +15,7 @@ namespace Game
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void game_manager_subscribe(Nito::Entity entity);
 void game_manager_unsubscribe(Nito::Entity entity);
+void game_manager_change_rooms(float door_rotation);
 
 
 } // namespace Game

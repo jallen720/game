@@ -11,6 +11,7 @@
 #include "Cpp_Utils/Map.hpp"
 
 #include "Game/Utilities.hpp"
+#include "Game/Systems/Game_Manager.hpp"
 
 
 using std::string;
@@ -24,6 +25,7 @@ using glm::vec2;
 using glm::ivec2;
 
 // Nito/APIs/ECS.hpp
+using Nito::Entity;
 using Nito::Component;
 using Nito::generate_entity;
 
@@ -537,13 +539,15 @@ void generate_floor()
     // Create tile entities based on each tile's type.
     iterate_room_tiles(current_floor, [](int tile_x, int tile_y, const Tile & tile) -> void
     {
-        if (tile.type == Tile::Types::NONE)
+        const Tile::Types tile_type = tile.type;
+
+        if (tile_type == Tile::Types::NONE)
         {
             return;
         }
 
-        auto transform = new Transform { vec3(), vec3(1.0f), tile.rotation };
-        const Tile::Types tile_type = tile.type;
+        const float tile_rotation = tile.rotation;
+        auto transform = new Transform { vec3(), vec3(1.0f), tile_rotation };
 
         map<string, Component> tile_components
         {
@@ -561,18 +565,54 @@ void generate_floor()
 
 
         // Give wall tiles a line collider.
-        if (tile_type == Tile::Types::WALL ||
-            tile_type == Tile::Types::RIGHT_DOOR_WALL ||
+        if (tile_type == Tile::Types::RIGHT_DOOR_WALL ||
             tile_type == Tile::Types::LEFT_DOOR_WALL ||
-            tile_type == Tile::Types::WALL_CORNER_INNER)
+            tile_type == Tile::Types::WALL_CORNER_INNER ||
+            tile_type == Tile::Types::WALL ||
+            tile_type == Tile::Types::DOOR)
         {
-            tile_components["collider"] = new Collider { true, true, false, {} };
+            // Create and configure collider component based on tile type.
+            auto collider = new Collider { true, true, false, {} };
+            tile_components["collider"] = collider;
+
+            if (tile_type == Tile::Types::DOOR)
+            {
+                collider->sends_collision = false;
+
+                collider->collision_handler = [=](Entity /*entity*/) -> void
+                {
+                    game_manager_change_rooms(tile_rotation);
+                };
+            }
 
 
-            // Door-adjacent walls should have a polygon collider, all other walls shouls have a line collider.
-            if (tile_type == Tile::Types::RIGHT_DOOR_WALL ||
-                tile_type == Tile::Types::LEFT_DOOR_WALL ||
-                tile_type == Tile::Types::WALL_CORNER_INNER)
+            if (tile_type == Tile::Types::WALL ||
+                tile_type == Tile::Types::DOOR)
+            {
+                // Create and configure line collider component based on tile type.
+                auto line_collider = new Line_Collider
+                {
+                    vec3(-0.25f, 0.0f, 0.0f),
+                    vec3(0.25f, 0.0f, 0.0f),
+                };
+
+                if (tile_type == Tile::Types::WALL)
+                {
+                    line_collider->begin.y = 0.25f;
+                    line_collider->end.y = 0.25f;
+                }
+                else
+                {
+                    line_collider->begin.y = -0.1f;
+                    line_collider->end.y = -0.1f;
+                }
+
+                tile_components["line_collider"] = line_collider;
+                tile_systems.push_back("line_collider");
+            }
+            else if (tile_type == Tile::Types::RIGHT_DOOR_WALL ||
+                     tile_type == Tile::Types::LEFT_DOOR_WALL ||
+                     tile_type == Tile::Types::WALL_CORNER_INNER)
             {
                 static const map<Tile::Types, const vector<vec3>> POINTS
                 {
@@ -605,16 +645,6 @@ void generate_floor()
 
                 tile_components["polygon_collider"] = new Polygon_Collider { POINTS.at(tile_type), false };
                 tile_systems.push_back("polygon_collider");
-            }
-            else
-            {
-                tile_components["line_collider"] = new Line_Collider
-                {
-                    vec3(-0.25f, 0.25f, 0.0f),
-                    vec3(0.25f, 0.25f, 0.0f),
-                };
-
-                tile_systems.push_back("line_collider");
             }
         }
 
