@@ -428,6 +428,15 @@ static void generate_wall_tile(
 }
 
 
+static int get_room_position_coordinate(
+    float position_coordinate,
+    int tile_dimension_size,
+    float texture_dimension_scale)
+{
+    return (position_coordinate + (texture_dimension_scale / 2.0f)) / (tile_dimension_size * texture_dimension_scale);
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Interface
@@ -667,8 +676,8 @@ char get_room(const vec3 & position)
     return *array_2d_at(
         current_floor.rooms,
         current_floor.size,
-        (position.x + (ROOM_TILE_TEXTURE_SCALE.x / 2.0f)) / (ROOM_TILE_WIDTH * ROOM_TILE_TEXTURE_SCALE.x),
-        (position.y + (ROOM_TILE_TEXTURE_SCALE.y / 2.0f)) / (ROOM_TILE_HEIGHT * ROOM_TILE_TEXTURE_SCALE.y));
+        get_room_position_coordinate(position.x, ROOM_TILE_WIDTH, ROOM_TILE_TEXTURE_SCALE.x),
+        get_room_position_coordinate(position.y, ROOM_TILE_HEIGHT, ROOM_TILE_TEXTURE_SCALE.y));
 }
 
 
