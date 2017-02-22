@@ -212,11 +212,17 @@ static void set_room(Floor & floor, Possible_Rooms & room_extensions, int x, int
 }
 
 
+static float get_room_center_coordinate(int room_coordinate, int tile_dimension_size, float texture_dimension_scale)
+{
+    return ((room_coordinate * tile_dimension_size) + (tile_dimension_size / 2)) * texture_dimension_scale;
+}
+
+
 static vec2 get_room_center(int room_x, int room_y)
 {
     return vec2(
-        ((room_x * ROOM_TILE_WIDTH) + (ROOM_TILE_WIDTH / 2)) * ROOM_TILE_TEXTURE_SCALE.x,
-        ((room_y * ROOM_TILE_HEIGHT) + (ROOM_TILE_HEIGHT / 2)) * ROOM_TILE_TEXTURE_SCALE.y);
+        get_room_center_coordinate(room_x, ROOM_TILE_WIDTH, ROOM_TILE_TEXTURE_SCALE.x),
+        get_room_center_coordinate(room_y, ROOM_TILE_HEIGHT, ROOM_TILE_TEXTURE_SCALE.y));
 }
 
 
