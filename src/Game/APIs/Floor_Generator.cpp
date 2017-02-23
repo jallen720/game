@@ -27,6 +27,8 @@ using glm::ivec2;
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
 using Nito::Component;
+using Nito::get_component;
+using Nito::has_component;
 using Nito::generate_entity;
 
 // Nito/Components.hpp
@@ -588,9 +590,13 @@ void generate_floor()
             {
                 collider->sends_collision = false;
 
-                collider->collision_handler = [=](Entity /*entity*/) -> void
+                collider->collision_handler = [=](Entity collision_entity) -> void
                 {
-                    game_manager_change_rooms(tile_rotation);
+                    if (has_component(collision_entity, "layer") &&
+                        *(string *)get_component(collision_entity, "layer") == "player")
+                    {
+                        game_manager_change_rooms(tile_rotation);
+                    }
                 };
             }
 
