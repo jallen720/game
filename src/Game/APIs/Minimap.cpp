@@ -6,6 +6,8 @@
 #include <glm/glm.hpp>
 #include "Nito/Components.hpp"
 #include "Nito/APIs/ECS.hpp"
+#include "Nito/APIs/Graphics.hpp"
+#include "Nito/APIs/Resources.hpp"
 
 #include "Game/APIs/Floor_Generator.hpp"
 
@@ -29,6 +31,12 @@ using Nito::Component;
 using Nito::get_component;
 using Nito::generate_entity;
 
+// Nito/APIs/Graphics.hpp
+using Nito::get_pixels_per_unit;
+
+// Nito/APIs/Resources.hpp
+using Nito::get_loaded_texture;
+
 
 namespace Game
 {
@@ -39,6 +47,8 @@ namespace Game
 // Data
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+static const string MINIMAP_ROOM_TEXTURE_PATH = "resources/textures/ui/minimap_room.png";
+
 static const vector<string> MINIMAP_ROOM_SYSTEMS
 {
     "ui_transform",
@@ -46,6 +56,7 @@ static const vector<string> MINIMAP_ROOM_SYSTEMS
     "renderer",
 };
 
+static vec3 room_texture_offset;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -55,9 +66,9 @@ static const vector<string> MINIMAP_ROOM_SYSTEMS
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static map<string, Component> get_room_components(int x, int y, const string & texture_path)
 {
-    static const float ROOM_TEXTURE_OFFSET = 0.25f;
+    static const int ROOM_TEXTURE_SIZE = 16;
 
-    vec3 position = vec3(x, y, 0.0f) * ROOM_TEXTURE_OFFSET - vec3(2.0f, 2.0f, 0.0f);
+    vec3 position = (vec3(x, y, 0.0f) * room_texture_offset) - vec3(2.0f, 2.0f, 0.0f);
 
     return
     {
@@ -86,10 +97,15 @@ static void generate_room_connector(int x, int y, float rotation)
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void minimap_init()
+{
+    const Dimensions & dimensions = get_loaded_texture(MINIMAP_ROOM_TEXTURE_PATH).dimensions;
+    room_texture_offset = vec3(dimensions.width, dimensions.height, 0.0f) / get_pixels_per_unit();
+}
+
+
 void generate_minimap()
 {
-    static const string MINIMAP_ROOM_TEXTURE_PATH = "resources/textures/ui/minimap_room.png";
-
     iterate_current_floor_rooms([](int x, int y, const char & room) -> void
     {
         // Don't generate minimap room for empty rooms.
