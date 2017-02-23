@@ -6,6 +6,7 @@
 #include "Cpp_Utils/String.hpp"
 
 #include "Game/APIs/Floor_Generator.hpp"
+#include "Game/APIs/Minimap.hpp"
 
 
 using std::runtime_error;
@@ -48,6 +49,7 @@ void game_manager_subscribe(Entity /*entity*/)
     player_position = &((Transform *)get_component(get_entity("player"), "transform"))->position;
     const vec2 & spawn_position = get_spawn_position();
     generate_floor();
+    generate_minimap();
     player_position->x = spawn_position.x;
     player_position->y = spawn_position.y;
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 
+#include <functional>
 #include <glm/glm.hpp>
 
 
@@ -27,8 +28,10 @@ struct Room_Data
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void generate_floor();
 const glm::vec2 & get_spawn_position();
+char get_room(int x, int y);
 char get_room(const glm::vec3 & position);
 const Room_Data & get_room_data(char room);
+void iterate_current_floor_rooms(const std::function<void(int, int, char &)> & callback);
 
 
 } // namespace Game

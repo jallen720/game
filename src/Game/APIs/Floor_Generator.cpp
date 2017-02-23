@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <functional>
 #include "Nito/Components.hpp"
 #include "Nito/Collider_Component.hpp"
 #include "Nito/APIs/ECS.hpp"
@@ -504,22 +503,22 @@ void generate_floor()
             {
                 const char bottom_neighbour =
                     room_y > 0
-                    ? *array_2d_at(current_floor.rooms, current_floor.size, room_x, room_y - 1)
+                    ? get_room(room_x, room_y - 1)
                     : '0';
 
                 const char left_neighbour =
                     room_x > 0
-                    ? *array_2d_at(current_floor.rooms, current_floor.size, room_x - 1, room_y)
+                    ? get_room(room_x - 1, room_y)
                     : '0';
 
                 const char top_neighbour =
                     room_y < floor_size - 1
-                    ? *array_2d_at(current_floor.rooms, current_floor.size, room_x, room_y + 1)
+                    ? get_room(room_x, room_y + 1)
                     : '0';
 
                 const char right_neighbour =
                     room_x < floor_size - 1
-                    ? *array_2d_at(current_floor.rooms, current_floor.size, room_x + 1, room_y)
+                    ? get_room(room_x + 1, room_y)
                     : '0';
 
                 // Bottom wall
@@ -677,11 +676,15 @@ const vec2 & get_spawn_position()
 }
 
 
+char get_room(int x, int y)
+{
+    return *array_2d_at(current_floor.rooms, current_floor.size, x, y);
+}
+
+
 char get_room(const vec3 & position)
 {
-    return *array_2d_at(
-        current_floor.rooms,
-        current_floor.size,
+    return get_room(
         get_room_position_coordinate(position.x, ROOM_TILE_WIDTH, ROOM_TILE_TEXTURE_SCALE.x),
         get_room_position_coordinate(position.y, ROOM_TILE_HEIGHT, ROOM_TILE_TEXTURE_SCALE.y));
 }
@@ -690,6 +693,12 @@ char get_room(const vec3 & position)
 const Room_Data & get_room_data(char room)
 {
     return room_datas.at(room);
+}
+
+
+void iterate_current_floor_rooms(const function<void(int, int, char &)> & callback)
+{
+    iterate_rooms(current_floor, callback);
 }
 
 
