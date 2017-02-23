@@ -75,9 +75,8 @@ static void generate_room_connector(int x, int y, float rotation)
     static const string MINIMAP_ROOM_CONNECTOR_TEXTURE_PATH = "resources/textures/ui/minimap_room_connector.png";
 
     map<string, Component> room_connector_components = get_room_components(x, y, MINIMAP_ROOM_CONNECTOR_TEXTURE_PATH);
-    auto transform = (Transform *)room_connector_components["transform"];
-    transform->rotation = rotation;
-    transform->position.z = -1.0f;
+    ((Transform *)room_connector_components["transform"])->rotation = rotation;
+    ((UI_Transform *)room_connector_components["ui_transform"])->position.z = -1.0f;
     generate_entity(room_connector_components, MINIMAP_ROOM_SYSTEMS);
 }
 
