@@ -55,9 +55,9 @@ static const vector<string> MINIMAP_ROOM_SYSTEMS
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static map<string, Component> get_room_components(int x, int y, const string & texture_path)
 {
-    static const float MINIMAP_ROOM_TEXTURE_OFFSET = 0.25f;
+    static const float ROOM_TEXTURE_OFFSET = 0.25f;
 
-    vec3 position = vec3(x, y, 0.0f) * MINIMAP_ROOM_TEXTURE_OFFSET - vec3(2.0f, 2.0f, 0.0f);
+    vec3 position = vec3(x, y, 0.0f) * ROOM_TEXTURE_OFFSET - vec3(2.0f, 2.0f, 0.0f);
 
     return
     {
