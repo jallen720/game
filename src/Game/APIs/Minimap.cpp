@@ -66,7 +66,7 @@ static vec3 room_texture_offset;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static map<string, Component> get_room_components(int x, int y, const string & texture_path)
 {
-    vec3 position = (vec3(x, y, 0.0f) * room_texture_offset) - vec3(2.0f, 2.0f, 0.0f);
+    const vec3 position = (vec3(x, y, 0.0f) * room_texture_offset) - vec3(2.0f, 2.0f, 0.0f);
 
     return
     {
@@ -82,10 +82,11 @@ static map<string, Component> get_room_components(int x, int y, const string & t
 static void generate_room_connector(int x, int y, float rotation)
 {
     static const string MINIMAP_ROOM_CONNECTOR_TEXTURE_PATH = "resources/textures/ui/minimap_room_connector.png";
+    static const float MINIMAP_ROOM_CONNECTOR_DEPTH = -1.0f;
 
     map<string, Component> room_connector_components = get_room_components(x, y, MINIMAP_ROOM_CONNECTOR_TEXTURE_PATH);
     ((Transform *)room_connector_components["transform"])->rotation = rotation;
-    ((UI_Transform *)room_connector_components["ui_transform"])->position.z = -1.0f;
+    ((UI_Transform *)room_connector_components["ui_transform"])->position.z = MINIMAP_ROOM_CONNECTOR_DEPTH;
     generate_entity(room_connector_components, MINIMAP_ROOM_SYSTEMS);
 }
 
@@ -104,6 +105,7 @@ void minimap_api_init()
 
 void generate_minimap()
 {
+    // Generate minimap rooms.
     iterate_current_floor_rooms([](int x, int y, const char & room) -> void
     {
         // Don't generate minimap room for empty rooms.
