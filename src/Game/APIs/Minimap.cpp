@@ -8,8 +8,10 @@
 #include "Nito/APIs/ECS.hpp"
 #include "Nito/APIs/Graphics.hpp"
 #include "Nito/APIs/Resources.hpp"
+#include "Cpp_Utils/Collection.hpp"
 
 #include "Game/APIs/Floor_Generator.hpp"
+#include "Game/Systems/Game_Manager.hpp"
 
 
 using std::string;
@@ -30,12 +32,17 @@ using Nito::Entity;
 using Nito::Component;
 using Nito::get_component;
 using Nito::generate_entity;
+using Nito::subscribe_to_system;
+using Nito::unsubscribe_from_system;
 
 // Nito/APIs/Graphics.hpp
 using Nito::get_pixels_per_unit;
 
 // Nito/APIs/Resources.hpp
 using Nito::get_loaded_texture;
+
+// Cpp_Utils/Collection.hpp
+using Cpp_Utils::for_each;
 
 
 namespace Game
@@ -44,10 +51,25 @@ namespace Game
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
+// Data Structures
+//
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+struct Minimap_Room
+{
+    Entity base;
+    vector<Entity> occupied;
+    vector<Entity> vacant;
+};
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
 // Data
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static const string MINIMAP_ROOM_TEXTURE_PATH = "resources/textures/ui/minimap_room.png";
+static const string MINIMAP_ROOM_VACANT_TEXTURE_PATH = "resources/textures/ui/minimap_room_vacant.png";
+static const string MINIMAP_ROOM_BASE_TEXTURE_PATH = "resources/textures/ui/minimap_room_base.png";
 
 static const vector<string> MINIMAP_ROOM_SYSTEMS
 {
@@ -57,6 +79,7 @@ static const vector<string> MINIMAP_ROOM_SYSTEMS
 };
 
 static vec3 room_texture_offset;
+static map<char, vector<Minimap_Room>> minimap_room_groups;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -64,9 +87,9 @@ static vec3 room_texture_offset;
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static map<string, Component> get_room_components(int x, int y, const string & texture_path)
+static map<string, Component> get_room_components(int x, int y, float z, const string & texture_path)
 {
-    const vec3 position = (vec3(x, y, 0.0f) * room_texture_offset) - vec3(2.0f, 2.0f, 0.0f);
+    const vec3 position = (vec3(x, y, z) * room_texture_offset) - vec3(2.0f, 2.0f, 0.0f);
 
     return
     {
@@ -79,15 +102,49 @@ static map<string, Component> get_room_components(int x, int y, const string & t
 }
 
 
-static void generate_room_connector(int x, int y, float rotation)
+static Entity generate_room_connector(int x, int y, float rotation, const string & texture_path)
 {
-    static const string MINIMAP_ROOM_CONNECTOR_TEXTURE_PATH = "resources/textures/ui/minimap_room_connector.png";
-    static const float MINIMAP_ROOM_CONNECTOR_DEPTH = -1.0f;
-
-    map<string, Component> room_connector_components = get_room_components(x, y, MINIMAP_ROOM_CONNECTOR_TEXTURE_PATH);
+    map<string, Component> room_connector_components = get_room_components(x, y, -1.0f, texture_path);
     ((Transform *)room_connector_components["transform"])->rotation = rotation;
-    ((UI_Transform *)room_connector_components["ui_transform"])->position.z = MINIMAP_ROOM_CONNECTOR_DEPTH;
-    generate_entity(room_connector_components, MINIMAP_ROOM_SYSTEMS);
+    return generate_entity(room_connector_components, MINIMAP_ROOM_SYSTEMS);
+}
+
+
+static void show(const vector<Entity> & entities)
+{
+    for (const Entity entity : entities)
+    {
+        subscribe_to_system(entity, "renderer");
+    }
+}
+
+
+static void hide(const vector<Entity> & entities)
+{
+    for (const Entity entity : entities)
+    {
+        unsubscribe_from_system(entity, "renderer");
+    }
+}
+
+
+static void occupy_room(char room)
+{
+    for (Minimap_Room & minimap_room : minimap_room_groups[room])
+    {
+        show(minimap_room.occupied);
+        hide(minimap_room.vacant);
+    }
+}
+
+
+static void vacate_room(char room)
+{
+    for (Minimap_Room & minimap_room : minimap_room_groups[room])
+    {
+        show(minimap_room.vacant);
+        hide(minimap_room.occupied);
+    }
 }
 
 
@@ -100,13 +157,26 @@ void minimap_api_init()
 {
     const Dimensions & dimensions = get_loaded_texture(MINIMAP_ROOM_TEXTURE_PATH).dimensions;
     room_texture_offset = vec3(dimensions.width, dimensions.height, 0.0f) / get_pixels_per_unit();
+    room_texture_offset.z = 1.0f;
 }
 
 
 void generate_minimap()
 {
+    static const string MINIMAP_ROOM_CONNECTOR_TEXTURE_PATH = "resources/textures/ui/minimap_room_connector.png";
+
+    static const string MINIMAP_ROOM_CONNECTOR_VACANT_TEXTURE_PATH =
+        "resources/textures/ui/minimap_room_connector_vacant.png";
+
+    game_manager_add_room_change_handler("minimap", [](char last_room, char current_room) -> void
+    {
+        vacate_room(last_room);
+        occupy_room(current_room);
+    });
+
+
     // Generate minimap rooms.
-    iterate_current_floor_rooms([](int x, int y, const char & room) -> void
+    iterate_current_floor_rooms([&](int x, int y, const char & room) -> void
     {
         // Don't generate minimap room for empty rooms.
         if (room == '0')
@@ -116,30 +186,67 @@ void generate_minimap()
 
 
         // Generate minimap room for current room.
-        generate_entity(get_room_components(x, y, MINIMAP_ROOM_TEXTURE_PATH), MINIMAP_ROOM_SYSTEMS);
+        Minimap_Room minimap_room;
+        vector<Entity> & minimap_room_occupied = minimap_room.occupied;
+        vector<Entity> & minimap_room_vacant = minimap_room.vacant;
+
+        minimap_room.base =
+            generate_entity(get_room_components(x, y, 0.0f, MINIMAP_ROOM_BASE_TEXTURE_PATH), MINIMAP_ROOM_SYSTEMS);
+
+        minimap_room_occupied.push_back(
+            generate_entity(get_room_components(x, y, -1.0f, MINIMAP_ROOM_TEXTURE_PATH), MINIMAP_ROOM_SYSTEMS));
+
+        minimap_room_vacant.push_back(
+            generate_entity(get_room_components(x, y, -1.0f, MINIMAP_ROOM_VACANT_TEXTURE_PATH), MINIMAP_ROOM_SYSTEMS));
 
 
         // Generate room connector for neighbouring rooms that are the same as this room.
         if (get_room(x, y - 1) == room)
         {
-            generate_room_connector(x, y, 0.0f);
+            minimap_room_occupied.push_back(generate_room_connector(x, y, 0.0f, MINIMAP_ROOM_CONNECTOR_TEXTURE_PATH));
+
+            minimap_room_vacant.push_back(
+                generate_room_connector(x, y, 0.0f, MINIMAP_ROOM_CONNECTOR_VACANT_TEXTURE_PATH));
         }
 
         if (get_room(x - 1, y) == room)
         {
-            generate_room_connector(x, y, 270.0f);
+            minimap_room_occupied.push_back(generate_room_connector(x, y, 270.0f, MINIMAP_ROOM_CONNECTOR_TEXTURE_PATH));
+
+            minimap_room_vacant.push_back(
+                generate_room_connector(x, y, 270.0f, MINIMAP_ROOM_CONNECTOR_VACANT_TEXTURE_PATH));
         }
 
         if (get_room(x, y + 1) == room)
         {
-            generate_room_connector(x, y, 180.0f);
+            minimap_room_occupied.push_back(generate_room_connector(x, y, 180.0f, MINIMAP_ROOM_CONNECTOR_TEXTURE_PATH));
+
+            minimap_room_vacant.push_back(
+                generate_room_connector(x, y, 180.0f, MINIMAP_ROOM_CONNECTOR_VACANT_TEXTURE_PATH));
         }
 
         if (get_room(x + 1, y) == room)
         {
-            generate_room_connector(x, y, 90.0f);
+            minimap_room_occupied.push_back(generate_room_connector(x, y, 90.0f, MINIMAP_ROOM_CONNECTOR_TEXTURE_PATH));
+
+            minimap_room_vacant.push_back(
+                generate_room_connector(x, y, 90.0f, MINIMAP_ROOM_CONNECTOR_VACANT_TEXTURE_PATH));
+        }
+
+         minimap_room_groups[room].push_back(minimap_room);
+    });
+
+
+    // Initialize minimap.
+    for_each(minimap_room_groups, [](char room, const vector<Minimap_Room> & /*minimap_room_group*/) -> void
+    {
+        for (Minimap_Room & minimap_room : minimap_room_groups[room])
+        {
+            hide(minimap_room.occupied);
         }
     });
+
+    occupy_room('1');
 }
 
 
