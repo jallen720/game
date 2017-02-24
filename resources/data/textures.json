@@ -44,7 +44,10 @@
             "resources/textures/turret_right.png",
             "resources/textures/turret_up.png",
             "resources/textures/ui/minimap_room.png",
-            "resources/textures/ui/minimap_room_connector.png"
+            "resources/textures/ui/minimap_room_connector.png",
+            "resources/textures/ui/minimap_room_vacant.png",
+            "resources/textures/ui/minimap_room_connector_vacant.png",
+            "resources/textures/ui/minimap_room_background.png"
         ]
     }
 ]
