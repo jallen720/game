@@ -110,7 +110,7 @@
             "health": 100,
             "collider":
             {
-                "render": true,
+                "render": false,
                 "send_collision": true,
                 "receives_collision": true
             },
@@ -156,7 +156,7 @@
             },
             "collider":
             {
-                "render": true,
+                "render": false,
                 "send_collision": true
             },
             "circle_collider":
@@ -201,7 +201,7 @@
             },
             "collider":
             {
-                "render": true,
+                "render": false,
                 "send_collision": true
             },
             "circle_collider":

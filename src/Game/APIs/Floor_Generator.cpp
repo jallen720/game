@@ -582,7 +582,7 @@ void generate_floor()
             tile_type == Tile::Types::DOOR)
         {
             // Create and configure collider component based on tile type.
-            auto collider = new Collider { true, true, false, {} };
+            auto collider = new Collider { false, true, false, {} };
             tile_components["collider"] = collider;
 
             if (tile_type == Tile::Types::DOOR)
