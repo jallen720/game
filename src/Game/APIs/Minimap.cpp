@@ -66,8 +66,6 @@ static vec3 room_texture_offset;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static map<string, Component> get_room_components(int x, int y, const string & texture_path)
 {
-    static const int ROOM_TEXTURE_SIZE = 16;
-
     vec3 position = (vec3(x, y, 0.0f) * room_texture_offset) - vec3(2.0f, 2.0f, 0.0f);
 
     return
