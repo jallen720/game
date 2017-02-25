@@ -86,7 +86,7 @@ static map<string, Component> get_room_components(int x, int y, float z, const s
     {
         { "render_layer" , new string("ui")                                      },
         { "transform"    , new Transform { vec3(0.0f), vec3(1.0f), 0.0f }        },
-        { "ui_transform" , new UI_Transform { position, vec3(1.0f) }             },
+        { "ui_transform" , new UI_Transform { position, vec3(1.0f, 1.0f, 0.0f) } },
         { "dimensions"   , new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) } },
         { "sprite"       , new Sprite { true, texture_path, "texture" }          },
     };
