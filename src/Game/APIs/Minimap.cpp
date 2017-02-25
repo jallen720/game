@@ -149,6 +149,23 @@ static void vacate_room(char room)
 }
 
 
+static void generate_room_connector_entities(
+    int x,
+    int y,
+    float rotation,
+    vector<Entity> & occupied,
+    vector<Entity> & vacant)
+{
+    static const string MINIMAP_ROOM_CONNECTOR_TEXTURE_PATH = "resources/textures/ui/minimap_room_connector.png";
+
+    static const string MINIMAP_ROOM_CONNECTOR_VACANT_TEXTURE_PATH =
+        "resources/textures/ui/minimap_room_connector_vacant.png";
+
+    occupied.push_back(generate_room_connector(x, y, rotation, MINIMAP_ROOM_CONNECTOR_TEXTURE_PATH));
+    vacant.push_back(generate_room_connector(x, y, rotation, MINIMAP_ROOM_CONNECTOR_VACANT_TEXTURE_PATH));
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Interface
@@ -164,10 +181,6 @@ void minimap_api_init()
 
 void generate_minimap()
 {
-    static const string MINIMAP_ROOM_CONNECTOR_TEXTURE_PATH = "resources/textures/ui/minimap_room_connector.png";
-
-    static const string MINIMAP_ROOM_CONNECTOR_VACANT_TEXTURE_PATH =
-        "resources/textures/ui/minimap_room_connector_vacant.png";
 
     game_manager_add_room_change_handler(MINIMAP_ROOM_CHANGE_HANDLER_ID, [](char last_room, char current_room) -> void
     {
@@ -204,34 +217,22 @@ void generate_minimap()
         // Generate room connector for neighbouring rooms that are the same as this room.
         if (get_room(x, y - 1) == room)
         {
-            minimap_room_occupied.push_back(generate_room_connector(x, y, 0.0f, MINIMAP_ROOM_CONNECTOR_TEXTURE_PATH));
-
-            minimap_room_vacant.push_back(
-                generate_room_connector(x, y, 0.0f, MINIMAP_ROOM_CONNECTOR_VACANT_TEXTURE_PATH));
+            generate_room_connector_entities(x, y, 0.0f, minimap_room_occupied, minimap_room_vacant);
         }
 
         if (get_room(x - 1, y) == room)
         {
-            minimap_room_occupied.push_back(generate_room_connector(x, y, 270.0f, MINIMAP_ROOM_CONNECTOR_TEXTURE_PATH));
-
-            minimap_room_vacant.push_back(
-                generate_room_connector(x, y, 270.0f, MINIMAP_ROOM_CONNECTOR_VACANT_TEXTURE_PATH));
+            generate_room_connector_entities(x, y, 270.0f, minimap_room_occupied, minimap_room_vacant);
         }
 
         if (get_room(x, y + 1) == room)
         {
-            minimap_room_occupied.push_back(generate_room_connector(x, y, 180.0f, MINIMAP_ROOM_CONNECTOR_TEXTURE_PATH));
-
-            minimap_room_vacant.push_back(
-                generate_room_connector(x, y, 180.0f, MINIMAP_ROOM_CONNECTOR_VACANT_TEXTURE_PATH));
+            generate_room_connector_entities(x, y, 180.0f, minimap_room_occupied, minimap_room_vacant);
         }
 
         if (get_room(x + 1, y) == room)
         {
-            minimap_room_occupied.push_back(generate_room_connector(x, y, 90.0f, MINIMAP_ROOM_CONNECTOR_TEXTURE_PATH));
-
-            minimap_room_vacant.push_back(
-                generate_room_connector(x, y, 90.0f, MINIMAP_ROOM_CONNECTOR_VACANT_TEXTURE_PATH));
+            generate_room_connector_entities(x, y, 90.0f, minimap_room_occupied, minimap_room_vacant);
         }
 
          minimap_room_groups[room].push_back(minimap_room);
@@ -239,9 +240,9 @@ void generate_minimap()
 
 
     // Initialize minimap.
-    for_each(minimap_room_groups, [](char room, const vector<Minimap_Room> & /*minimap_room_group*/) -> void
+    for_each(minimap_room_groups, [](char /*room*/, const vector<Minimap_Room> & minimap_room_group) -> void
     {
-        for (Minimap_Room & minimap_room : minimap_room_groups[room])
+        for (const Minimap_Room & minimap_room : minimap_room_group)
         {
             hide(minimap_room.occupied);
         }
