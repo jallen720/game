@@ -61,9 +61,11 @@ static char current_room;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void game_manager_subscribe(Entity /*entity*/)
 {
+    static const char SPAWN_ROOM = '1';
+
     player_position = &((Transform *)get_component(get_entity("player"), "transform"))->position;
-    last_room = '1';
-    current_room = '1';
+    last_room = SPAWN_ROOM;
+    current_room = SPAWN_ROOM;
     const vec2 & spawn_position = get_spawn_position();
     generate_floor();
     minimap_api_init();
@@ -111,6 +113,8 @@ void game_manager_change_rooms(float door_rotation)
 
     current_room = get_room(*player_position);
 
+
+    // Trigger room-change handlers.
     for_each(room_change_handlers, [=](
         const string & /*id*/,
         const function<void(char, char)> & room_change_handler) -> void
