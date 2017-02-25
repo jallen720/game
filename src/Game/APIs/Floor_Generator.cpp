@@ -670,6 +670,12 @@ void generate_floor()
 }
 
 
+void destroy_floor()
+{
+    room_datas.clear();
+}
+
+
 const vec2 & get_spawn_position()
 {
     return spawn_position;

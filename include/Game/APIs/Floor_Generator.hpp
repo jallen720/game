@@ -27,6 +27,7 @@ struct Room_Data
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void generate_floor();
+void destroy_floor();
 const glm::vec2 & get_spawn_position();
 char get_room(int x, int y);
 char get_room(const glm::vec3 & position);

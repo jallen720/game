@@ -70,6 +70,7 @@ struct Minimap_Room
 static const string MINIMAP_ROOM_TEXTURE_PATH = "resources/textures/ui/minimap_room.png";
 static const string MINIMAP_ROOM_VACANT_TEXTURE_PATH = "resources/textures/ui/minimap_room_vacant.png";
 static const string MINIMAP_ROOM_BASE_TEXTURE_PATH = "resources/textures/ui/minimap_room_base.png";
+static const string MINIMAP_ROOM_CHANGE_HANDLER_ID = "minimap";
 
 static const vector<string> MINIMAP_ROOM_SYSTEMS
 {
@@ -168,7 +169,7 @@ void generate_minimap()
     static const string MINIMAP_ROOM_CONNECTOR_VACANT_TEXTURE_PATH =
         "resources/textures/ui/minimap_room_connector_vacant.png";
 
-    game_manager_add_room_change_handler("minimap", [](char last_room, char current_room) -> void
+    game_manager_add_room_change_handler(MINIMAP_ROOM_CHANGE_HANDLER_ID, [](char last_room, char current_room) -> void
     {
         vacate_room(last_room);
         occupy_room(current_room);
@@ -247,6 +248,13 @@ void generate_minimap()
     });
 
     occupy_room('1');
+}
+
+
+void destroy_minimap()
+{
+    minimap_room_groups.clear();
+    game_manager_remove_room_change_handler(MINIMAP_ROOM_CHANGE_HANDLER_ID);
 }
 
 

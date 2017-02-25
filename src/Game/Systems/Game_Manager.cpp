@@ -75,6 +75,8 @@ void game_manager_subscribe(Entity /*entity*/)
 
 void game_manager_unsubscribe(Entity /*entity*/)
 {
+    destroy_floor();
+    destroy_minimap();
     room_change_handlers.clear();
     player_position = nullptr;
 }
