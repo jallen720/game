@@ -32,8 +32,6 @@ using Nito::Entity;
 using Nito::Component;
 using Nito::get_component;
 using Nito::generate_entity;
-using Nito::subscribe_to_system;
-using Nito::unsubscribe_from_system;
 
 // Nito/APIs/Graphics.hpp
 using Nito::get_pixels_per_unit;
@@ -56,9 +54,9 @@ namespace Game
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 struct Minimap_Room
 {
-    Entity base;
-    vector<Entity> occupied;
-    vector<Entity> vacant;
+    bool * base_flag;
+    vector<bool *> occupied_flags;
+    vector<bool *> vacant_flags;
 };
 
 
@@ -68,17 +66,7 @@ struct Minimap_Room
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static const string MINIMAP_ROOM_TEXTURE_PATH = "resources/textures/ui/minimap_room.png";
-static const string MINIMAP_ROOM_VACANT_TEXTURE_PATH = "resources/textures/ui/minimap_room_vacant.png";
-static const string MINIMAP_ROOM_BASE_TEXTURE_PATH = "resources/textures/ui/minimap_room_base.png";
 static const string MINIMAP_ROOM_CHANGE_HANDLER_ID = "minimap";
-
-static const vector<string> MINIMAP_ROOM_SYSTEMS
-{
-    "ui_transform",
-    "sprite_dimensions_handler",
-    "renderer",
-};
-
 static vec3 room_texture_offset;
 static map<char, vector<Minimap_Room>> minimap_room_groups;
 
@@ -103,28 +91,42 @@ static map<string, Component> get_room_components(int x, int y, float z, const s
 }
 
 
-static Entity generate_room_connector(int x, int y, float rotation, const string & texture_path)
+static void generate_room(const map<string, Component> & room_components, bool ** render_flag)
 {
-    map<string, Component> room_connector_components = get_room_components(x, y, -1.0f, texture_path);
-    ((Transform *)room_connector_components["transform"])->rotation = rotation;
-    return generate_entity(room_connector_components, MINIMAP_ROOM_SYSTEMS);
+    static const vector<string> MINIMAP_ROOM_SYSTEMS
+    {
+        "ui_transform",
+        "sprite_dimensions_handler",
+        "renderer",
+    };
+
+    *render_flag = &((Sprite *)room_components.at("sprite"))->render;
+    generate_entity(room_components, MINIMAP_ROOM_SYSTEMS);
 }
 
 
-static void show(const vector<Entity> & entities)
+static void generate_room_connector(int x, int y, float rotation, const string & texture_path, bool ** render_flag)
 {
-    for (const Entity entity : entities)
+    map<string, Component> room_connector_components = get_room_components(x, y, -1.0f, texture_path);
+    ((Transform *)room_connector_components["transform"])->rotation = rotation;
+    return generate_room(room_connector_components, render_flag);
+}
+
+
+static void show(const vector<bool *> & render_flags)
+{
+    for (bool * render_flag : render_flags)
     {
-        subscribe_to_system(entity, "renderer");
+        *render_flag = true;
     }
 }
 
 
-static void hide(const vector<Entity> & entities)
+static void hide(const vector<bool *> & render_flags)
 {
-    for (const Entity entity : entities)
+    for (bool * render_flag : render_flags)
     {
-        unsubscribe_from_system(entity, "renderer");
+        *render_flag = false;
     }
 }
 
@@ -133,8 +135,8 @@ static void occupy_room(char room)
 {
     for (Minimap_Room & minimap_room : minimap_room_groups[room])
     {
-        show(minimap_room.occupied);
-        hide(minimap_room.vacant);
+        show(minimap_room.occupied_flags);
+        hide(minimap_room.vacant_flags);
     }
 }
 
@@ -143,26 +145,28 @@ static void vacate_room(char room)
 {
     for (Minimap_Room & minimap_room : minimap_room_groups[room])
     {
-        show(minimap_room.vacant);
-        hide(minimap_room.occupied);
+        show(minimap_room.vacant_flags);
+        hide(minimap_room.occupied_flags);
     }
 }
 
 
-static void generate_room_connector_entities(
+static void generate_room_connectors(
     int x,
     int y,
     float rotation,
-    vector<Entity> & occupied,
-    vector<Entity> & vacant)
+    vector<bool *> & occupied_flags,
+    vector<bool *> & vacant_flags)
 {
-    static const string MINIMAP_ROOM_CONNECTOR_TEXTURE_PATH = "resources/textures/ui/minimap_room_connector.png";
+    static const string ROOM_CONNECTOR_TEXTURE_PATH = "resources/textures/ui/minimap_room_connector.png";
+    static const string ROOM_CONNECTOR_VACANT_TEXTURE_PATH = "resources/textures/ui/minimap_room_connector_vacant.png";
 
-    static const string MINIMAP_ROOM_CONNECTOR_VACANT_TEXTURE_PATH =
-        "resources/textures/ui/minimap_room_connector_vacant.png";
-
-    occupied.push_back(generate_room_connector(x, y, rotation, MINIMAP_ROOM_CONNECTOR_TEXTURE_PATH));
-    vacant.push_back(generate_room_connector(x, y, rotation, MINIMAP_ROOM_CONNECTOR_VACANT_TEXTURE_PATH));
+    bool * room_connector_render_flag;
+    bool * room_connector_vacant_render_flag;
+    generate_room_connector(x, y, rotation, ROOM_CONNECTOR_TEXTURE_PATH, &room_connector_render_flag);
+    generate_room_connector(x, y, rotation, ROOM_CONNECTOR_VACANT_TEXTURE_PATH, &room_connector_vacant_render_flag);
+    occupied_flags.push_back(room_connector_render_flag);
+    vacant_flags.push_back(room_connector_vacant_render_flag);
 }
 
 
@@ -181,6 +185,8 @@ void minimap_api_init()
 
 void generate_minimap()
 {
+    static const string MINIMAP_ROOM_VACANT_TEXTURE_PATH = "resources/textures/ui/minimap_room_vacant.png";
+    static const string MINIMAP_ROOM_BASE_TEXTURE_PATH = "resources/textures/ui/minimap_room_base.png";
 
     game_manager_add_room_change_handler(MINIMAP_ROOM_CHANGE_HANDLER_ID, [](char last_room, char current_room) -> void
     {
@@ -201,38 +207,36 @@ void generate_minimap()
 
         // Generate minimap room for current room.
         Minimap_Room minimap_room;
-        vector<Entity> & minimap_room_occupied = minimap_room.occupied;
-        vector<Entity> & minimap_room_vacant = minimap_room.vacant;
-
-        minimap_room.base =
-            generate_entity(get_room_components(x, y, 0.0f, MINIMAP_ROOM_BASE_TEXTURE_PATH), MINIMAP_ROOM_SYSTEMS);
-
-        minimap_room_occupied.push_back(
-            generate_entity(get_room_components(x, y, -1.0f, MINIMAP_ROOM_TEXTURE_PATH), MINIMAP_ROOM_SYSTEMS));
-
-        minimap_room_vacant.push_back(
-            generate_entity(get_room_components(x, y, -1.0f, MINIMAP_ROOM_VACANT_TEXTURE_PATH), MINIMAP_ROOM_SYSTEMS));
+        vector<bool *> & occupied_flags = minimap_room.occupied_flags;
+        vector<bool *> & vacant_flags = minimap_room.vacant_flags;
+        bool * room_render_flag;
+        bool * room_vacant_render_flag;
+        generate_room(get_room_components(x, y, 0.0f, MINIMAP_ROOM_BASE_TEXTURE_PATH), &minimap_room.base_flag);
+        generate_room(get_room_components(x, y, -1.0f, MINIMAP_ROOM_TEXTURE_PATH), &room_render_flag);
+        generate_room(get_room_components(x, y, -1.0f, MINIMAP_ROOM_VACANT_TEXTURE_PATH), &room_vacant_render_flag);
+        occupied_flags.push_back(room_render_flag);
+        vacant_flags.push_back(room_vacant_render_flag);
 
 
         // Generate room connector for neighbouring rooms that are the same as this room.
         if (get_room(x, y - 1) == room)
         {
-            generate_room_connector_entities(x, y, 0.0f, minimap_room_occupied, minimap_room_vacant);
+            generate_room_connectors(x, y, 0.0f, occupied_flags, vacant_flags);
         }
 
         if (get_room(x - 1, y) == room)
         {
-            generate_room_connector_entities(x, y, 270.0f, minimap_room_occupied, minimap_room_vacant);
+            generate_room_connectors(x, y, 270.0f, occupied_flags, vacant_flags);
         }
 
         if (get_room(x, y + 1) == room)
         {
-            generate_room_connector_entities(x, y, 180.0f, minimap_room_occupied, minimap_room_vacant);
+            generate_room_connectors(x, y, 180.0f, occupied_flags, vacant_flags);
         }
 
         if (get_room(x + 1, y) == room)
         {
-            generate_room_connector_entities(x, y, 90.0f, minimap_room_occupied, minimap_room_vacant);
+            generate_room_connectors(x, y, 90.0f, occupied_flags, vacant_flags);
         }
 
          minimap_room_groups[room].push_back(minimap_room);
@@ -244,7 +248,7 @@ void generate_minimap()
     {
         for (const Minimap_Room & minimap_room : minimap_room_group)
         {
-            hide(minimap_room.occupied);
+            hide(minimap_room.occupied_flags);
         }
     });
 
