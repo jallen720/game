@@ -78,16 +78,22 @@ static map<char, vector<Minimap_Room>> minimap_room_groups;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static map<string, Component> get_room_components(int x, int y, float z, const string & texture_path)
 {
-    static const vec3 MINIMAP_OFFSET(2.0f, 2.0f, 0.0f);
+    static const vec3 ROOM_ORIGIN(0.5f, 0.5f, 0.0f);
 
-    const vec3 position = (vec3(x, y, z) * room_texture_offset) - MINIMAP_OFFSET;
+    const int floor_offset = get_floor_size() - 1;
+
+    const vec3 position =
+        (vec3(x, y, z) * room_texture_offset) -
+        (room_texture_offset * vec3(floor_offset, floor_offset, 0.0f)) -
+        (room_texture_offset * ROOM_ORIGIN) -
+        0.1f;
 
     return
     {
         { "render_layer" , new string("ui")                                      },
         { "transform"    , new Transform { vec3(0.0f), vec3(1.0f), 0.0f }        },
         { "ui_transform" , new UI_Transform { position, vec3(1.0f, 1.0f, 0.0f) } },
-        { "dimensions"   , new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) } },
+        { "dimensions"   , new Dimensions { 0.0f, 0.0f, ROOM_ORIGIN }            },
         { "sprite"       , new Sprite { true, texture_path, "texture" }          },
     };
 }
@@ -250,7 +256,9 @@ void generate_minimap()
     {
         for (const Minimap_Room & minimap_room : minimap_room_group)
         {
+            // hide(minimap_room.base_flag);
             hide(minimap_room.occupied_flags);
+            // hide(minimap_room.vacant_flags);
         }
     });
 

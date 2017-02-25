@@ -102,6 +102,7 @@ static const vec3 ROOM_TILE_TEXTURE_SCALE(0.5f, 0.5f, 1.0f);
 static vec2 spawn_position;
 static map<char, Room_Data> room_datas;
 static Floor current_floor;
+static int floor_size;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -446,7 +447,7 @@ static int get_room_position_coordinate(
 void generate_floor()
 {
     // Create floor.
-    const int floor_size = 6;
+    floor_size = 6;
     current_floor = create_floor(floor_size);
     Possible_Rooms & possible_rooms = current_floor.possible_rooms;
     iterate_rooms(current_floor, [](int /*x*/, int /*y*/, char & room) -> void { room = '0'; });
@@ -705,6 +706,12 @@ const Room_Data & get_room_data(char room)
 void iterate_current_floor_rooms(const function<void(int, int, char &)> & callback)
 {
     iterate_rooms(current_floor, callback);
+}
+
+
+int get_floor_size()
+{
+    return floor_size;
 }
 
 
