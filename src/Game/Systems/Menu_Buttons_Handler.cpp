@@ -131,15 +131,15 @@ static Button * generate_button(
 
     generate_entity(
         {
-            { "id"                      , new string(button_id)                                          },
-            { "parent_id"               , new string(menu_id)                                            },
-            { "render_layer"            , new string("ui")                                               },
-            { "button"                  , button                                                         },
-            { "sprite"                  , new Sprite { "resources/textures/ui/button.png", "texture" }   },
-            { "transform"               , new Transform { vec3(), vec3(), 0.0f }                         },
-            { "dimensions"              , new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) }          },
-            { "local_transform"         , new Transform { vec3(0.0f, button_y, 0.0f), vec3(1.0f), 0.0f } },
-            { "ui_mouse_event_handlers" , new UI_Mouse_Event_Handlers                                    },
+            { "id"                      , new string(button_id)                                              },
+            { "parent_id"               , new string(menu_id)                                                },
+            { "render_layer"            , new string("ui")                                                   },
+            { "button"                  , button                                                             },
+            { "sprite"                  , new Sprite { true, "resources/textures/ui/button.png", "texture" } },
+            { "transform"               , new Transform { vec3(), vec3(), 0.0f }                             },
+            { "dimensions"              , new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) }              },
+            { "local_transform"         , new Transform { vec3(0.0f, button_y, 0.0f), vec3(1.0f), 0.0f }     },
+            { "ui_mouse_event_handlers" , new UI_Mouse_Event_Handlers                                        },
         },
         BUTTON_SYSTEMS);
 
@@ -171,13 +171,13 @@ string * generate_selection_sprite(Entity entity)
 
     generate_entity(
         {
-            { "id"              , new string("selection_sprite " + to_string(entity))             },
-            { "parent_id"       , parent_id                                                       },
-            { "render_layer"    , new string("ui")                                                },
-            { "sprite"          , new Sprite { "resources/textures/ui/selection.png", "texture" } },
-            { "dimensions"      , new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) }           },
-            { "transform"       , new Transform { vec3(), vec3(1.0f), 0.0f }                      },
-            { "local_transform" , new Transform { vec3(0.0f, 0.0f, 1.0f), vec3(1.0f), 0.0f }      },
+            { "id"              , new string("selection_sprite " + to_string(entity))                   },
+            { "parent_id"       , parent_id                                                             },
+            { "render_layer"    , new string("ui")                                                      },
+            { "sprite"          , new Sprite { true, "resources/textures/ui/selection.png", "texture" } },
+            { "dimensions"      , new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) }                 },
+            { "transform"       , new Transform { vec3(), vec3(1.0f), 0.0f }                            },
+            { "local_transform" , new Transform { vec3(0.0f, 0.0f, 1.0f), vec3(1.0f), 0.0f }            },
         },
         SELECTION_SPRITE_COMPONENTS);
 

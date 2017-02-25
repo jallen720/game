@@ -564,7 +564,7 @@ void generate_floor()
             { "render_layer" , new string("world")                                   },
             { "transform"    , transform                                             },
             { "dimensions"   , new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) } },
-            { "sprite"       , new Sprite { *tile.texture_path, "texture" }          },
+            { "sprite"       , new Sprite { true, *tile.texture_path, "texture" }    },
         };
 
         vector<string> tile_systems
