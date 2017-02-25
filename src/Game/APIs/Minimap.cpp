@@ -78,7 +78,9 @@ static map<char, vector<Minimap_Room>> minimap_room_groups;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static map<string, Component> get_room_components(int x, int y, float z, const string & texture_path)
 {
-    const vec3 position = (vec3(x, y, z) * room_texture_offset) - vec3(2.0f, 2.0f, 0.0f);
+    static const vec3 MINIMAP_OFFSET(2.0f, 2.0f, 0.0f);
+
+    const vec3 position = (vec3(x, y, z) * room_texture_offset) - MINIMAP_OFFSET;
 
     return
     {
@@ -239,7 +241,7 @@ void generate_minimap()
             generate_room_connectors(x, y, 90.0f, occupied_flags, vacant_flags);
         }
 
-         minimap_room_groups[room].push_back(minimap_room);
+        minimap_room_groups[room].push_back(minimap_room);
     });
 
 
