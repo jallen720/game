@@ -9,6 +9,7 @@
 #include "Nito/APIs/Graphics.hpp"
 #include "Nito/APIs/Resources.hpp"
 #include "Cpp_Utils/Collection.hpp"
+#include "Cpp_Utils/Vector.hpp"
 
 #include "Game/APIs/Floor_Generator.hpp"
 #include "Game/Systems/Game_Manager.hpp"
@@ -42,6 +43,9 @@ using Nito::get_loaded_texture;
 // Cpp_Utils/Collection.hpp
 using Cpp_Utils::for_each;
 
+// Cpp_Utils/Vector.hpp
+using Cpp_Utils::contains;
+
 
 namespace Game
 {
@@ -54,6 +58,8 @@ namespace Game
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 struct Minimap_Room
 {
+    int x;
+    int y;
     bool * base_flag;
     vector<bool *> occupied_flags;
     vector<bool *> vacant_flags;
@@ -143,6 +149,45 @@ static void occupy_room(char room)
 {
     for (Minimap_Room & minimap_room : minimap_room_groups[room])
     {
+        // Ensure base is on.
+        *minimap_room.base_flag = true;
+
+
+        // Ensure neighbouring bases are on.
+        int x = minimap_room.x;
+        int y = minimap_room.y;
+
+        vector<char> neighbour_rooms
+        {
+            get_room(x, y - 1),
+            get_room(x - 1, y),
+            get_room(x, y + 1),
+            get_room(x + 1, y),
+        };
+
+        vector<char> flagged_rooms;
+
+        for (char neighbour_room : neighbour_rooms)
+        {
+            // Don't enable base flag for empty rooms, the same room as this, or a room that's already had its base flag
+            // set.
+            if (neighbour_room == '0' ||
+                neighbour_room == room ||
+                contains(flagged_rooms, neighbour_room))
+            {
+                continue;
+            }
+
+
+            for (Minimap_Room & minimap_neighbour_room : minimap_room_groups[neighbour_room])
+            {
+                *minimap_neighbour_room.base_flag = true;
+            }
+
+            flagged_rooms.push_back(neighbour_room);
+        }
+
+
         show(minimap_room.occupied_flags);
         hide(minimap_room.vacant_flags);
     }
@@ -215,6 +260,8 @@ void generate_minimap()
 
         // Generate minimap room for current room.
         Minimap_Room minimap_room;
+        minimap_room.x = x;
+        minimap_room.y = y;
         vector<bool *> & occupied_flags = minimap_room.occupied_flags;
         vector<bool *> & vacant_flags = minimap_room.vacant_flags;
         bool * room_render_flag;
@@ -256,9 +303,9 @@ void generate_minimap()
     {
         for (const Minimap_Room & minimap_room : minimap_room_group)
         {
-            // hide(minimap_room.base_flag);
+            *minimap_room.base_flag = false;
             hide(minimap_room.occupied_flags);
-            // hide(minimap_room.vacant_flags);
+            hide(minimap_room.vacant_flags);
         }
     });
 
