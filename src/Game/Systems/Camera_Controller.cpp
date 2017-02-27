@@ -7,7 +7,7 @@
 #include "Cpp_Utils/Collection.hpp"
 #include "Cpp_Utils/Map.hpp"
 
-#include "Game/APIs/Floor_Generator.hpp"
+#include "Game/APIs/Floor_Manager.hpp"
 
 
 using std::map;

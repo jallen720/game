@@ -8,7 +8,7 @@
 #include "Cpp_Utils/Map.hpp"
 #include "Cpp_Utils/Collection.hpp"
 
-#include "Game/APIs/Floor_Generator.hpp"
+#include "Game/APIs/Floor_Manager.hpp"
 #include "Game/APIs/Minimap.hpp"
 
 
