@@ -249,7 +249,7 @@ void generate_minimap()
 
 
     // Generate minimap rooms.
-    iterate_current_floor_rooms([&](int x, int y, const char & room) -> void
+    iterate_rooms([&](int x, int y, const char & room) -> void
     {
         // Don't generate minimap room for empty rooms.
         if (room == '0')

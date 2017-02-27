@@ -703,7 +703,7 @@ const Room_Data & get_room_data(char room)
 }
 
 
-void iterate_current_floor_rooms(const function<void(int, int, char &)> & callback)
+void iterate_rooms(const function<void(int, int, char &)> & callback)
 {
     iterate_rooms(current_floor, callback);
 }
