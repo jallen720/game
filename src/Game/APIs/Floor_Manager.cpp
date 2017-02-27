@@ -685,7 +685,12 @@ const vec2 & get_spawn_position()
 
 char get_room(int x, int y)
 {
-    return *array_2d_at(current_floor.rooms, current_floor.size, x, y);
+    int floor_size = current_floor.size;
+
+    return x < 0 || x >= floor_size ||
+           y < 0 || y >= floor_size
+           ? '0'
+           : *array_2d_at(current_floor.rooms, floor_size, x, y);
 }
 
 
