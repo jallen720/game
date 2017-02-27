@@ -2,6 +2,7 @@
 
 #include <map>
 #include <string>
+#include <stdexcept>
 #include <glm/glm.hpp>
 #include "Nito/Components.hpp"
 #include "Cpp_Utils/Collection.hpp"
@@ -12,6 +13,7 @@
 
 using std::map;
 using std::string;
+using std::runtime_error;
 
 // glm/glm.hpp
 using glm::vec3;
@@ -87,7 +89,14 @@ void camera_controller_update()
         const vec3 & target_position = entity_state.target_transform->position;
         float & position_x = position.x;
         float & position_y = position.y;
-        const Room_Data & target_room_data = get_room_data(get_room(target_position));
+        int target_room = get_room(target_position);
+
+        if (target_room <= 0)
+        {
+            throw runtime_error("ERROR: camera cannot follow target as target is out-of-bounds!");
+        }
+
+        const Room_Data & target_room_data = get_room_data(target_room);
         const vec2 & target_room_origin = target_room_data.origin;
         const vec2 & target_room_bounds = target_room_data.bounds;
         const float target_room_origin_x = target_room_origin.x;

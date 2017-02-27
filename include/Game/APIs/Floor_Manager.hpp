@@ -29,10 +29,10 @@ struct Room_Data
 void generate_floor();
 void destroy_floor();
 const glm::vec2 & get_spawn_position();
-char get_room(int x, int y);
-char get_room(const glm::vec3 & position);
-const Room_Data & get_room_data(char room);
-void iterate_rooms(const std::function<void(int, int, char &)> & callback);
+int get_room(int x, int y);
+int get_room(const glm::vec3 & position);
+const Room_Data & get_room_data(int room);
+void iterate_rooms(const std::function<void(int, int, int &)> & callback);
 int get_floor_size();
 
 

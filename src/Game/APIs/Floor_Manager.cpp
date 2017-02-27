@@ -78,13 +78,13 @@ struct Tile
 };
 
 
-using Possible_Rooms = map<char *, ivec2>;
+using Possible_Rooms = map<int *, ivec2>;
 
 
 struct Floor
 {
     int size;
-    char * rooms;
+    int * rooms;
     Tile * room_tiles;
     Possible_Rooms possible_rooms;
 };
@@ -100,7 +100,7 @@ static const int ROOM_TILE_HEIGHT = 9;
 static const float ROOM_Z = 100.0f;
 static const vec3 ROOM_TILE_TEXTURE_SCALE(0.5f, 0.5f, 1.0f);
 static vec2 spawn_position;
-static map<char, Room_Data> room_datas;
+static map<int, Room_Data> room_datas;
 static Floor current_floor;
 static int floor_size;
 
@@ -144,7 +144,7 @@ static void iterate_array_2d(T * array_2d, int width, int height, const function
 }
 
 
-static void iterate_rooms(Floor & floor, const function<void(int, int, char &)> & callback)
+static void iterate_rooms(Floor & floor, const function<void(int, int, int &)> & callback)
 {
     iterate_array_2d(floor.rooms, floor.size, floor.size, callback);
 }
@@ -183,9 +183,9 @@ static void check_possible_room(Floor & floor, Possible_Rooms & room_extensions,
         return;
     }
 
-    char * room = array_2d_at(floor.rooms, size, x, y);
+    int * room = array_2d_at(floor.rooms, size, x, y);
 
-    if (*room == '0' && !contains_key(room_extensions, room))
+    if (*room == 0 && !contains_key(room_extensions, room))
     {
         ivec2 room_coordinates(x, y);
         room_extensions[room] = room_coordinates;
@@ -194,9 +194,9 @@ static void check_possible_room(Floor & floor, Possible_Rooms & room_extensions,
 }
 
 
-static void set_room(Floor & floor, Possible_Rooms & room_extensions, int x, int y, char id)
+static void set_room(Floor & floor, Possible_Rooms & room_extensions, int x, int y, int id)
 {
-    char * room = array_2d_at(floor.rooms, floor.size, x, y);
+    int * room = array_2d_at(floor.rooms, floor.size, x, y);
     *room = id;
 
     if (contains_key(room_extensions, room))
@@ -230,7 +230,7 @@ static vec2 get_room_center(int room_x, int room_y)
 }
 
 
-static void generate_room(Floor & floor, int x, int y, char id, int max_size)
+static void generate_room(Floor & floor, int x, int y, int id, int max_size)
 {
     Possible_Rooms room_extensions;
     Room_Data & room_data = room_datas[id];
@@ -290,7 +290,7 @@ static void generate_room(Floor & floor, int x, int y, char id, int max_size)
 static void debug_floor(Floor & floor)
 {
     const int size = floor.size;
-    const char * rooms = floor.rooms;
+    const int * rooms = floor.rooms;
 
     for (int i = 0; i < size + 2; i++)
     {
@@ -305,7 +305,7 @@ static void debug_floor(Floor & floor)
 
         for (int x = 0; x < size; x++)
         {
-            printf("%c", rooms[(y * size) + x]);
+            printf("%d", rooms[(y * size) + x]);
         }
 
         printf("=");
@@ -325,7 +325,7 @@ static Floor create_floor(int size)
 {
     Floor floor;
     floor.size = size;
-    floor.rooms = new char[size * size];
+    floor.rooms = new int[size * size];
     floor.room_tiles = new Tile[(size * ROOM_TILE_WIDTH) * (size * ROOM_TILE_HEIGHT)];
     return floor;
 }
@@ -359,9 +359,9 @@ static void generate_wall_tile(
     Tile & tile,
     int coordinate,
     int dimension_size,
-    char room,
-    char neighbor,
-    char clockwise_neighbor,
+    int room,
+    int neighbor,
+    int clockwise_neighbor,
     float rotation,
     bool inverted = false)
 {
@@ -399,7 +399,7 @@ static void generate_wall_tile(
         tile.rotation = 0.0f;
     }
     // Wall
-    else if (neighbor != '0')
+    else if (neighbor > 0)
     {
         // Door
         if (coordinate == (dimension_size - 1) / 2)
@@ -450,7 +450,7 @@ void generate_floor()
     floor_size = 6;
     current_floor = create_floor(floor_size);
     Possible_Rooms & possible_rooms = current_floor.possible_rooms;
-    iterate_rooms(current_floor, [](int /*x*/, int /*y*/, char & room) -> void { room = '0'; });
+    iterate_rooms(current_floor, [](int /*x*/, int /*y*/, int & room) -> void { room = 0; });
 
     iterate_room_tiles(current_floor, [](int /*x*/, int /*y*/, Tile & room_tile) -> void
     {
@@ -462,9 +462,9 @@ void generate_floor()
     // Generate rooms.
     const int root_room_x = random(0, floor_size);
     const int root_room_y = random(0, floor_size);
-    generate_room(current_floor, root_room_x, root_room_y, '1', 1);
+    generate_room(current_floor, root_room_x, root_room_y, 1, 1);
 
-    for (char i = '2'; i < '9'; i++)
+    for (int i = 2; i < 9; i++)
     {
         // No possible rooms available
         if (possible_rooms.size() == 0)
@@ -481,10 +481,10 @@ void generate_floor()
 
 
     // Generate room tiles.
-    iterate_rooms(current_floor, [&](int room_x, int room_y, char & room) -> void
+    iterate_rooms(current_floor, [&](int room_x, int room_y, int & room) -> void
     {
         // Don't generate tiles for empty rooms.
-        if (room == '0')
+        if (room == 0)
         {
             return;
         }
@@ -502,25 +502,10 @@ void generate_floor()
             // Wall
             else
             {
-                const char bottom_neighbor =
-                    room_y > 0
-                    ? get_room(room_x, room_y - 1)
-                    : '0';
-
-                const char left_neighbor =
-                    room_x > 0
-                    ? get_room(room_x - 1, room_y)
-                    : '0';
-
-                const char top_neighbor =
-                    room_y < floor_size - 1
-                    ? get_room(room_x, room_y + 1)
-                    : '0';
-
-                const char right_neighbor =
-                    room_x < floor_size - 1
-                    ? get_room(room_x + 1, room_y)
-                    : '0';
+                const int bottom_neighbor = get_room(room_x, room_y - 1);
+                const int left_neighbor = get_room(room_x - 1, room_y);
+                const int top_neighbor = get_room(room_x, room_y + 1);
+                const int right_neighbor = get_room(room_x + 1, room_y);
 
                 // Bottom wall
                 if (y == 0 && x != ROOM_TILE_WIDTH - 1)
@@ -683,18 +668,18 @@ const vec2 & get_spawn_position()
 }
 
 
-char get_room(int x, int y)
+int get_room(int x, int y)
 {
     int floor_size = current_floor.size;
 
     return x < 0 || x >= floor_size ||
            y < 0 || y >= floor_size
-           ? '0'
+           ? -1
            : *array_2d_at(current_floor.rooms, floor_size, x, y);
 }
 
 
-char get_room(const vec3 & position)
+int get_room(const vec3 & position)
 {
     return get_room(
         get_room_position_coordinate(position.x, ROOM_TILE_WIDTH, ROOM_TILE_TEXTURE_SCALE.x),
@@ -702,13 +687,13 @@ char get_room(const vec3 & position)
 }
 
 
-const Room_Data & get_room_data(char room)
+const Room_Data & get_room_data(int room)
 {
     return room_datas.at(room);
 }
 
 
-void iterate_rooms(const function<void(int, int, char &)> & callback)
+void iterate_rooms(const function<void(int, int, int &)> & callback)
 {
     iterate_rooms(current_floor, callback);
 }

@@ -74,7 +74,7 @@ struct Minimap_Room
 static const string MINIMAP_ROOM_TEXTURE_PATH = "resources/textures/ui/minimap_room.png";
 static const string MINIMAP_ROOM_CHANGE_HANDLER_ID = "minimap";
 static vec3 room_texture_offset;
-static map<char, vector<Minimap_Room>> minimap_room_groups;
+static map<int, vector<Minimap_Room>> minimap_room_groups;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -145,7 +145,7 @@ static void hide(const vector<bool *> & render_flags)
 }
 
 
-static void occupy_room(char room)
+static void occupy_room(int room)
 {
     for (Minimap_Room & minimap_room : minimap_room_groups[room])
     {
@@ -157,7 +157,7 @@ static void occupy_room(char room)
         int x = minimap_room.x;
         int y = minimap_room.y;
 
-        vector<char> neighbor_rooms
+        vector<int> neighbor_rooms
         {
             get_room(x, y - 1),
             get_room(x - 1, y),
@@ -165,13 +165,13 @@ static void occupy_room(char room)
             get_room(x + 1, y),
         };
 
-        vector<char> flagged_rooms;
+        vector<int> flagged_rooms;
 
-        for (char neighbor_room : neighbor_rooms)
+        for (int neighbor_room : neighbor_rooms)
         {
-            // Don't enable base flag for empty rooms, the same room as this, or a room that's already had its base flag
-            // set.
-            if (neighbor_room == '0' ||
+            // Don't enable base flag for empty/out-of-bounds rooms, the same room as this, or a room that's already had
+            // its base flag set.
+            if (neighbor_room <= 0 ||
                 neighbor_room == room ||
                 contains(flagged_rooms, neighbor_room))
             {
@@ -194,7 +194,7 @@ static void occupy_room(char room)
 }
 
 
-static void vacate_room(char room)
+static void vacate_room(int room)
 {
     for (Minimap_Room & minimap_room : minimap_room_groups[room])
     {
@@ -241,7 +241,7 @@ void generate_minimap()
     static const string MINIMAP_ROOM_VACANT_TEXTURE_PATH = "resources/textures/ui/minimap_room_vacant.png";
     static const string MINIMAP_ROOM_BASE_TEXTURE_PATH = "resources/textures/ui/minimap_room_base.png";
 
-    game_manager_add_room_change_handler(MINIMAP_ROOM_CHANGE_HANDLER_ID, [](char last_room, char current_room) -> void
+    game_manager_add_room_change_handler(MINIMAP_ROOM_CHANGE_HANDLER_ID, [](int last_room, int current_room) -> void
     {
         vacate_room(last_room);
         occupy_room(current_room);
@@ -249,10 +249,10 @@ void generate_minimap()
 
 
     // Generate minimap rooms.
-    iterate_rooms([&](int x, int y, const char & room) -> void
+    iterate_rooms([&](int x, int y, const int & room) -> void
     {
         // Don't generate minimap room for empty rooms.
-        if (room == '0')
+        if (room == 0)
         {
             return;
         }
@@ -299,7 +299,7 @@ void generate_minimap()
 
 
     // Initialize minimap.
-    for_each(minimap_room_groups, [](char /*room*/, const vector<Minimap_Room> & minimap_room_group) -> void
+    for_each(minimap_room_groups, [](int /*room*/, const vector<Minimap_Room> & minimap_room_group) -> void
     {
         for (const Minimap_Room & minimap_room : minimap_room_group)
         {
@@ -309,7 +309,7 @@ void generate_minimap()
         }
     });
 
-    occupy_room('1');
+    occupy_room(1);
 }
 
 

@@ -48,10 +48,10 @@ namespace Game
 // Data
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static map<string, function<void(char, char)>> room_change_handlers;
+static map<string, function<void(int, int)>> room_change_handlers;
 static vec3 * player_position;
-static char last_room;
-static char current_room;
+static int last_room;
+static int current_room;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,7 +61,7 @@ static char current_room;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void game_manager_subscribe(Entity /*entity*/)
 {
-    static const char SPAWN_ROOM = '1';
+    static const int SPAWN_ROOM = 1;
 
     player_position = &((Transform *)get_component(get_entity("player"), "transform"))->position;
     last_room = SPAWN_ROOM;
@@ -117,14 +117,14 @@ void game_manager_change_rooms(float door_rotation)
     // Trigger room-change handlers.
     for_each(room_change_handlers, [=](
         const string & /*id*/,
-        const function<void(char, char)> & room_change_handler) -> void
+        const function<void(int, int)> & room_change_handler) -> void
     {
         room_change_handler(last_room, current_room);
     });
 }
 
 
-void game_manager_add_room_change_handler(const string & id, const function<void(char, char)> & room_change_handler)
+void game_manager_add_room_change_handler(const string & id, const function<void(int, int)> & room_change_handler)
 {
     room_change_handlers[id] = room_change_handler;
 }
