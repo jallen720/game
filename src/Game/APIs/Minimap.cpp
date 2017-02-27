@@ -153,11 +153,11 @@ static void occupy_room(char room)
         *minimap_room.base_flag = true;
 
 
-        // Ensure neighbouring bases are on.
+        // Ensure neighboring bases are on.
         int x = minimap_room.x;
         int y = minimap_room.y;
 
-        vector<char> neighbour_rooms
+        vector<char> neighbor_rooms
         {
             get_room(x, y - 1),
             get_room(x - 1, y),
@@ -167,24 +167,24 @@ static void occupy_room(char room)
 
         vector<char> flagged_rooms;
 
-        for (char neighbour_room : neighbour_rooms)
+        for (char neighbor_room : neighbor_rooms)
         {
             // Don't enable base flag for empty rooms, the same room as this, or a room that's already had its base flag
             // set.
-            if (neighbour_room == '0' ||
-                neighbour_room == room ||
-                contains(flagged_rooms, neighbour_room))
+            if (neighbor_room == '0' ||
+                neighbor_room == room ||
+                contains(flagged_rooms, neighbor_room))
             {
                 continue;
             }
 
 
-            for (Minimap_Room & minimap_neighbour_room : minimap_room_groups[neighbour_room])
+            for (Minimap_Room & minimap_neighbor_room : minimap_room_groups[neighbor_room])
             {
-                *minimap_neighbour_room.base_flag = true;
+                *minimap_neighbor_room.base_flag = true;
             }
 
-            flagged_rooms.push_back(neighbour_room);
+            flagged_rooms.push_back(neighbor_room);
         }
 
 
@@ -273,7 +273,7 @@ void generate_minimap()
         vacant_flags.push_back(room_vacant_render_flag);
 
 
-        // Generate room connector for neighbouring rooms that are the same as this room.
+        // Generate room connector for neighboring rooms that are the same as this room.
         if (get_room(x, y - 1) == room)
         {
             generate_room_connectors(x, y, 0.0f, occupied_flags, vacant_flags);

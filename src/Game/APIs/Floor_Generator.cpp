@@ -360,8 +360,8 @@ static void generate_wall_tile(
     int coordinate,
     int dimension_size,
     char room,
-    char neighbour,
-    char clockwise_neighbour,
+    char neighbor,
+    char clockwise_neighbor,
     float rotation,
     bool inverted = false)
 {
@@ -371,18 +371,18 @@ static void generate_wall_tile(
     if ((inverted && coordinate == dimension_size - 1) || coordinate == 0)
     {
         // Inner corner
-        if (neighbour == room && clockwise_neighbour == room)
+        if (neighbor == room && clockwise_neighbor == room)
         {
             set_tile_type(tile, Tile::Types::WALL_CORNER_INNER);
         }
-        // Wall to neighbour
-        else if (neighbour == room)
+        // Wall to neighbor
+        else if (neighbor == room)
         {
             set_tile_type(tile, Tile::Types::WALL);
             tile.rotation -= 90.0f;
         }
-        // Wall to clockwise_neighbour
-        else if (clockwise_neighbour == room)
+        // Wall to clockwise_neighbor
+        else if (clockwise_neighbor == room)
         {
             set_tile_type(tile, Tile::Types::WALL);
         }
@@ -393,13 +393,13 @@ static void generate_wall_tile(
         }
     }
     // Floor between rooms
-    else if (neighbour == room)
+    else if (neighbor == room)
     {
         set_tile_type(tile, Tile::Types::FLOOR);
         tile.rotation = 0.0f;
     }
     // Wall
-    else if (neighbour != '0')
+    else if (neighbor != '0')
     {
         // Door
         if (coordinate == (dimension_size - 1) / 2)
@@ -502,22 +502,22 @@ void generate_floor()
             // Wall
             else
             {
-                const char bottom_neighbour =
+                const char bottom_neighbor =
                     room_y > 0
                     ? get_room(room_x, room_y - 1)
                     : '0';
 
-                const char left_neighbour =
+                const char left_neighbor =
                     room_x > 0
                     ? get_room(room_x - 1, room_y)
                     : '0';
 
-                const char top_neighbour =
+                const char top_neighbor =
                     room_y < floor_size - 1
                     ? get_room(room_x, room_y + 1)
                     : '0';
 
-                const char right_neighbour =
+                const char right_neighbor =
                     room_x < floor_size - 1
                     ? get_room(room_x + 1, room_y)
                     : '0';
@@ -525,22 +525,22 @@ void generate_floor()
                 // Bottom wall
                 if (y == 0 && x != ROOM_TILE_WIDTH - 1)
                 {
-                    generate_wall_tile(tile, x, ROOM_TILE_WIDTH, room, bottom_neighbour, left_neighbour, 0.0f);
+                    generate_wall_tile(tile, x, ROOM_TILE_WIDTH, room, bottom_neighbor, left_neighbor, 0.0f);
                 }
                 // Left wall
                 else if (x == 0 && y != 0)
                 {
-                    generate_wall_tile(tile, y, ROOM_TILE_HEIGHT, room, left_neighbour, top_neighbour, 270.0f, true);
+                    generate_wall_tile(tile, y, ROOM_TILE_HEIGHT, room, left_neighbor, top_neighbor, 270.0f, true);
                 }
                 // Top wall
                 else if (y == ROOM_TILE_HEIGHT - 1 && x != 0)
                 {
-                    generate_wall_tile(tile, x, ROOM_TILE_WIDTH, room, top_neighbour, right_neighbour, 180.0f, true);
+                    generate_wall_tile(tile, x, ROOM_TILE_WIDTH, room, top_neighbor, right_neighbor, 180.0f, true);
                 }
                 // Right wall
                 else if (x == ROOM_TILE_WIDTH - 1 && y != ROOM_TILE_HEIGHT - 1)
                 {
-                    generate_wall_tile(tile, y, ROOM_TILE_HEIGHT, room, right_neighbour, bottom_neighbour, 90.0f);
+                    generate_wall_tile(tile, y, ROOM_TILE_HEIGHT, room, right_neighbor, bottom_neighbor, 90.0f);
                 }
             }
         });
