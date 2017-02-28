@@ -71,8 +71,8 @@ struct Minimap_Room
 // Data
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static const string MINIMAP_ROOM_TEXTURE_PATH = "resources/textures/ui/minimap_room.png";
-static const string MINIMAP_ROOM_CHANGE_HANDLER_ID = "minimap";
+static const string MINIMAP_ROOM_TEXTURE_PATH("resources/textures/ui/minimap_room.png");
+static const string MINIMAP_ROOM_CHANGE_HANDLER_ID("minimap");
 static vec3 room_texture_offset;
 static map<int, vector<Minimap_Room>> minimap_room_groups;
 
