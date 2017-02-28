@@ -127,20 +127,11 @@ static void generate_room_connector(int x, int y, float rotation, const string &
 }
 
 
-static void show(const vector<bool *> & render_flags)
+static void set_render_flags(const vector<bool *> & render_flags, bool value)
 {
     for (bool * render_flag : render_flags)
     {
-        *render_flag = true;
-    }
-}
-
-
-static void hide(const vector<bool *> & render_flags)
-{
-    for (bool * render_flag : render_flags)
-    {
-        *render_flag = false;
+        *render_flag = value;
     }
 }
 
@@ -188,8 +179,8 @@ static void occupy_room(int room)
         }
 
 
-        show(minimap_room.occupied_flags);
-        hide(minimap_room.vacant_flags);
+        set_render_flags(minimap_room.occupied_flags, true);
+        set_render_flags(minimap_room.vacant_flags, false);
     }
 }
 
@@ -198,8 +189,8 @@ static void vacate_room(int room)
 {
     for (Minimap_Room & minimap_room : minimap_room_groups[room])
     {
-        show(minimap_room.vacant_flags);
-        hide(minimap_room.occupied_flags);
+        set_render_flags(minimap_room.vacant_flags, true);
+        set_render_flags(minimap_room.occupied_flags, false);
     }
 }
 
@@ -304,8 +295,8 @@ void generate_minimap()
         for (const Minimap_Room & minimap_room : minimap_room_group)
         {
             *minimap_room.base_flag = false;
-            hide(minimap_room.occupied_flags);
-            hide(minimap_room.vacant_flags);
+            set_render_flags(minimap_room.occupied_flags, false);
+            set_render_flags(minimap_room.vacant_flags, false);
         }
     });
 
