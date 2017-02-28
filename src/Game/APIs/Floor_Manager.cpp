@@ -266,11 +266,11 @@ static void generate_room(Floor & floor, int x, int y, int id, int max_size)
 
     while (room_generated < room_size)
     {
-        // Return if no room extensions could be found (room root is surrounded by other rooms or on the edge of the
+        // Break if no room extensions could be found (room root is surrounded by other rooms or on the edge of the
         // floor).
         if (room_extensions.size() == 0)
         {
-            return;
+            break;
         }
 
         ivec2 room_coordinates = at_index(room_extensions, random(0, room_extensions.size())).second;
