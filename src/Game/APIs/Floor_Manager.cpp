@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <stdexcept>
 #include "Nito/Components.hpp"
 #include "Nito/Collider_Component.hpp"
 #include "Nito/APIs/ECS.hpp"
@@ -18,6 +19,7 @@ using std::string;
 using std::vector;
 using std::map;
 using std::function;
+using std::runtime_error;
 
 // glm/glm.hpp
 using glm::vec3;
@@ -73,6 +75,7 @@ struct Tile
         RIGHT_DOOR_WALL,
         DOOR,
         FLOOR,
+        NEXT_FLOOR,
         NONE,
     }
     type;
@@ -362,6 +365,7 @@ static void set_tile_type(Tile & tile, Tile::Types type)
     static const string WALL_CORNER_INNER_TEXTURE_PATH = "resources/textures/tiles/wall_corner_inner.png";
     static const string DOOR_TEXTURE_PATH = "resources/textures/tiles/door.png";
     static const string FLOOR_TEXTURE_PATH = "resources/textures/tiles/floor.png";
+    static const string NEXT_FLOOR_TEXTURE_PATH = "resources/textures/tiles/next_floor.png";
 
     static const map<Tile::Types, const string *> TILE_TYPE_TEXTURE_PATHS
     {
@@ -372,6 +376,7 @@ static void set_tile_type(Tile & tile, Tile::Types type)
         { Tile::Types::FLOOR             , &FLOOR_TEXTURE_PATH             },
         { Tile::Types::LEFT_DOOR_WALL    , &WALL_TEXTURE_PATH              },
         { Tile::Types::RIGHT_DOOR_WALL   , &WALL_TEXTURE_PATH              },
+        { Tile::Types::NEXT_FLOOR        , &NEXT_FLOOR_TEXTURE_PATH        },
     };
 
     tile.type = type;
@@ -494,6 +499,7 @@ void generate_floor()
 
     // Generate rooms.
     static const int MAX_ROOM_ID = 8;
+    static const int MAX_ROOM_SIZE = 4;
 
     const int root_room_x = random(0, floor_size);
     const int root_room_y = random(0, floor_size);
@@ -508,7 +514,13 @@ void generate_floor()
         }
 
         ivec2 room_coordinates = at_index(possible_rooms, random(0, possible_rooms.size())).second;
-        generate_room(current_floor, room_coordinates.x, room_coordinates.y, i, 4);
+
+        generate_room(
+            current_floor,
+            room_coordinates.x,
+            room_coordinates.y,
+            room_id,
+            room_id == MAX_ROOM_ID ? 1 : MAX_ROOM_SIZE);
     }
 
     spawn_position = get_room_center(root_room_x, root_room_y);
@@ -531,7 +543,17 @@ void generate_floor()
             if (x > 0 && x < ROOM_TILE_WIDTH - 1 &&
                 y > 0 && y < ROOM_TILE_HEIGHT - 1)
             {
-                set_tile_type(tile, Tile::Types::FLOOR);
+                if (room == MAX_ROOM_ID &&
+                    x == (ROOM_TILE_WIDTH - 1) / 2 &&
+                    y == (ROOM_TILE_HEIGHT - 1) / 2)
+                {
+                    set_tile_type(tile, Tile::Types::NEXT_FLOOR);
+                }
+                else
+                {
+                    set_tile_type(tile, Tile::Types::FLOOR);
+                }
+
                 tile.rotation = 0.0f;
             }
             // Wall
@@ -614,11 +636,12 @@ void generate_floor()
             if (tile_type == Tile::Types::RIGHT_DOOR_WALL ||
                 tile_type == Tile::Types::LEFT_DOOR_WALL ||
                 tile_type == Tile::Types::WALL_CORNER_INNER ||
+                tile_type == Tile::Types::NEXT_FLOOR ||
                 tile_type == Tile::Types::WALL ||
                 tile_type == Tile::Types::DOOR)
             {
                 // Create and configure collider component based on tile type.
-                auto collider = new Collider { false, true, false, {} };
+                auto collider = new Collider { true, true, false, {} };
                 tile_components["collider"] = collider;
 
                 if (tile_type == Tile::Types::DOOR)
@@ -632,6 +655,15 @@ void generate_floor()
                         {
                             game_manager_change_rooms(tile_rotation);
                         }
+                    };
+                }
+                else if (tile_type == Tile::Types::NEXT_FLOOR)
+                {
+                    collider->sends_collision = false;
+
+                    collider->collision_handler = [=](Entity /*collision_entity*/) -> void
+                    {
+                        puts("next floor");
                     };
                 }
 
@@ -662,7 +694,8 @@ void generate_floor()
                 }
                 else if (tile_type == Tile::Types::RIGHT_DOOR_WALL ||
                          tile_type == Tile::Types::LEFT_DOOR_WALL ||
-                         tile_type == Tile::Types::WALL_CORNER_INNER)
+                         tile_type == Tile::Types::WALL_CORNER_INNER ||
+                         tile_type == Tile::Types::NEXT_FLOOR)
                 {
                     static const map<Tile::Types, const vector<vec3>> POINTS
                     {
@@ -691,9 +724,31 @@ void generate_floor()
                                 vec3( 0.25f ,-0.25f , 0.0f),
                             }
                         },
+                        {
+                            Tile::Types::NEXT_FLOOR,
+                            {
+                                vec3(-0.2f ,-0.2f , 0.0f),
+                                vec3(-0.2f , 0.2f , 0.0f),
+                                vec3( 0.2f , 0.2f , 0.0f),
+                                vec3( 0.2f ,-0.2f , 0.0f),
+                            }
+                        },
                     };
 
-                    tile_components["polygon_collider"] = new Polygon_Collider { POINTS.at(tile_type), false };
+                    static const map<Tile::Types, bool> WRAP_FLAGS
+                    {
+                        { Tile::Types::RIGHT_DOOR_WALL   , false },
+                        { Tile::Types::LEFT_DOOR_WALL    , false },
+                        { Tile::Types::WALL_CORNER_INNER , false },
+                        { Tile::Types::NEXT_FLOOR        , true  },
+                    };
+
+                    tile_components["polygon_collider"] = new Polygon_Collider
+                    {
+                        POINTS.at(tile_type),
+                        WRAP_FLAGS.at(tile_type),
+                    };
+
                     tile_systems.push_back("polygon_collider");
                 }
             }
