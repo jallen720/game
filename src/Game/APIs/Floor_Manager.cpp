@@ -660,9 +660,12 @@ void generate_floor()
                 {
                     collider->sends_collision = false;
 
-                    collider->collision_handler = [=](Entity /*collision_entity*/) -> void
+                    collider->collision_handler = [=](Entity collision_entity) -> void
                     {
-                        puts("next floor");
+                        if (in_layer(collision_entity, "player"))
+                        {
+                            puts("next floor");
+                        }
                     };
                 }
 
