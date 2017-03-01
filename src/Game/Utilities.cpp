@@ -5,7 +5,6 @@
 #include <ctime>
 #include "Nito/Components.hpp"
 #include "Nito/Collider_Component.hpp"
-#include "Nito/APIs/ECS.hpp"
 
 #include "Game/Components.hpp"
 
@@ -29,7 +28,10 @@ using Nito::Circle_Collider;
 using Nito::Collider;
 
 // Nito/APIs/ECS.hpp
+using Nito::Entity;
 using Nito::generate_entity;
+using Nito::has_component;
+using Nito::get_component;
 
 
 namespace Game
@@ -77,6 +79,12 @@ int random(int min, int max)
     }
 
     return min == max ? min : (rand() % (max - min)) + min;
+}
+
+
+bool in_layer(Entity entity, const string & layer)
+{
+    return has_component(entity, "layer") && *(string *)get_component(entity, "layer") == layer;
 }
 
 

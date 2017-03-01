@@ -650,8 +650,7 @@ void generate_floor()
 
                     collider->collision_handler = [=](Entity collision_entity) -> void
                     {
-                        if (has_component(collision_entity, "layer") &&
-                            *(string *)get_component(collision_entity, "layer") == "player")
+                        if (in_layer(collision_entity, "player"))
                         {
                             game_manager_change_rooms(tile_rotation);
                         }
