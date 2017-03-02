@@ -24,6 +24,7 @@ void game_manager_add_room_change_handler(
     const std::function<void(int, int)> & room_change_handler);
 
 void game_manager_remove_room_change_handler(const std::string & id);
+void game_manager_complete_floor();
 
 
 } // namespace Game

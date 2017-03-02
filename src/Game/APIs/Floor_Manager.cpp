@@ -32,6 +32,7 @@ using Nito::Component;
 using Nito::get_component;
 using Nito::has_component;
 using Nito::generate_entity;
+using Nito::flag_entity_for_deletion;
 
 // Nito/Components.hpp
 using Nito::Transform;
@@ -96,6 +97,7 @@ struct Floor
     int * rooms;
     Tile * room_tiles;
     Possible_Rooms possible_rooms;
+    vector<Entity> entities;
 };
 
 
@@ -343,17 +345,34 @@ static void debug_floor(Floor & floor)
 }
 
 
-static Floor create_floor(int size)
+static void create_floor(int size)
 {
-    Floor floor;
     const int rooms_size = size * size;
     const int room_tiles_size = (size * ROOM_TILE_WIDTH) * (size * ROOM_TILE_HEIGHT);
-    floor.size = size;
-    floor.rooms_size = rooms_size;
-    floor.room_tiles_size = room_tiles_size;
-    floor.rooms = new int[rooms_size];
-    floor.room_tiles = new Tile[room_tiles_size];
-    return floor;
+    current_floor.size = size;
+    current_floor.rooms_size = rooms_size;
+    current_floor.room_tiles_size = room_tiles_size;
+    current_floor.rooms = new int[rooms_size];
+    current_floor.room_tiles = new Tile[room_tiles_size];
+}
+
+
+static void cleanup_floor()
+{
+    vector<Entity> & entities = current_floor.entities;
+    current_floor.size = 0;
+    current_floor.rooms_size = 0;
+    current_floor.room_tiles_size = 0;
+    delete[] current_floor.rooms;
+    delete[] current_floor.room_tiles;
+    current_floor.possible_rooms.clear();
+
+    for (const Entity entity : entities)
+    {
+        flag_entity_for_deletion(entity);
+    }
+
+    entities.clear();
 }
 
 
@@ -485,8 +504,9 @@ void generate_floor()
 {
     // Create floor.
     const int floor_size = 6;
-    current_floor = create_floor(floor_size);
+    create_floor(floor_size);
     Possible_Rooms & possible_rooms = current_floor.possible_rooms;
+    vector<Entity> & entities = current_floor.entities;
     iterate_rooms(current_floor, [](int /*x*/, int /*y*/, int & room) -> void { room = 0; });
 
     iterate_room_tiles(current_floor, [](int /*x*/, int /*y*/, Tile & room_tile) -> void
@@ -663,7 +683,7 @@ void generate_floor()
                     {
                         if (in_layer(collision_entity, "player"))
                         {
-                            puts("next floor");
+                            game_manager_complete_floor();
                         }
                     };
                 }
@@ -755,7 +775,7 @@ void generate_floor()
             }
 
 
-            generate_entity(tile_components, tile_systems);
+            entities.push_back(generate_entity(tile_components, tile_systems));
             transform->position = vec3(tile_x, tile_y, 0.0f) * ROOM_TILE_TEXTURE_SCALE;
             transform->position.z = ROOM_Z;
         });
@@ -782,6 +802,7 @@ void generate_floor()
 
 void destroy_floor()
 {
+    cleanup_floor();
     room_datas.clear();
     room_tile_render_flags.clear();
     game_manager_remove_room_change_handler(FLOOR_MANAGER_ROOM_CHANGE_HANDLER_ID);

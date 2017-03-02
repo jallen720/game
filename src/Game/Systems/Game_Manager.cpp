@@ -50,8 +50,35 @@ namespace Game
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static map<string, function<void(int, int)>> room_change_handlers;
 static vec3 * player_position;
+static const vec2 * spawn_position;
 static int last_room;
 static int current_room;
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Utilities
+//
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+static void start_floor()
+{
+    static const int SPAWN_ROOM = 1;
+
+    last_room = SPAWN_ROOM;
+    current_room = SPAWN_ROOM;
+    generate_floor();
+    minimap_api_init();
+    generate_minimap();
+    player_position->x = spawn_position->x;
+    player_position->y = spawn_position->y;
+}
+
+
+static void cleanup_floor()
+{
+    destroy_floor();
+    destroy_minimap();
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -61,24 +88,15 @@ static int current_room;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void game_manager_subscribe(Entity /*entity*/)
 {
-    static const int SPAWN_ROOM = 1;
-
     player_position = &((Transform *)get_component(get_entity("player"), "transform"))->position;
-    last_room = SPAWN_ROOM;
-    current_room = SPAWN_ROOM;
-    const vec2 & spawn_position = get_spawn_position();
-    generate_floor();
-    minimap_api_init();
-    generate_minimap();
-    player_position->x = spawn_position.x;
-    player_position->y = spawn_position.y;
+    spawn_position = &get_spawn_position();
+    start_floor();
 }
 
 
 void game_manager_unsubscribe(Entity /*entity*/)
 {
-    destroy_floor();
-    destroy_minimap();
+    cleanup_floor();
     room_change_handlers.clear();
     player_position = nullptr;
 }
@@ -133,6 +151,13 @@ void game_manager_add_room_change_handler(const string & id, const function<void
 void game_manager_remove_room_change_handler(const string & id)
 {
     remove(room_change_handlers, id);
+}
+
+
+void game_manager_complete_floor()
+{
+    cleanup_floor();
+    start_floor();
 }
 
 
