@@ -109,10 +109,9 @@ static const int ROOM_TILE_HEIGHT = 9;
 static const float ROOM_Z = 100.0f;
 static const vec3 ROOM_TILE_TEXTURE_SCALE(0.5f, 0.5f, 1.0f);
 static const string FLOOR_MANAGER_ROOM_CHANGE_HANDLER_ID("floor_manager");
+static Floor current_floor;
 static vec2 spawn_position;
 static map<int, Room_Data> room_datas;
-static Floor current_floor;
-static int floor_size;
 static map<int, vector<bool *>> room_tile_render_flags;
 
 
@@ -485,7 +484,7 @@ static void set_render_flags(int room, bool value)
 void generate_floor()
 {
     // Create floor.
-    floor_size = 6;
+    const int floor_size = 6;
     current_floor = create_floor(floor_size);
     Possible_Rooms & possible_rooms = current_floor.possible_rooms;
     iterate_rooms(current_floor, [](int /*x*/, int /*y*/, int & room) -> void { room = 0; });
@@ -797,7 +796,7 @@ const vec2 & get_spawn_position()
 
 int get_room(int x, int y)
 {
-    int floor_size = current_floor.size;
+    const int floor_size = current_floor.size;
 
     return x < 0 || x >= floor_size ||
            y < 0 || y >= floor_size
@@ -828,7 +827,7 @@ void iterate_rooms(const function<void(int, int, int &)> & callback)
 
 int get_floor_size()
 {
-    return floor_size;
+    return current_floor.size;
 }
 
 
