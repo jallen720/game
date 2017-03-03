@@ -51,7 +51,6 @@ void depth_handler_subscribe(Entity entity)
 
 void depth_handler_unsubscribe(Entity entity)
 {
-
     remove(entity_positions, entity);
 }
 
