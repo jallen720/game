@@ -329,7 +329,9 @@ static void debug_floor(Floor & floor)
 
         for (int x = 0; x < size; x++)
         {
-            printf("%d", rooms[(y * size) + x]);
+            int room = rooms[(y * size) + x];
+            char room_display = room > 9 ? ('A' + (room - 10)) : ('0' + room);
+            printf("%c", room_display);
         }
 
         printf("=");
