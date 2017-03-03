@@ -113,20 +113,20 @@ static Button * generate_button(
         "local_transform"
     };
 
-    static const vector<string> BUTTON_TEXT_COMPONENTS
+    static const vector<string> BUTTON_TEXT_SYSTEMS
     {
         "text_renderer",
         "local_transform"
     };
 
-    Button * button = new Button
+    auto button = new Button
     {
         "resources/textures/ui/button_hover.png",
         "resources/textures/ui/button_pressed.png",
         {},
     };
 
-    float button_y = ((button_count - 1) / 2.0f) - (index * 1.2f);
+    const float button_y = ((button_count - 1) / 2.0f) - (index * 1.2f);
     string button_id = get_button_id(entity, button_name);
 
     generate_entity(
@@ -152,7 +152,7 @@ static Button * generate_button(
             { "dimensions"      , new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.45f, 0.0f) }               },
             { "local_transform" , new Transform { vec3(0.0f, 0.0f, -1.0f), vec3(1.0f), 0.0f }          },
         },
-        BUTTON_TEXT_COMPONENTS);
+        BUTTON_TEXT_SYSTEMS);
 
     return button;
 }
@@ -160,7 +160,7 @@ static Button * generate_button(
 
 string * generate_selection_sprite(Entity entity)
 {
-    static const vector<string> SELECTION_SPRITE_COMPONENTS
+    static const vector<string> SELECTION_SPRITE_SYSTEMS
     {
         "renderer",
         "sprite_dimensions_handler",
@@ -179,7 +179,7 @@ string * generate_selection_sprite(Entity entity)
             { "transform"       , new Transform { vec3(), vec3(1.0f), 0.0f }                            },
             { "local_transform" , new Transform { vec3(0.0f, 0.0f, 1.0f), vec3(1.0f), 0.0f }            },
         },
-        SELECTION_SPRITE_COMPONENTS);
+        SELECTION_SPRITE_SYSTEMS);
 
     return parent_id;
 }
