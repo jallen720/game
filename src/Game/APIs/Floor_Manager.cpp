@@ -782,10 +782,13 @@ void destroy_floor()
     delete[] current_floor.room_tiles;
     current_floor.possible_rooms.clear();
 
+
+    // Delete all entities associated with floor.
     for (const Entity entity : entities)
     {
         flag_entity_for_deletion(entity);
     }
+
 
     entities.clear();
     room_datas.clear();
