@@ -66,7 +66,7 @@ static void start_floor()
 
     last_room = SPAWN_ROOM;
     current_room = SPAWN_ROOM;
-    generate_floor();
+    generate_floor(6);
     minimap_api_init();
     generate_minimap();
     player_position->x = spawn_position->x;

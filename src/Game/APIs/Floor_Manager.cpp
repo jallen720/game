@@ -469,10 +469,9 @@ static void set_render_flags(int room, bool value)
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void generate_floor()
+void generate_floor(int floor_size)
 {
     // Create floor.
-    const int floor_size = 6;
     const int rooms_size = floor_size * floor_size;
     const int room_tiles_size = (floor_size * ROOM_TILE_WIDTH) * (floor_size * ROOM_TILE_HEIGHT);
     Possible_Rooms & possible_rooms = current_floor.possible_rooms;
