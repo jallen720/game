@@ -493,19 +493,22 @@ void generate_floor(int floor_size)
 
 
     // Generate rooms.
-    static const int MAX_ROOM_ID = 8;
     static const int MAX_ROOM_SIZE = 4;
+
+    // Calculate the max number of fully-sized rooms that can be generated. The "- 2" & "+ 2" account for the spawn and
+    // boss rooms being size 1.
+    const int max_room_id = (((floor_size * floor_size) - 2) / MAX_ROOM_SIZE) + 2;
 
     const int root_room_x = random(0, floor_size);
     const int root_room_y = random(0, floor_size);
     generate_room(current_floor, root_room_x, root_room_y, 1, 1);
 
-    for (int room_id = 2; room_id <= MAX_ROOM_ID; room_id++)
+    for (int room_id = 2; room_id <= max_room_id; room_id++)
     {
         // No possible rooms available.
         if (possible_rooms.size() == 0)
         {
-            throw runtime_error("ERROR: exhausted possible rooms for generation before reaching MAX_ROOM_ID!");
+            throw runtime_error("ERROR: exhausted possible rooms for generation before reaching max room ID!");
         }
 
         ivec2 room_coordinates = at_index(possible_rooms, random(0, possible_rooms.size())).second;
@@ -515,7 +518,7 @@ void generate_floor(int floor_size)
             room_coordinates.x,
             room_coordinates.y,
             room_id,
-            room_id == MAX_ROOM_ID ? 1 : MAX_ROOM_SIZE);
+            room_id == max_room_id ? 1 : MAX_ROOM_SIZE);
     }
 
     spawn_position = get_room_center(root_room_x, root_room_y);
@@ -538,7 +541,7 @@ void generate_floor(int floor_size)
             if (x > 0 && x < ROOM_TILE_WIDTH - 1 &&
                 y > 0 && y < ROOM_TILE_HEIGHT - 1)
             {
-                if (room == MAX_ROOM_ID &&
+                if (room == max_room_id &&
                     x == (ROOM_TILE_WIDTH - 1) / 2 &&
                     y == (ROOM_TILE_HEIGHT - 1) / 2)
                 {
