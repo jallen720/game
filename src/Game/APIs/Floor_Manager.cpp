@@ -110,7 +110,7 @@ static const int ROOM_TILE_WIDTH = 13;
 static const int ROOM_TILE_HEIGHT = 9;
 static const float ROOM_Z = 100.0f;
 static const vec3 ROOM_TILE_TEXTURE_SCALE(0.5f, 0.5f, 1.0f);
-static const string FLOOR_MANAGER_ROOM_CHANGE_HANDLER_ID("floor_manager");
+static const string ROOM_CHANGE_HANDLER_ID("floor_manager");
 static Floor current_floor;
 static vec2 spawn_position;
 static map<int, Room_Data> room_datas;
@@ -345,37 +345,6 @@ static void debug_floor(Floor & floor)
 }
 
 
-static void create_floor(int size)
-{
-    const int rooms_size = size * size;
-    const int room_tiles_size = (size * ROOM_TILE_WIDTH) * (size * ROOM_TILE_HEIGHT);
-    current_floor.size = size;
-    current_floor.rooms_size = rooms_size;
-    current_floor.room_tiles_size = room_tiles_size;
-    current_floor.rooms = new int[rooms_size];
-    current_floor.room_tiles = new Tile[room_tiles_size];
-}
-
-
-static void cleanup_floor()
-{
-    vector<Entity> & entities = current_floor.entities;
-    current_floor.size = 0;
-    current_floor.rooms_size = 0;
-    current_floor.room_tiles_size = 0;
-    delete[] current_floor.rooms;
-    delete[] current_floor.room_tiles;
-    current_floor.possible_rooms.clear();
-
-    for (const Entity entity : entities)
-    {
-        flag_entity_for_deletion(entity);
-    }
-
-    entities.clear();
-}
-
-
 static void set_tile_type(Tile & tile, Tile::Types type)
 {
     static const string WALL_TEXTURE_PATH = "resources/textures/tiles/wall.png";
@@ -504,9 +473,15 @@ void generate_floor()
 {
     // Create floor.
     const int floor_size = 6;
-    create_floor(floor_size);
+    const int rooms_size = floor_size * floor_size;
+    const int room_tiles_size = (floor_size * ROOM_TILE_WIDTH) * (floor_size * ROOM_TILE_HEIGHT);
     Possible_Rooms & possible_rooms = current_floor.possible_rooms;
     vector<Entity> & entities = current_floor.entities;
+    current_floor.size = floor_size;
+    current_floor.rooms_size = rooms_size;
+    current_floor.room_tiles_size = room_tiles_size;
+    current_floor.rooms = new int[rooms_size];
+    current_floor.room_tiles = new Tile[room_tiles_size];
     iterate_rooms(current_floor, [](int /*x*/, int /*y*/, int & room) -> void { room = 0; });
 
     iterate_room_tiles(current_floor, [](int /*x*/, int /*y*/, Tile & room_tile) -> void
@@ -790,9 +765,7 @@ void generate_floor()
 
     set_render_flags(1, true);
 
-    game_manager_add_room_change_handler(FLOOR_MANAGER_ROOM_CHANGE_HANDLER_ID, [](
-        int last_room,
-        int current_room) -> void
+    game_manager_add_room_change_handler(ROOM_CHANGE_HANDLER_ID, [](int last_room, int current_room) -> void
     {
         set_render_flags(last_room, false);
         set_render_flags(current_room, true);
@@ -802,10 +775,23 @@ void generate_floor()
 
 void destroy_floor()
 {
-    cleanup_floor();
+    vector<Entity> & entities = current_floor.entities;
+    current_floor.size = 0;
+    current_floor.rooms_size = 0;
+    current_floor.room_tiles_size = 0;
+    delete[] current_floor.rooms;
+    delete[] current_floor.room_tiles;
+    current_floor.possible_rooms.clear();
+
+    for (const Entity entity : entities)
+    {
+        flag_entity_for_deletion(entity);
+    }
+
+    entities.clear();
     room_datas.clear();
     room_tile_render_flags.clear();
-    game_manager_remove_room_change_handler(FLOOR_MANAGER_ROOM_CHANGE_HANDLER_ID);
+    game_manager_remove_room_change_handler(ROOM_CHANGE_HANDLER_ID);
 }
 
 
