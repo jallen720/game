@@ -61,9 +61,9 @@ struct Minimap_Room
 {
     int x;
     int y;
-    bool * base_flag;
-    vector<bool *> occupied_flags;
-    vector<bool *> vacant_flags;
+    bool * base_render_flag;
+    vector<bool *> occupied_render_flags;
+    vector<bool *> vacant_render_flags;
 };
 
 
@@ -143,7 +143,7 @@ static void occupy_room(int room)
     for (Minimap_Room & minimap_room : minimap_room_groups[room])
     {
         // Ensure base is on.
-        *minimap_room.base_flag = true;
+        *minimap_room.base_render_flag = true;
 
 
         // Ensure neighboring bases are on.
@@ -174,15 +174,15 @@ static void occupy_room(int room)
 
             for (Minimap_Room & minimap_neighbor_room : minimap_room_groups[neighbor_room])
             {
-                *minimap_neighbor_room.base_flag = true;
+                *minimap_neighbor_room.base_render_flag = true;
             }
 
             flagged_rooms.push_back(neighbor_room);
         }
 
 
-        set_render_flags(minimap_room.occupied_flags, true);
-        set_render_flags(minimap_room.vacant_flags, false);
+        set_render_flags(minimap_room.occupied_render_flags, true);
+        set_render_flags(minimap_room.vacant_render_flags, false);
     }
 }
 
@@ -191,8 +191,8 @@ static void vacate_room(int room)
 {
     for (Minimap_Room & minimap_room : minimap_room_groups[room])
     {
-        set_render_flags(minimap_room.vacant_flags, true);
-        set_render_flags(minimap_room.occupied_flags, false);
+        set_render_flags(minimap_room.vacant_render_flags, true);
+        set_render_flags(minimap_room.occupied_render_flags, false);
     }
 }
 
@@ -201,8 +201,8 @@ static void generate_room_connectors(
     int x,
     int y,
     float rotation,
-    vector<bool *> & occupied_flags,
-    vector<bool *> & vacant_flags)
+    vector<bool *> & occupied_render_flags,
+    vector<bool *> & vacant_render_flags)
 {
     static const string ROOM_CONNECTOR_TEXTURE_PATH = "resources/textures/ui/minimap_room_connector.png";
     static const string ROOM_CONNECTOR_VACANT_TEXTURE_PATH = "resources/textures/ui/minimap_room_connector_vacant.png";
@@ -211,8 +211,8 @@ static void generate_room_connectors(
     bool * room_connector_vacant_render_flag;
     generate_room_connector(x, y, rotation, ROOM_CONNECTOR_TEXTURE_PATH, &room_connector_render_flag);
     generate_room_connector(x, y, rotation, ROOM_CONNECTOR_VACANT_TEXTURE_PATH, &room_connector_vacant_render_flag);
-    occupied_flags.push_back(room_connector_render_flag);
-    vacant_flags.push_back(room_connector_vacant_render_flag);
+    occupied_render_flags.push_back(room_connector_render_flag);
+    vacant_render_flags.push_back(room_connector_vacant_render_flag);
 }
 
 
@@ -255,36 +255,36 @@ void generate_minimap()
         Minimap_Room minimap_room;
         minimap_room.x = x;
         minimap_room.y = y;
-        vector<bool *> & occupied_flags = minimap_room.occupied_flags;
-        vector<bool *> & vacant_flags = minimap_room.vacant_flags;
+        vector<bool *> & occupied_render_flags = minimap_room.occupied_render_flags;
+        vector<bool *> & vacant_render_flags = minimap_room.vacant_render_flags;
         bool * room_render_flag;
         bool * room_vacant_render_flag;
-        generate_room(get_room_components(x, y, 0.0f, MINIMAP_ROOM_BASE_TEXTURE_PATH), &minimap_room.base_flag);
+        generate_room(get_room_components(x, y, 0.0f, MINIMAP_ROOM_BASE_TEXTURE_PATH), &minimap_room.base_render_flag);
         generate_room(get_room_components(x, y, -1.0f, MINIMAP_ROOM_TEXTURE_PATH), &room_render_flag);
         generate_room(get_room_components(x, y, -1.0f, MINIMAP_ROOM_VACANT_TEXTURE_PATH), &room_vacant_render_flag);
-        occupied_flags.push_back(room_render_flag);
-        vacant_flags.push_back(room_vacant_render_flag);
+        occupied_render_flags.push_back(room_render_flag);
+        vacant_render_flags.push_back(room_vacant_render_flag);
 
 
         // Generate room connector for neighboring rooms that are the same as this room.
         if (get_room(x, y - 1) == room)
         {
-            generate_room_connectors(x, y, 0.0f, occupied_flags, vacant_flags);
+            generate_room_connectors(x, y, 0.0f, occupied_render_flags, vacant_render_flags);
         }
 
         if (get_room(x - 1, y) == room)
         {
-            generate_room_connectors(x, y, 270.0f, occupied_flags, vacant_flags);
+            generate_room_connectors(x, y, 270.0f, occupied_render_flags, vacant_render_flags);
         }
 
         if (get_room(x, y + 1) == room)
         {
-            generate_room_connectors(x, y, 180.0f, occupied_flags, vacant_flags);
+            generate_room_connectors(x, y, 180.0f, occupied_render_flags, vacant_render_flags);
         }
 
         if (get_room(x + 1, y) == room)
         {
-            generate_room_connectors(x, y, 90.0f, occupied_flags, vacant_flags);
+            generate_room_connectors(x, y, 90.0f, occupied_render_flags, vacant_render_flags);
         }
 
         minimap_room_groups[room].push_back(minimap_room);
@@ -296,9 +296,9 @@ void generate_minimap()
     {
         for (const Minimap_Room & minimap_room : minimap_room_group)
         {
-            *minimap_room.base_flag = false;
-            set_render_flags(minimap_room.occupied_flags, false);
-            set_render_flags(minimap_room.vacant_flags, false);
+            *minimap_room.base_render_flag = false;
+            set_render_flags(minimap_room.occupied_render_flags, false);
+            set_render_flags(minimap_room.vacant_render_flags, false);
         }
     });
 
