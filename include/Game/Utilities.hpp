@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <functional>
 #include <glm/glm.hpp>
 #include "Nito/APIs/ECS.hpp"
 
@@ -25,5 +26,25 @@ void fire_projectile(
 int random(int min, int max);
 bool in_layer(Nito::Entity entity, const std::string & layer);
 
+template<typename T>
+T * array_2d_at(T * array_2d, int width, int x, int y);
+
+template<typename T>
+void iterate_array_2d(
+    T * array_2d,
+    int width,
+    int start_x,
+    int start_y,
+    int sub_width,
+    int sub_height,
+    bool relative_coordinates,
+    const std::function<void(int, int, T &)> & callback);
+
+template<typename T>
+void iterate_array_2d(T * array_2d, int width, int height, const std::function<void(int, int, T &)> & callback);
+
 
 } // namespace Game
+
+
+#include "Game/Utilities.ipp"
