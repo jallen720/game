@@ -67,7 +67,6 @@ static void start_floor()
     last_room = SPAWN_ROOM;
     current_room = SPAWN_ROOM;
     generate_floor(6);
-    minimap_api_init();
     generate_minimap();
     player_position->x = spawn_position->x;
     player_position->y = spawn_position->y;
@@ -90,6 +89,7 @@ void game_manager_subscribe(Entity /*entity*/)
 {
     player_position = &((Transform *)get_component(get_entity("player"), "transform"))->position;
     spawn_position = &get_spawn_position();
+    minimap_api_init();
     start_floor();
 }
 
