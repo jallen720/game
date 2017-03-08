@@ -801,4 +801,16 @@ int get_floor_size()
 }
 
 
+int get_room_tile_width()
+{
+    return ROOM_TILE_WIDTH;
+}
+
+
+int get_room_tile_height()
+{
+    return ROOM_TILE_HEIGHT;
+}
+
+
 } // namespace Game
