@@ -9,6 +9,7 @@
 #include "Cpp_Utils/Collection.hpp"
 
 #include "Game/APIs/Floor_Manager.hpp"
+#include "Game/APIs/Enemy_Manager.hpp"
 #include "Game/APIs/Minimap.hpp"
 
 
@@ -68,6 +69,7 @@ static void start_floor()
     current_room = SPAWN_ROOM;
     generate_floor(6);
     generate_minimap();
+    generate_enemies();
     player_position->x = spawn_position->x;
     player_position->y = spawn_position->y;
 }
@@ -77,6 +79,7 @@ static void cleanup_floor()
 {
     destroy_floor();
     destroy_minimap();
+    destroy_enemies();
 }
 
 
