@@ -45,14 +45,12 @@ void generate_enemies()
         enemy = Enemies::NONE;
     });
 
-    puts("generate_enemies()");
 }
 
 
 void destroy_enemies()
 {
     delete[] enemies;
-    puts("destroy_enemies()");
 }
 
 
