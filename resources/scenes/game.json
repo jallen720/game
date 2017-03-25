@@ -94,7 +94,7 @@
             },
             "player_controller":
             {
-                "speed": 1.2,
+                "speed": 3,
                 "stick_dead_zone": 0.35
             },
             "orientation_handler":
