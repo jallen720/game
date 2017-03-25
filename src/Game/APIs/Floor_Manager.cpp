@@ -763,6 +763,12 @@ const Room_Data & get_room_data(int room)
 }
 
 
+const Tile & get_room_tile(int x, int y)
+{
+    return *array_2d_at(current_floor.room_tiles, current_floor.room_tiles_width, x, y);
+}
+
+
 void iterate_rooms(const function<void(int, int, int &)> & callback)
 {
     iterate_rooms(current_floor, callback);
@@ -784,6 +790,11 @@ int get_room_tile_width()
 int get_room_tile_height()
 {
     return ROOM_TILE_HEIGHT;
+}
+
+const glm::vec3 & get_room_tile_texture_scale()
+{
+    return ROOM_TILE_TEXTURE_SCALE;
 }
 
 

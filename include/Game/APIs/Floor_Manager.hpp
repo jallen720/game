@@ -55,10 +55,12 @@ const glm::vec2 & get_spawn_position();
 int get_room(int x, int y);
 int get_room(const glm::vec3 & position);
 const Room_Data & get_room_data(int room);
+const Tile & get_room_tile(int x, int y);
 void iterate_rooms(const std::function<void(int, int, int &)> & callback);
 int get_floor_size();
 int get_room_tile_width();
 int get_room_tile_height();
+const glm::vec3 & get_room_tile_texture_scale();
 
 
 } // namespace Game
