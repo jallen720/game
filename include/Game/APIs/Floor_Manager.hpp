@@ -2,6 +2,7 @@
 
 
 #include <functional>
+#include <string>
 #include <glm/glm.hpp>
 
 
@@ -18,6 +19,28 @@ struct Room_Data
 {
     glm::vec2 origin;
     glm::vec2 bounds;
+};
+
+
+enum class Tile_Types
+{
+    WALL,
+    WALL_CORNER,
+    WALL_CORNER_INNER,
+    LEFT_DOOR_WALL,
+    RIGHT_DOOR_WALL,
+    DOOR,
+    FLOOR,
+    NEXT_FLOOR,
+    NONE,
+};
+
+
+struct Tile
+{
+    Tile_Types type;
+    float rotation;
+    const std::string * texture_path;
 };
 
 
