@@ -70,8 +70,7 @@ using Possible_Rooms = map<int *, ivec2>;
 struct Floor
 {
     int size;
-    int rooms_size;
-    int room_tiles_size;
+    int room_tiles_width;
     int * rooms;
     Tile * room_tiles;
     Possible_Rooms possible_rooms;
@@ -408,15 +407,13 @@ static void set_render_flags(int room, bool value)
 void generate_floor(int floor_size)
 {
     // Create floor.
-    const int rooms_size = floor_size * floor_size;
-    const int room_tiles_size = (floor_size * ROOM_TILE_WIDTH) * (floor_size * ROOM_TILE_HEIGHT);
+    const int room_tiles_width = floor_size * ROOM_TILE_WIDTH;
     Possible_Rooms & possible_rooms = current_floor.possible_rooms;
     vector<Entity> & entities = current_floor.entities;
     current_floor.size = floor_size;
-    current_floor.rooms_size = rooms_size;
-    current_floor.room_tiles_size = room_tiles_size;
-    current_floor.rooms = new int[rooms_size];
-    current_floor.room_tiles = new Tile[room_tiles_size];
+    current_floor.room_tiles_width = room_tiles_width;
+    current_floor.rooms = new int[floor_size * floor_size];
+    current_floor.room_tiles = new Tile[room_tiles_width * (floor_size * ROOM_TILE_HEIGHT)];
     iterate_rooms(current_floor, [](int /*x*/, int /*y*/, int & room) -> void { room = 0; });
 
     iterate_room_tiles(current_floor, [](int /*x*/, int /*y*/, Tile & room_tile) -> void
@@ -715,8 +712,7 @@ void destroy_floor()
 {
     vector<Entity> & entities = current_floor.entities;
     current_floor.size = 0;
-    current_floor.rooms_size = 0;
-    current_floor.room_tiles_size = 0;
+    current_floor.room_tiles_width = 0;
     delete[] current_floor.rooms;
     delete[] current_floor.room_tiles;
     current_floor.possible_rooms.clear();
