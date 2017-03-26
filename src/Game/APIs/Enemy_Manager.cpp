@@ -141,6 +141,7 @@ void destroy_enemies()
 {
     delete[] enemies;
     for_each(enemy_entities, flag_entity_for_deletion);
+    enemy_entities.clear();
 }
 
 

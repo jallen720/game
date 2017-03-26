@@ -102,6 +102,7 @@ void game_manager_unsubscribe(Entity /*entity*/)
     cleanup_floor();
     room_change_handlers.clear();
     player_position = nullptr;
+    spawn_position = nullptr;
 }
 
 
