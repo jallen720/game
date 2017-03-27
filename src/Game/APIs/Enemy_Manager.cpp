@@ -6,6 +6,7 @@
 #include "Nito/Components.hpp"
 #include "Nito/Collider_Component.hpp"
 #include "Nito/APIs/ECS.hpp"
+#include "Nito/APIs/Scene.hpp"
 #include "Cpp_Utils/Collection.hpp"
 
 #include "Game/APIs/Floor_Manager.hpp"
@@ -30,8 +31,11 @@ using Nito::Collider;
 
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
-using Nito::generate_entity;
+using Nito::get_component;
 using Nito::flag_entity_for_deletion;
+
+// Nito/APIs/Scene.hpp
+using Nito::load_blueprint;
 
 // Cpp_Utils/Collection.hpp
 using Cpp_Utils::for_each;
@@ -93,47 +97,10 @@ void generate_enemies()
     {
         if (enemy == Enemies::TURRET)
         {
-            static const vector<string> TURRET_SYSTEMS
-            {
-                "renderer",
-                "sprite_dimensions_handler",
-                "circle_collider",
-                "health",
-                "orientation_handler",
-                "turret",
-                "depth_handler",
-            };
-
-            auto transform = new Transform { vec3(x, y, 0) * *room_tile_texture_scale, vec3(1), 0 };
-
-            Entity enemy_entity = generate_entity(
-                {
-                    { "layer"           , new string("enemy")                                                },
-                    { "render_layer"    , new string("world")                                                },
-                    { "sprite"          , new Sprite { true, "resources/textures/turret_up.png", "texture" } },
-                    { "dimensions"      , new Dimensions { 0, 0, vec3(0.5f, 0.5f, 0) }                       },
-                    { "transform"       , transform                                                          },
-                    { "collider"        , new Collider { false, true, false, {} }                            },
-                    { "circle_collider" , new Circle_Collider { 0.2f }                                       },
-                    { "health"          , new Health { 100, 100, {} }                                        },
-                    {
-                        "orientation_handler",
-                        new Orientation_Handler
-                        {
-                            Orientation::DOWN,
-                            vec3(0, -1, 0),
-                            {
-                                { Orientation::LEFT  , "resources/textures/turret_left.png"  },
-                                { Orientation::UP    , "resources/textures/turret_up.png"    },
-                                { Orientation::RIGHT , "resources/textures/turret_right.png" },
-                                { Orientation::DOWN  , "resources/textures/turret_down.png"  },
-                            }
-                        }
-                    },
-                },
-                TURRET_SYSTEMS);
-
-            enemy_entities.push_back(enemy_entity);
+            Entity turret = load_blueprint("turret");
+            auto transform = (Transform *)get_component(turret, "transform");
+            transform->position = vec3(x, y, 0) * *room_tile_texture_scale;
+            enemy_entities.push_back(turret);
         }
     });
 }
