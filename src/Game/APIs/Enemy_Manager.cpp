@@ -98,8 +98,7 @@ void generate_enemies()
         if (enemy == Enemies::TURRET)
         {
             Entity turret = load_blueprint("turret");
-            auto transform = (Transform *)get_component(turret, "transform");
-            transform->position = vec3(x, y, 0) * *room_tile_texture_scale;
+            ((Transform *)get_component(turret, "transform"))->position = vec3(x, y, 0) * *room_tile_texture_scale;
             enemy_entities.push_back(turret);
         }
     });
