@@ -108,7 +108,7 @@ void game_manager_unsubscribe(Entity /*entity*/)
 
 void game_manager_change_rooms(float door_rotation)
 {
-    static const float PLAYER_MOVEMENT_VALUE = 0.7f;
+    static const float PLAYER_MOVEMENT_VALUE = 1.1f;
 
     last_room = current_room;
 

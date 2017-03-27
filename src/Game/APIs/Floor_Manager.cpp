@@ -618,8 +618,8 @@ void generate_floor(int floor_size)
                 }
                 else
                 {
-                    line_collider->begin.y = -0.1f;
-                    line_collider->end.y = -0.1f;
+                    line_collider->begin.y = 0.1f;
+                    line_collider->end.y = 0.1f;
                 }
 
                 tile_components["line_collider"] = line_collider;
