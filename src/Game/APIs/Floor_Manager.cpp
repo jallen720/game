@@ -427,7 +427,7 @@ void generate_floor(int floor_size)
     static const int MAX_ROOM_SIZE = 4;
 
     // Calculate the max number of fully-sized rooms that can be generated. The "- 2" & "+ 2" account for the spawn and
-    // boss rooms being size 1.
+    // boss rooms being size 1, therefore not being required to be multiplied by MAX_ROOM_SIZE.
     const int max_room_id = (((floor_size * floor_size) - 2) / MAX_ROOM_SIZE) + 2;
 
     const int root_room_x = random(0, floor_size);
