@@ -561,7 +561,7 @@ void generate_floor(int floor_size)
             };
 
 
-            // Give wall tiles a line collider.
+            // Give wall tiles a collider.
             if (tile_type == Tile_Types::RIGHT_DOOR_WALL ||
                 tile_type == Tile_Types::LEFT_DOOR_WALL ||
                 tile_type == Tile_Types::WALL_CORNER_INNER ||
@@ -599,6 +599,7 @@ void generate_floor(int floor_size)
                 }
 
 
+                // Give walls and doors line colliders.
                 if (tile_type == Tile_Types::WALL ||
                     tile_type == Tile_Types::DOOR)
                 {
@@ -623,6 +624,7 @@ void generate_floor(int floor_size)
                     tile_components["line_collider"] = line_collider;
                     tile_systems.push_back("line_collider");
                 }
+                // Give door-adjacent walls, inner-wall corners and next floor tiles polygon colliders.
                 else if (tile_type == Tile_Types::RIGHT_DOOR_WALL ||
                          tile_type == Tile_Types::LEFT_DOOR_WALL ||
                          tile_type == Tile_Types::WALL_CORNER_INNER ||
