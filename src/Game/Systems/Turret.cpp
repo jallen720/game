@@ -20,7 +20,9 @@ using std::string;
 using std::vector;
 
 // glm/glm.hpp
+using glm::vec2;
 using glm::vec3;
+using glm::distance;
 
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
@@ -108,23 +110,26 @@ void turret_unsubscribe(Entity entity)
 
 void turret_update()
 {
+    static const float TURRET_RANGE = 3.0f;
+
     const float delta_time = get_delta_time() * get_time_scale();
 
     for_each(entity_states, [&](Entity /*entity*/, Turret_State & entity_state) -> void
     {
         const vec3 & position = entity_state.transform->position;
+        const vec3 & target_position = *entity_state.target_position;
         float & cooldown = entity_state.cooldown;
         vec3 & look_direction = entity_state.orientation_handler->look_direction;
-        look_direction = *entity_state.target_position - position;
+        look_direction = target_position - position;
 
-        if (cooldown <= 0.0f)
+        if (cooldown > 0.0f)
+        {
+            cooldown -= delta_time;
+        }
+        else if (distance((vec2)target_position, (vec2)position) < TURRET_RANGE)
         {
             fire_projectile(position, look_direction, 1.0f, TARGET_LAYERS);
             cooldown = FIRE_COOLDOWN;
-        }
-        else
-        {
-            cooldown -= delta_time;
         }
     });
 }
