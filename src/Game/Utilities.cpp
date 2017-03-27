@@ -5,6 +5,7 @@
 #include <ctime>
 #include "Nito/Components.hpp"
 #include "Nito/Collider_Component.hpp"
+#include "Nito/APIs/Scene.hpp"
 
 #include "Game/Components.hpp"
 
@@ -29,9 +30,11 @@ using Nito::Collider;
 
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
-using Nito::generate_entity;
 using Nito::has_component;
 using Nito::get_component;
+
+// Nito/APIs/Scene.hpp
+using Nito::load_blueprint;
 
 
 namespace Game
@@ -45,26 +48,13 @@ namespace Game
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void fire_projectile(const vec3 & origin, const vec3 & direction, float duration, const vector<string> & target_layers)
 {
-    static const vector<string> PROJECTILE_SYSTEMS
-    {
-        "projectile",
-        "sprite_dimensions_handler",
-        "renderer",
-        "depth_handler",
-        "circle_collider",
-    };
-
-    generate_entity(
-        {
-            { "transform"       , new Transform { origin, vec3(1.0f), 0.0f }                             },
-            { "projectile"      , new Projectile { 3.0f, normalize(direction), duration, target_layers } },
-            { "sprite"          , new Sprite { true, "resources/textures/projectile.png", "texture" }    },
-            { "dimensions"      , new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) }                  },
-            { "collider"        , new Collider { false, false, false, {} }                               },
-            { "circle_collider" , new Circle_Collider { 0.065f }                                         },
-            { "render_layer"    , new string("world")                                                    },
-        },
-        PROJECTILE_SYSTEMS);
+    Entity projectile_entity = load_blueprint("projectile");
+    auto projectile = (Projectile *)get_component(projectile_entity, "projectile");
+    ((Transform *)get_component(projectile_entity, "transform"))->position = origin;
+    projectile->speed = 3.0f;
+    projectile->direction = normalize(direction);
+    projectile->duration = duration;
+    projectile->target_layers = target_layers;
 }
 
 

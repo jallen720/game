@@ -41,5 +41,38 @@
             "turret",
             "depth_handler"
         ]
+    },
+    "projectile":
+    {
+        "components":
+        {
+            "render_layer": "world",
+            "sprite":
+            {
+                "texture_path": "resources/textures/projectile.png",
+                "shader_pipeline_name": "texture"
+            },
+            "dimensions":
+            {
+                "origin": { "x": 0.5, "y": 0.5 }
+            },
+            "transform": {},
+            "projectile":
+            {
+                "speed": 3
+            },
+            "collider":
+            {
+                "render": false
+            },
+            "circle_collider":
+            {
+                "radius": 0.065
+            }
+        },
+        "systems":
+        [
+            "depth_handler"
+        ]
     }
 }
