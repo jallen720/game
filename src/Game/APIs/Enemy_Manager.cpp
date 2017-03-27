@@ -113,7 +113,7 @@ void generate_enemies()
                     { "sprite"          , new Sprite { true, "resources/textures/turret_up.png", "texture" } },
                     { "dimensions"      , new Dimensions { 0, 0, vec3(0.5f, 0.5f, 0) }                       },
                     { "transform"       , transform                                                          },
-                    { "collider"        , new Collider { true, true, false, {} }                             },
+                    { "collider"        , new Collider { false, true, false, {} }                            },
                     { "circle_collider" , new Circle_Collider { 0.2f }                                       },
                     { "health"          , new Health { 100, 100, {} }                                        },
                     {
