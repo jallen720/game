@@ -597,95 +597,94 @@ void generate_floor(int floor_size)
                         }
                     };
                 }
-
-
-                // Give walls and doors line colliders.
-                if (tile_type == Tile_Types::WALL ||
-                    tile_type == Tile_Types::DOOR)
-                {
-                    // Create and configure line collider component based on tile type.
-                    auto line_collider = new Line_Collider
-                    {
-                        vec3(-0.25f, 0.0f, 0.0f),
-                        vec3(0.25f, 0.0f, 0.0f),
-                    };
-
-                    if (tile_type == Tile_Types::WALL)
-                    {
-                        line_collider->begin.y = 0.25f;
-                        line_collider->end.y = 0.25f;
-                    }
-                    else
-                    {
-                        line_collider->begin.y = -0.1f;
-                        line_collider->end.y = -0.1f;
-                    }
-
-                    tile_components["line_collider"] = line_collider;
-                    tile_systems.push_back("line_collider");
-                }
-                // Give door-adjacent walls, inner-wall corners and next floor tiles polygon colliders.
-                else if (tile_type == Tile_Types::RIGHT_DOOR_WALL ||
-                         tile_type == Tile_Types::LEFT_DOOR_WALL ||
-                         tile_type == Tile_Types::WALL_CORNER_INNER ||
-                         tile_type == Tile_Types::NEXT_FLOOR)
-                {
-                    static const map<Tile_Types, const vector<vec3>> POINTS
-                    {
-                        {
-                            Tile_Types::RIGHT_DOOR_WALL,
-                            {
-                                vec3(-0.25f, 0.25f, 0.0f),
-                                vec3( 0.25f, 0.25f, 0.0f),
-                                vec3( 0.25f,-0.25f, 0.0f),
-                            }
-                        },
-                        {
-                            Tile_Types::LEFT_DOOR_WALL,
-                            {
-                                vec3(-0.25f,-0.25f, 0.0f),
-                                vec3(-0.25f, 0.25f, 0.0f),
-                                vec3( 0.25f, 0.25f, 0.0f),
-                            }
-                        },
-                        {
-                            Tile_Types::WALL_CORNER_INNER,
-                            {
-                                vec3(-0.25f , 0.25f , 0.0f),
-                                vec3( 0.05f , 0.25f , 0.0f),
-                                vec3( 0.25f , 0.05f , 0.0f),
-                                vec3( 0.25f ,-0.25f , 0.0f),
-                            }
-                        },
-                        {
-                            Tile_Types::NEXT_FLOOR,
-                            {
-                                vec3(-0.2f ,-0.2f , 0.0f),
-                                vec3(-0.2f , 0.2f , 0.0f),
-                                vec3( 0.2f , 0.2f , 0.0f),
-                                vec3( 0.2f ,-0.2f , 0.0f),
-                            }
-                        },
-                    };
-
-                    static const map<Tile_Types, bool> WRAP_FLAGS
-                    {
-                        { Tile_Types::RIGHT_DOOR_WALL   , false },
-                        { Tile_Types::LEFT_DOOR_WALL    , false },
-                        { Tile_Types::WALL_CORNER_INNER , false },
-                        { Tile_Types::NEXT_FLOOR        , true  },
-                    };
-
-                    tile_components["polygon_collider"] = new Polygon_Collider
-                    {
-                        POINTS.at(tile_type),
-                        WRAP_FLAGS.at(tile_type),
-                    };
-
-                    tile_systems.push_back("polygon_collider");
-                }
             }
 
+
+            // Give walls and doors line colliders.
+            if (tile_type == Tile_Types::WALL ||
+                tile_type == Tile_Types::DOOR)
+            {
+                // Create and configure line collider component based on tile type.
+                auto line_collider = new Line_Collider
+                {
+                    vec3(-0.25f, 0.0f, 0.0f),
+                    vec3(0.25f, 0.0f, 0.0f),
+                };
+
+                if (tile_type == Tile_Types::WALL)
+                {
+                    line_collider->begin.y = 0.25f;
+                    line_collider->end.y = 0.25f;
+                }
+                else
+                {
+                    line_collider->begin.y = -0.1f;
+                    line_collider->end.y = -0.1f;
+                }
+
+                tile_components["line_collider"] = line_collider;
+                tile_systems.push_back("line_collider");
+            }
+            // Give door-adjacent walls, inner-wall corners and next floor tiles polygon colliders.
+            else if (tile_type == Tile_Types::RIGHT_DOOR_WALL ||
+                     tile_type == Tile_Types::LEFT_DOOR_WALL ||
+                     tile_type == Tile_Types::WALL_CORNER_INNER ||
+                     tile_type == Tile_Types::NEXT_FLOOR)
+            {
+                static const map<Tile_Types, const vector<vec3>> POINTS
+                {
+                    {
+                        Tile_Types::RIGHT_DOOR_WALL,
+                        {
+                            vec3(-0.25f, 0.25f, 0.0f),
+                            vec3( 0.25f, 0.25f, 0.0f),
+                            vec3( 0.25f,-0.25f, 0.0f),
+                        }
+                    },
+                    {
+                        Tile_Types::LEFT_DOOR_WALL,
+                        {
+                            vec3(-0.25f,-0.25f, 0.0f),
+                            vec3(-0.25f, 0.25f, 0.0f),
+                            vec3( 0.25f, 0.25f, 0.0f),
+                        }
+                    },
+                    {
+                        Tile_Types::WALL_CORNER_INNER,
+                        {
+                            vec3(-0.25f , 0.25f , 0.0f),
+                            vec3( 0.05f , 0.25f , 0.0f),
+                            vec3( 0.25f , 0.05f , 0.0f),
+                            vec3( 0.25f ,-0.25f , 0.0f),
+                        }
+                    },
+                    {
+                        Tile_Types::NEXT_FLOOR,
+                        {
+                            vec3(-0.2f ,-0.2f , 0.0f),
+                            vec3(-0.2f , 0.2f , 0.0f),
+                            vec3( 0.2f , 0.2f , 0.0f),
+                            vec3( 0.2f ,-0.2f , 0.0f),
+                        }
+                    },
+                };
+
+                static const map<Tile_Types, bool> WRAP_FLAGS
+                {
+                    { Tile_Types::RIGHT_DOOR_WALL   , false },
+                    { Tile_Types::LEFT_DOOR_WALL    , false },
+                    { Tile_Types::WALL_CORNER_INNER , false },
+                    { Tile_Types::NEXT_FLOOR        , true  },
+                };
+
+                tile_components["polygon_collider"] = new Polygon_Collider
+                {
+                    POINTS.at(tile_type),
+                    WRAP_FLAGS.at(tile_type),
+                };
+
+                tile_systems.push_back("polygon_collider");
+            }
 
             entities.push_back(generate_entity(tile_components, tile_systems));
             transform->position = vec3(tile_x, tile_y, 0.0f) * ROOM_TILE_TEXTURE_SCALE;
