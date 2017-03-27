@@ -120,7 +120,10 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
         {
             [](const JSON & data) -> Component
             {
-                vec3 direction;
+                auto projectile = new Projectile;
+                projectile->speed = contains_key(data, "speed") ? data["speed"].get<float>() : 1.0f;
+                projectile->duration = contains_key(data, "duration") ? data["duration"].get<float>() : 1.0f;
+                vec3 & direction = projectile->direction;
 
                 if (contains_key(data, "direction"))
                 {
@@ -129,13 +132,12 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
                     direction.y = direction_data["y"];
                 }
 
-                return new Projectile
+                if (contains_key(data, "target_layers"))
                 {
-                    data["speed"],
-                    direction,
-                    data["duration"],
-                    data["target_layers"],
-                };
+                    projectile->target_layers = data["target_layers"].get<vector<string>>();
+                }
+
+                return projectile;
             },
             get_component_deallocator<Projectile>(),
         }
