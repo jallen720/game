@@ -14,10 +14,7 @@
             {
                 "origin": { "x": 0.5, "y": 0.5 }
             },
-            "transform":
-            {
-                "position": { "x": 2.0, "y": 2.0 }
-            },
+            "transform": {},
             "orientation_handler":
             {
                 "texture_paths":
