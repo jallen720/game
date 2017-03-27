@@ -82,7 +82,7 @@ void generate_enemies()
 
         if (get_room_tile(x, y).type == Tile_Types::FLOOR)
         {
-            if (random(1, 25) == 7)
+            if (random(1, 50) == 7)
             {
                 enemy = Enemies::TURRET;
             }
@@ -106,7 +106,7 @@ void generate_enemies()
 
             auto transform = new Transform { vec3(x, y, 0) * *room_tile_texture_scale, vec3(1), 0 };
 
-            generate_entity(
+            Entity enemy_entity = generate_entity(
                 {
                     { "layer"           , new string("enemy")                                                },
                     { "render_layer"    , new string("world")                                                },
@@ -132,6 +132,8 @@ void generate_enemies()
                     },
                 },
                 TURRET_SYSTEMS);
+
+            enemy_entities.push_back(enemy_entity);
         }
     });
 }
