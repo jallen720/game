@@ -33,7 +33,6 @@ using Nito::Sprite;
 using Nito::Entity;
 using Nito::Component;
 using Nito::get_component;
-using Nito::generate_entity;
 using Nito::flag_entity_for_deletion;
 
 // Nito/APIs/Scene.hpp
