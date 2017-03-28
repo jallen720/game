@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include "Nito/Components.hpp"
 #include "Nito/APIs/ECS.hpp"
+#include "Nito/APIs/Scene.hpp"
 #include "Nito/APIs/Graphics.hpp"
 #include "Nito/APIs/Resources.hpp"
 #include "Cpp_Utils/Collection.hpp"
@@ -34,6 +35,9 @@ using Nito::Component;
 using Nito::get_component;
 using Nito::generate_entity;
 using Nito::flag_entity_for_deletion;
+
+// Nito/APIs/Scene.hpp
+using Nito::load_blueprint;
 
 // Nito/APIs/Graphics.hpp
 using Nito::get_pixels_per_unit;
@@ -84,48 +88,56 @@ static map<int, vector<Minimap_Room>> minimap_room_groups;
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static map<string, Component> get_room_components(int x, int y, float z, const string & texture_path)
+static void generate_minimap_tile(
+    const vec3 & position,
+    const string & texture_path,
+    bool ** render_flag,
+    float rotation = 0.0f)
 {
-    static const vec3 ROOM_ORIGIN(0.5f, 0.5f, 0.0f);
-
+    Entity minimap_tile = load_blueprint("minimap_tile");
     const int floor_offset = get_floor_size() - 1;
+    auto sprite = (Sprite *)get_component(minimap_tile, "sprite");
+    sprite->texture_path = texture_path;
+    *render_flag = &sprite->render;
 
-    const vec3 position =
-        (vec3(x, y, z) * room_texture_offset) -
+    ((UI_Transform *)get_component(minimap_tile, "ui_transform"))->position =
+        (position * room_texture_offset) -
         (room_texture_offset * vec3(floor_offset, floor_offset, 0.0f)) -
-        (room_texture_offset * ROOM_ORIGIN) -
-        0.1f;
+        (room_texture_offset * ((Dimensions *)get_component(minimap_tile, "dimensions"))->origin) -
+        vec3(0.1f, 0.1f, 0);
 
-    return
-    {
-        { "render_layer" , new string("ui")                                      },
-        { "transform"    , new Transform { vec3(0.0f), vec3(1.0f), 0.0f }        },
-        { "ui_transform" , new UI_Transform { position, vec3(1.0f, 1.0f, 0.0f) } },
-        { "dimensions"   , new Dimensions { 0.0f, 0.0f, ROOM_ORIGIN }            },
-        { "sprite"       , new Sprite { true, texture_path, "texture" }          },
-    };
+    ((Transform *)get_component(minimap_tile, "transform"))->rotation = rotation;
+    minimap_entities.push_back(minimap_tile);
 }
 
 
-static void generate_room(const map<string, Component> & room_components, bool ** render_flag)
+static void generate_room_connectors(
+    int x,
+    int y,
+    float rotation,
+    vector<bool *> & occupied_render_flags,
+    vector<bool *> & vacant_render_flags)
 {
-    static const vector<string> MINIMAP_ROOM_SYSTEMS
-    {
-        "ui_transform",
-        "sprite_dimensions_handler",
-        "renderer",
-    };
+    static const string ROOM_CONNECTOR_TEXTURE_PATH = "resources/textures/ui/minimap_room_connector.png";
+    static const string ROOM_CONNECTOR_VACANT_TEXTURE_PATH = "resources/textures/ui/minimap_room_connector_vacant.png";
 
-    *render_flag = &((Sprite *)room_components.at("sprite"))->render;
-    minimap_entities.push_back(generate_entity(room_components, MINIMAP_ROOM_SYSTEMS));
-}
+    bool * room_connector_render_flag;
+    bool * room_connector_vacant_render_flag;
 
+    generate_minimap_tile(
+        vec3(x, y, -1.0f),
+        ROOM_CONNECTOR_TEXTURE_PATH,
+        &room_connector_render_flag,
+        rotation);
 
-static void generate_room_connector(int x, int y, float rotation, const string & texture_path, bool ** render_flag)
-{
-    map<string, Component> room_connector_components = get_room_components(x, y, -1.0f, texture_path);
-    ((Transform *)room_connector_components["transform"])->rotation = rotation;
-    return generate_room(room_connector_components, render_flag);
+    generate_minimap_tile(
+        vec3(x, y, -1.0f),
+        ROOM_CONNECTOR_VACANT_TEXTURE_PATH,
+        &room_connector_vacant_render_flag,
+        rotation);
+
+    occupied_render_flags.push_back(room_connector_render_flag);
+    vacant_render_flags.push_back(room_connector_vacant_render_flag);
 }
 
 
@@ -197,25 +209,6 @@ static void vacate_room(int room)
 }
 
 
-static void generate_room_connectors(
-    int x,
-    int y,
-    float rotation,
-    vector<bool *> & occupied_render_flags,
-    vector<bool *> & vacant_render_flags)
-{
-    static const string ROOM_CONNECTOR_TEXTURE_PATH = "resources/textures/ui/minimap_room_connector.png";
-    static const string ROOM_CONNECTOR_VACANT_TEXTURE_PATH = "resources/textures/ui/minimap_room_connector_vacant.png";
-
-    bool * room_connector_render_flag;
-    bool * room_connector_vacant_render_flag;
-    generate_room_connector(x, y, rotation, ROOM_CONNECTOR_TEXTURE_PATH, &room_connector_render_flag);
-    generate_room_connector(x, y, rotation, ROOM_CONNECTOR_VACANT_TEXTURE_PATH, &room_connector_vacant_render_flag);
-    occupied_render_flags.push_back(room_connector_render_flag);
-    vacant_render_flags.push_back(room_connector_vacant_render_flag);
-}
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Interface
@@ -259,9 +252,9 @@ void generate_minimap()
         vector<bool *> & vacant_render_flags = minimap_room.vacant_render_flags;
         bool * room_render_flag;
         bool * room_vacant_render_flag;
-        generate_room(get_room_components(x, y, 0.0f, MINIMAP_ROOM_BASE_TEXTURE_PATH), &minimap_room.base_render_flag);
-        generate_room(get_room_components(x, y, -1.0f, MINIMAP_ROOM_TEXTURE_PATH), &room_render_flag);
-        generate_room(get_room_components(x, y, -1.0f, MINIMAP_ROOM_VACANT_TEXTURE_PATH), &room_vacant_render_flag);
+        generate_minimap_tile(vec3(x, y, 0.0f), MINIMAP_ROOM_BASE_TEXTURE_PATH, &minimap_room.base_render_flag);
+        generate_minimap_tile(vec3(x, y,-1.0f), MINIMAP_ROOM_TEXTURE_PATH, &room_render_flag);
+        generate_minimap_tile(vec3(x, y,-1.0f), MINIMAP_ROOM_VACANT_TEXTURE_PATH, &room_vacant_render_flag);
         occupied_render_flags.push_back(room_render_flag);
         vacant_render_flags.push_back(room_vacant_render_flag);
 

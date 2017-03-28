@@ -74,5 +74,26 @@
         [
             "depth_handler"
         ]
+    },
+    "minimap_tile":
+    {
+        "components":
+        {
+            "render_layer": "ui",
+            "sprite":
+            {
+                "texture_path": "resources/textures/ui/minimap_room.png",
+                "shader_pipeline_name": "texture"
+            },
+            "dimensions":
+            {
+                "origin": { "x": 0.5, "y": 0.5 }
+            },
+            "transform": {},
+            "ui_transform":
+            {
+                "anchor": { "x": 1, "y": 1 }
+            }
+        }
     }
 }
