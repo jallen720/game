@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 #include "Nito/Components.hpp"
 #include "Nito/APIs/Input.hpp"
+#include "Nito/APIs/Scene.hpp"
 #include "Cpp_Utils/Collection.hpp"
 #include "Cpp_Utils/Map.hpp"
 #include "Cpp_Utils/String.hpp"
@@ -44,6 +45,9 @@ using Nito::Button_Actions;
 using Nito::get_controller_axis;
 using Nito::set_controller_button_handler;
 using Nito::remove_controller_button_handler;
+
+// Nito/APIs/Scene.hpp
+using Nito::load_blueprint;
 
 // Cpp_Utils/Collection.hpp
 using Cpp_Utils::for_each;
@@ -104,44 +108,13 @@ static Button * generate_button(
     int index,
     int button_count)
 {
-    static const vector<string> BUTTON_SYSTEMS
-    {
-        "button",
-        "renderer",
-        "sprite_dimensions_handler",
-        "ui_mouse_event_dispatcher",
-        "local_transform"
-    };
-
     static const vector<string> BUTTON_TEXT_SYSTEMS
     {
         "text_renderer",
         "local_transform"
     };
 
-    auto button = new Button
-    {
-        "resources/textures/ui/button_hover.png",
-        "resources/textures/ui/button_pressed.png",
-        {},
-    };
-
-    const float button_y = ((button_count - 1) / 2.0f) - (index * 1.2f);
     string button_id = get_button_id(entity, button_name);
-
-    generate_entity(
-        {
-            { "id"                      , new string(button_id)                                              },
-            { "parent_id"               , new string(menu_id)                                                },
-            { "render_layer"            , new string("ui")                                                   },
-            { "button"                  , button                                                             },
-            { "sprite"                  , new Sprite { true, "resources/textures/ui/button.png", "texture" } },
-            { "transform"               , new Transform { vec3(), vec3(), 0.0f }                             },
-            { "dimensions"              , new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) }              },
-            { "local_transform"         , new Transform { vec3(0.0f, button_y, 0.0f), vec3(1.0f), 0.0f }     },
-            { "ui_mouse_event_handlers" , new UI_Mouse_Event_Handlers                                        },
-        },
-        BUTTON_SYSTEMS);
 
     generate_entity(
         {
@@ -154,34 +127,19 @@ static Button * generate_button(
         },
         BUTTON_TEXT_SYSTEMS);
 
-    return button;
+    Entity button = load_blueprint("button");
+    *(string *)get_component(button, "id") = button_id;
+    *(string *)get_component(button, "parent_id") = menu_id;
+    ((Transform *)get_component(button, "local_transform"))->position.y = ((button_count - 1) / 2.0f) - (index * 1.2f);
+    return (Button *)get_component(button, "button");
 }
 
 
 string * generate_selection_sprite(Entity entity)
 {
-    static const vector<string> SELECTION_SPRITE_SYSTEMS
-    {
-        "renderer",
-        "sprite_dimensions_handler",
-        "local_transform"
-    };
-
-    auto parent_id = new string("");
-
-    generate_entity(
-        {
-            { "id"              , new string("selection_sprite " + to_string(entity))                   },
-            { "parent_id"       , parent_id                                                             },
-            { "render_layer"    , new string("ui")                                                      },
-            { "sprite"          , new Sprite { true, "resources/textures/ui/selection.png", "texture" } },
-            { "dimensions"      , new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) }                 },
-            { "transform"       , new Transform { vec3(), vec3(1.0f), 0.0f }                            },
-            { "local_transform" , new Transform { vec3(0.0f, 0.0f, 1.0f), vec3(1.0f), 0.0f }            },
-        },
-        SELECTION_SPRITE_SYSTEMS);
-
-    return parent_id;
+    Entity selection_sprite = load_blueprint("selection_sprite");
+    *((string *)get_component(selection_sprite, "id")) = "selection_sprite " + to_string(entity);
+    return (string *)get_component(selection_sprite, "parent_id");
 }
 
 

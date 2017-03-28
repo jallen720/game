@@ -95,5 +95,54 @@
                 "anchor": { "x": 1, "y": 1 }
             }
         }
+    },
+    "button":
+    {
+        "components":
+        {
+            "id": "",
+            "parent_id": "",
+            "render_layer": "ui",
+            "button":
+            {
+                "hover_texture_path": "resources/textures/ui/button_hover.png",
+                "pressed_texture_path": "resources/textures/ui/button_pressed.png"
+            },
+            "sprite":
+            {
+                "texture_path": "resources/textures/ui/button.png",
+                "shader_pipeline_name": "texture"
+            },
+            "transform": {},
+            "dimensions":
+            {
+                "origin": { "x": 0.5, "y": 0.5 }
+            },
+            "local_transform": {},
+            "ui_mouse_event_handlers": {}
+        }
+    },
+    "selection_sprite":
+    {
+        "components":
+        {
+            "id": "",
+            "parent_id": "",
+            "render_layer": "ui",
+            "sprite":
+            {
+                "texture_path": "resources/textures/ui/selection.png",
+                "shader_pipeline_name": "texture"
+            },
+            "dimensions":
+            {
+                "origin": { "x": 0.5, "y": 0.5 }
+            },
+            "transform": {},
+            "local_transform":
+            {
+                "position": { "z": -1 }
+            }
+        }
     }
 }
