@@ -35,7 +35,6 @@ using glm::normalize;
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
 using Nito::get_component;
-using Nito::generate_entity;
 
 // Nito/Engine.hpp
 using Nito::get_time_scale;
@@ -45,7 +44,6 @@ using Nito::Transform;
 using Nito::Dimensions;
 
 // Nito/Input.hpp
-using Nito::debug_controllers;
 using Nito::get_controller_axis;
 using Nito::set_controller_button_handler;
 using Nito::remove_controller_button_handler;
