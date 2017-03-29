@@ -36,7 +36,7 @@
                 {
                     "left": "resources/textures/turret_left.png",
                     "up": "resources/textures/turret_up.png",
-                    "right":"resources/textures/turret_right.png",
+                    "right": "resources/textures/turret_right.png",
                     "down": "resources/textures/turret_down.png"
                 }
             },
