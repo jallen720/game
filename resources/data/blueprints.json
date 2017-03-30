@@ -15,6 +15,216 @@
             "transform": {}
         }
     },
+    "collidable":
+    {
+        "components":
+        {
+            "collider":
+            {
+                "render": false
+            }
+        }
+    },
+    "static_obstacle":
+    {
+        "components":
+        {
+            "collider":
+            {
+                "send_collision": true
+            }
+        }
+    },
+    "corner_wall_tile":
+    {
+        "components":
+        {
+            "polygon_collider":
+            {
+                "wrap": false
+            }
+        }
+    },
+    "door_adjacent_wall_tile":
+    {
+        "components":
+        {
+            "sprite":
+            {
+                "texture_path": "resources/textures/tiles/wall.png"
+            }
+        }
+    },
+
+
+    "floor_tile":
+    {
+        "inherits":
+        [
+            "renderable"
+        ],
+        "components":
+        {
+            "sprite":
+            {
+                "texture_path": "resources/textures/tiles/floor.png"
+            }
+        }
+    },
+    "wall_tile":
+    {
+        "inherits":
+        [
+            "renderable",
+            "collidable",
+            "static_obstacle"
+        ],
+        "components":
+        {
+            "sprite":
+            {
+                "texture_path": "resources/textures/tiles/wall.png"
+            },
+            "line_collider":
+            {
+                "begin": { "x": -0.25, "y": 0.25 },
+                "end": { "x": 0.25, "y": 0.25 }
+            }
+        }
+    },
+    "door_tile":
+    {
+        "inherits":
+        [
+            "renderable",
+            "collidable"
+        ],
+        "components":
+        {
+            "sprite":
+            {
+                "texture_path": "resources/textures/tiles/door.png"
+            },
+            "line_collider":
+            {
+                "begin": { "x": -0.25, "y": 0.1 },
+                "end": { "x": 0.25, "y": 0.1 }
+            }
+        }
+    },
+    "next_floor_tile":
+    {
+        "inherits":
+        [
+            "renderable",
+            "collidable"
+        ],
+        "components":
+        {
+            "sprite":
+            {
+                "texture_path": "resources/textures/tiles/next_floor.png"
+            },
+            "polygon_collider":
+            {
+                "wrap": true,
+                "points":
+                [
+                    { "x": -0.2, "y": -0.2 },
+                    { "x": -0.2, "y":  0.2 },
+                    { "x":  0.2, "y":  0.2 },
+                    { "x":  0.2, "y": -0.2 }
+                ]
+            }
+        }
+    },
+    "right_door_wall_tile":
+    {
+        "inherits":
+        [
+            "renderable",
+            "collidable",
+            "static_obstacle",
+            "corner_wall_tile",
+            "door_adjacent_wall_tile"
+        ],
+        "components":
+        {
+            "polygon_collider":
+            {
+                "points":
+                [
+                    { "x": -0.25, "y":  0.25 },
+                    { "x":  0.25, "y":  0.25 },
+                    { "x":  0.25, "y": -0.25 }
+                ]
+            }
+        }
+    },
+    "left_door_wall_tile":
+    {
+        "inherits":
+        [
+            "renderable",
+            "collidable",
+            "static_obstacle",
+            "corner_wall_tile",
+            "door_adjacent_wall_tile"
+        ],
+        "components":
+        {
+            "polygon_collider":
+            {
+                "points":
+                [
+                    { "x": -0.25, "y": -0.25 },
+                    { "x": -0.25, "y":  0.25 },
+                    { "x":  0.25, "y":  0.25 }
+                ]
+            }
+        }
+    },
+    "wall_corner_tile":
+    {
+        "inherits":
+        [
+            "renderable"
+        ],
+        "components":
+        {
+            "sprite":
+            {
+                "texture_path": "resources/textures/tiles/wall_corner.png"
+            }
+        }
+    },
+    "wall_corner_inner_tile":
+    {
+        "inherits":
+        [
+            "renderable",
+            "collidable",
+            "static_obstacle",
+            "corner_wall_tile"
+        ],
+        "components":
+        {
+            "sprite":
+            {
+                "texture_path": "resources/textures/tiles/wall_corner_inner.png"
+            },
+            "polygon_collider":
+            {
+                "points":
+                [
+                    { "x": -0.25, "y":  0.25 },
+                    { "x":  0.05, "y":  0.25 },
+                    { "x":  0.25, "y":  0.05 },
+                    { "x":  0.25, "y": -0.25 }
+                ]
+            }
+        }
+    },
 
 
     "turret":

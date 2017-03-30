@@ -2,7 +2,6 @@
 
 
 #include <functional>
-#include <string>
 #include <glm/glm.hpp>
 
 
@@ -40,7 +39,6 @@ struct Tile
 {
     Tile_Types type;
     float rotation;
-    const std::string * texture_path;
 };
 
 

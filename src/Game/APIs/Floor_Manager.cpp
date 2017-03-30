@@ -2,10 +2,12 @@
 
 #include <vector>
 #include <map>
+#include <string>
 #include <stdexcept>
 #include "Nito/Components.hpp"
 #include "Nito/Collider_Component.hpp"
 #include "Nito/APIs/ECS.hpp"
+#include "Nito/APIs/Scene.hpp"
 #include "Nito/APIs/Graphics.hpp"
 #include "Cpp_Utils/Map.hpp"
 #include "Cpp_Utils/Collection.hpp"
@@ -32,6 +34,9 @@ using Nito::get_component;
 using Nito::has_component;
 using Nito::generate_entity;
 using Nito::flag_entity_for_deletion;
+
+// Nito/APIs/Scene.hpp
+using Nito::load_blueprint;
 
 // Nito/Components.hpp
 using Nito::Transform;
@@ -280,32 +285,6 @@ static void debug_floor(Floor & floor)
 }
 
 
-static void set_tile_type(Tile & tile, Tile_Types type)
-{
-    static const string WALL_TEXTURE_PATH = "resources/textures/tiles/wall.png";
-    static const string WALL_CORNER_TEXTURE_PATH = "resources/textures/tiles/wall_corner.png";
-    static const string WALL_CORNER_INNER_TEXTURE_PATH = "resources/textures/tiles/wall_corner_inner.png";
-    static const string DOOR_TEXTURE_PATH = "resources/textures/tiles/door.png";
-    static const string FLOOR_TEXTURE_PATH = "resources/textures/tiles/floor.png";
-    static const string NEXT_FLOOR_TEXTURE_PATH = "resources/textures/tiles/next_floor.png";
-
-    static const map<Tile_Types, const string *> TILE_TYPE_TEXTURE_PATHS
-    {
-        { Tile_Types::WALL              , &WALL_TEXTURE_PATH              },
-        { Tile_Types::WALL_CORNER       , &WALL_CORNER_TEXTURE_PATH       },
-        { Tile_Types::WALL_CORNER_INNER , &WALL_CORNER_INNER_TEXTURE_PATH },
-        { Tile_Types::DOOR              , &DOOR_TEXTURE_PATH              },
-        { Tile_Types::FLOOR             , &FLOOR_TEXTURE_PATH             },
-        { Tile_Types::LEFT_DOOR_WALL    , &WALL_TEXTURE_PATH              },
-        { Tile_Types::RIGHT_DOOR_WALL   , &WALL_TEXTURE_PATH              },
-        { Tile_Types::NEXT_FLOOR        , &NEXT_FLOOR_TEXTURE_PATH        },
-    };
-
-    tile.type = type;
-    tile.texture_path = TILE_TYPE_TEXTURE_PATHS.at(type);
-}
-
-
 static void generate_wall_tile(
     Tile & tile,
     int coordinate,
@@ -324,29 +303,29 @@ static void generate_wall_tile(
         // Inner corner
         if (neighbor == room && clockwise_neighbor == room)
         {
-            set_tile_type(tile, Tile_Types::WALL_CORNER_INNER);
+            tile.type = Tile_Types::WALL_CORNER_INNER;
         }
         // Wall to neighbor
         else if (neighbor == room)
         {
-            set_tile_type(tile, Tile_Types::WALL);
+            tile.type = Tile_Types::WALL;
             tile.rotation -= 90.0f;
         }
         // Wall to clockwise_neighbor
         else if (clockwise_neighbor == room)
         {
-            set_tile_type(tile, Tile_Types::WALL);
+            tile.type = Tile_Types::WALL;
         }
         // Outer corner
         else
         {
-            set_tile_type(tile, Tile_Types::WALL_CORNER);
+            tile.type = Tile_Types::WALL_CORNER;
         }
     }
     // Floor between rooms
     else if (neighbor == room)
     {
-        set_tile_type(tile, Tile_Types::FLOOR);
+        tile.type = Tile_Types::FLOOR;
         tile.rotation = 0.0f;
     }
     // Wall
@@ -355,28 +334,28 @@ static void generate_wall_tile(
         // Door
         if (coordinate == (dimension_size - 1) / 2)
         {
-            set_tile_type(tile, Tile_Types::DOOR);
+            tile.type = Tile_Types::DOOR;
         }
         // Door-adjacent wall
         else if (coordinate == (dimension_size - 2) / 2)
         {
-            set_tile_type(tile, inverted ? Tile_Types::LEFT_DOOR_WALL : Tile_Types::RIGHT_DOOR_WALL);
+            tile.type = inverted ? Tile_Types::LEFT_DOOR_WALL : Tile_Types::RIGHT_DOOR_WALL;
         }
         // Door-adjacent wall
         else if (coordinate == ((dimension_size - 2) / 2) + 2)
         {
-            set_tile_type(tile, inverted ? Tile_Types::RIGHT_DOOR_WALL : Tile_Types::LEFT_DOOR_WALL);
+            tile.type = inverted ? Tile_Types::RIGHT_DOOR_WALL : Tile_Types::LEFT_DOOR_WALL;
         }
         // Normal wall
         else
         {
-            set_tile_type(tile, Tile_Types::WALL);
+            tile.type = Tile_Types::WALL;
         }
     }
     // Normal wall
     else
     {
-        set_tile_type(tile, Tile_Types::WALL);
+        tile.type = Tile_Types::WALL;
     }
 }
 
@@ -476,11 +455,11 @@ void generate_floor(int floor_size)
                     x == (ROOM_TILE_WIDTH - 1) / 2 &&
                     y == (ROOM_TILE_HEIGHT - 1) / 2)
                 {
-                    set_tile_type(tile, Tile_Types::NEXT_FLOOR);
+                    tile.type = Tile_Types::NEXT_FLOOR;
                 }
                 else
                 {
-                    set_tile_type(tile, Tile_Types::FLOOR);
+                    tile.type = Tile_Types::FLOOR;
                 }
 
                 tile.rotation = 0.0f;
@@ -532,163 +511,64 @@ void generate_floor(int floor_size)
         vector<bool *> & render_flags = room_tile_render_flags[room];
 
 
-        iterate_room_tiles(current_floor, room_x, room_y, false, [&](int tile_x, int tile_y, const Tile & tile) -> void
+        iterate_room_tiles(current_floor, room_x, room_y, false, [&](
+            int tile_x,
+            int tile_y,
+            const Tile & tile_data) -> void
         {
-            const Tile_Types tile_type = tile.type;
+            static const map<Tile_Types, const string> TILE_TYPE_BLUEPRINTS
+            {
+                { Tile_Types::WALL              , "wall_tile"              },
+                { Tile_Types::WALL_CORNER       , "wall_corner_tile"       },
+                { Tile_Types::WALL_CORNER_INNER , "wall_corner_inner_tile" },
+                { Tile_Types::DOOR              , "door_tile"              },
+                { Tile_Types::FLOOR             , "floor_tile"             },
+                { Tile_Types::LEFT_DOOR_WALL    , "left_door_wall_tile"    },
+                { Tile_Types::RIGHT_DOOR_WALL   , "right_door_wall_tile"   },
+                { Tile_Types::NEXT_FLOOR        , "next_floor_tile"        },
+            };
+
+            const Tile_Types tile_type = tile_data.type;
 
             if (tile_type == Tile_Types::NONE)
             {
                 return;
             }
 
-            const float tile_rotation = tile.rotation;
-            auto transform = new Transform { vec3(), vec3(1.0f), tile_rotation };
-            auto sprite = new Sprite { true, *tile.texture_path, "texture" };
-            render_flags.push_back(&sprite->render);
 
-            map<string, Component> tile_components
+            // Create tile entity, set its position and rotation, and track it.
+            const float tile_rotation = tile_data.rotation;
+            Entity tile = load_blueprint(TILE_TYPE_BLUEPRINTS.at(tile_type));
+            auto transform = (Transform *)get_component(tile, "transform");
+            vec3 & position = transform->position;
+            transform->rotation = tile_rotation;
+            position = vec3(tile_x, tile_y, 0.0f) * ROOM_TILE_TEXTURE_SCALE;
+            position.z = ROOM_Z;
+            render_flags.push_back(&((Sprite *)get_component(tile, "sprite"))->render);
+            entities.push_back(tile);
+
+
+            // Set collision handlers for tiles that need them.
+            if (tile_type == Tile_Types::DOOR)
             {
-                { "render_layer" , new string("world")                                   },
-                { "transform"    , transform                                             },
-                { "dimensions"   , new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.5f, 0.0f) } },
-                { "sprite"       , sprite                                                },
-            };
-
-            vector<string> tile_systems
-            {
-                "sprite_dimensions_handler",
-                "renderer",
-            };
-
-
-            // Give wall tiles a collider.
-            if (tile_type == Tile_Types::RIGHT_DOOR_WALL ||
-                tile_type == Tile_Types::LEFT_DOOR_WALL ||
-                tile_type == Tile_Types::WALL_CORNER_INNER ||
-                tile_type == Tile_Types::NEXT_FLOOR ||
-                tile_type == Tile_Types::WALL ||
-                tile_type == Tile_Types::DOOR)
-            {
-                // Create and configure collider component based on tile type.
-                auto collider = new Collider { false, true, false, {} };
-                tile_components["collider"] = collider;
-
-                if (tile_type == Tile_Types::DOOR)
+                ((Collider *)get_component(tile, "collider"))->collision_handler = [=](Entity collision_entity) -> void
                 {
-                    collider->sends_collision = false;
-
-                    collider->collision_handler = [=](Entity collision_entity) -> void
+                    if (in_layer(collision_entity, "player"))
                     {
-                        if (in_layer(collision_entity, "player"))
-                        {
-                            game_manager_change_rooms(tile_rotation);
-                        }
-                    };
-                }
-                else if (tile_type == Tile_Types::NEXT_FLOOR)
-                {
-                    collider->sends_collision = false;
-
-                    collider->collision_handler = [=](Entity collision_entity) -> void
-                    {
-                        if (in_layer(collision_entity, "player"))
-                        {
-                            game_manager_complete_floor();
-                        }
-                    };
-                }
+                        game_manager_change_rooms(tile_rotation);
+                    }
+                };
             }
-
-
-            // Give walls and doors line colliders.
-            if (tile_type == Tile_Types::WALL ||
-                tile_type == Tile_Types::DOOR)
+            else if (tile_type == Tile_Types::NEXT_FLOOR)
             {
-                // Create and configure line collider component based on tile type.
-                auto line_collider = new Line_Collider
+                ((Collider *)get_component(tile, "collider"))->collision_handler = [=](Entity collision_entity) -> void
                 {
-                    vec3(-0.25f, 0.0f, 0.0f),
-                    vec3(0.25f, 0.0f, 0.0f),
+                    if (in_layer(collision_entity, "player"))
+                    {
+                        game_manager_complete_floor();
+                    }
                 };
-
-                if (tile_type == Tile_Types::WALL)
-                {
-                    line_collider->begin.y = 0.25f;
-                    line_collider->end.y = 0.25f;
-                }
-                else
-                {
-                    line_collider->begin.y = 0.1f;
-                    line_collider->end.y = 0.1f;
-                }
-
-                tile_components["line_collider"] = line_collider;
-                tile_systems.push_back("line_collider");
             }
-            // Give door-adjacent walls, inner-wall corners and next floor tiles polygon colliders.
-            else if (tile_type == Tile_Types::RIGHT_DOOR_WALL ||
-                     tile_type == Tile_Types::LEFT_DOOR_WALL ||
-                     tile_type == Tile_Types::WALL_CORNER_INNER ||
-                     tile_type == Tile_Types::NEXT_FLOOR)
-            {
-                static const map<Tile_Types, const vector<vec3>> POINTS
-                {
-                    {
-                        Tile_Types::RIGHT_DOOR_WALL,
-                        {
-                            vec3(-0.25f, 0.25f, 0.0f),
-                            vec3( 0.25f, 0.25f, 0.0f),
-                            vec3( 0.25f,-0.25f, 0.0f),
-                        }
-                    },
-                    {
-                        Tile_Types::LEFT_DOOR_WALL,
-                        {
-                            vec3(-0.25f,-0.25f, 0.0f),
-                            vec3(-0.25f, 0.25f, 0.0f),
-                            vec3( 0.25f, 0.25f, 0.0f),
-                        }
-                    },
-                    {
-                        Tile_Types::WALL_CORNER_INNER,
-                        {
-                            vec3(-0.25f , 0.25f , 0.0f),
-                            vec3( 0.05f , 0.25f , 0.0f),
-                            vec3( 0.25f , 0.05f , 0.0f),
-                            vec3( 0.25f ,-0.25f , 0.0f),
-                        }
-                    },
-                    {
-                        Tile_Types::NEXT_FLOOR,
-                        {
-                            vec3(-0.2f ,-0.2f , 0.0f),
-                            vec3(-0.2f , 0.2f , 0.0f),
-                            vec3( 0.2f , 0.2f , 0.0f),
-                            vec3( 0.2f ,-0.2f , 0.0f),
-                        }
-                    },
-                };
-
-                static const map<Tile_Types, bool> WRAP_FLAGS
-                {
-                    { Tile_Types::RIGHT_DOOR_WALL   , false },
-                    { Tile_Types::LEFT_DOOR_WALL    , false },
-                    { Tile_Types::WALL_CORNER_INNER , false },
-                    { Tile_Types::NEXT_FLOOR        , true  },
-                };
-
-                tile_components["polygon_collider"] = new Polygon_Collider
-                {
-                    POINTS.at(tile_type),
-                    WRAP_FLAGS.at(tile_type),
-                };
-
-                tile_systems.push_back("polygon_collider");
-            }
-
-            entities.push_back(generate_entity(tile_components, tile_systems));
-            transform->position = vec3(tile_x, tile_y, 0.0f) * ROOM_TILE_TEXTURE_SCALE;
-            transform->position.z = ROOM_Z;
         });
     });
 
