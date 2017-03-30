@@ -29,10 +29,7 @@ using glm::ivec2;
 
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
-using Nito::Component;
 using Nito::get_component;
-using Nito::has_component;
-using Nito::generate_entity;
 using Nito::flag_entity_for_deletion;
 
 // Nito/APIs/Scene.hpp
@@ -40,10 +37,7 @@ using Nito::load_blueprint;
 
 // Nito/Components.hpp
 using Nito::Transform;
-using Nito::Dimensions;
 using Nito::Sprite;
-using Nito::Line_Collider;
-using Nito::Polygon_Collider;
 
 // Nito/Collider_Component.hpp
 using Nito::Collider;
