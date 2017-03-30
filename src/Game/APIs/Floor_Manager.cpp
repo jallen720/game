@@ -91,6 +91,7 @@ static Floor current_floor;
 static vec2 spawn_position;
 static map<int, Room_Data> room_datas;
 static map<int, vector<bool *>> room_tile_render_flags;
+static int max_room_id;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -401,7 +402,7 @@ void generate_floor(int floor_size)
 
     // Calculate the max number of fully-sized rooms that can be generated. The "- 2" & "+ 2" account for the spawn and
     // boss rooms being size 1, therefore not being required to be multiplied by MAX_ROOM_SIZE.
-    const int max_room_id = (((floor_size * floor_size) - 2) / MAX_ROOM_SIZE) + 2;
+    max_room_id = (((floor_size * floor_size) - 2) / MAX_ROOM_SIZE) + 2;
 
     const int root_room_x = random(0, floor_size);
     const int root_room_y = random(0, floor_size);
@@ -670,6 +671,11 @@ int get_room_tile_height()
 const glm::vec3 & get_room_tile_texture_scale()
 {
     return ROOM_TILE_TEXTURE_SCALE;
+}
+
+int get_max_room_id()
+{
+    return max_room_id;
 }
 
 

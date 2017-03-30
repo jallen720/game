@@ -59,6 +59,7 @@ int get_floor_size();
 int get_room_tile_width();
 int get_room_tile_height();
 const glm::vec3 & get_room_tile_texture_scale();
+int get_max_room_id();
 
 
 } // namespace Game

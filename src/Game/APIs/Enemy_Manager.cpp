@@ -8,6 +8,7 @@
 #include "Nito/APIs/ECS.hpp"
 #include "Nito/APIs/Scene.hpp"
 #include "Cpp_Utils/Collection.hpp"
+#include "Cpp_Utils/JSON.hpp"
 
 #include "Game/APIs/Floor_Manager.hpp"
 #include "Game/Utilities.hpp"
@@ -40,6 +41,10 @@ using Nito::load_blueprint;
 // Cpp_Utils/Collection.hpp
 using Cpp_Utils::for_each;
 
+// Cpp_Utils/JSON.hpp
+using Cpp_Utils::JSON;
+using Cpp_Utils::read_json_file;
+
 
 namespace Game
 {
@@ -65,6 +70,7 @@ enum class Enemies
 static Enemies * enemies;
 static const vec3 * room_tile_texture_scale;
 static vector<Entity> enemy_entities;
+static vector<vector<JSON>> enemy_layouts;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -72,23 +78,49 @@ static vector<Entity> enemy_entities;
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void enemy_manager_api_init()
+{
+    enemy_layouts = read_json_file("resources/data/enemy_layouts.json").get<vector<vector<JSON>>>();
+}
+
+
 void generate_enemies()
 {
     const int floor_size = get_floor_size();
-    const int enemies_width = floor_size * get_room_tile_width();
-    const int enemies_height = floor_size * get_room_tile_height();
+    const int room_tile_width = get_room_tile_width();
+    const int room_tile_height = get_room_tile_height();
+    const int enemies_width = floor_size * room_tile_width;
+    const int enemies_height = floor_size * room_tile_height;
+    const int max_room_id = get_max_room_id();
     enemies = new Enemies[enemies_width * enemies_height];
     room_tile_texture_scale = &get_room_tile_texture_scale();
 
-    iterate_array_2d<Enemies>(enemies, enemies_width, enemies_height, [](int x, int y, Enemies & enemy) -> void
+    iterate_array_2d<Enemies>(enemies, enemies_width, enemies_height, [](int /*x*/, int /*y*/, Enemies & enemy) -> void
     {
         enemy = Enemies::NONE;
+    });
 
-        if (get_room_tile(x, y).type == Tile_Types::FLOOR)
+    iterate_rooms([&](int x, int y, int & room) -> void
+    {
+        // Don't generate enemies for non-rooms, the spawn room, or the boss room.
+        if (room == 0 || room == 1 || room == max_room_id)
         {
-            if (random(1, 50) == 7)
+            return;
+        }
+
+
+        const int origin_x = x * room_tile_width;
+        const int origin_y = y * room_tile_height;
+        const vector<JSON> & enemy_layout = enemy_layouts[random(0, enemy_layouts.size())];
+
+        for (const JSON & enemy_position : enemy_layout)
+        {
+            int enemy_position_x = origin_x + enemy_position["x"].get<int>();
+            int enemy_position_y = origin_y + enemy_position["y"].get<int>();
+
+            if (get_room_tile(enemy_position_x, enemy_position_y).type == Tile_Types::FLOOR)
             {
-                enemy = Enemies::TURRET;
+                *array_2d_at(enemies, enemies_width, enemy_position_x, enemy_position_y) = Enemies::TURRET;
             }
         }
     });
