@@ -532,7 +532,7 @@ void generate_floor(int floor_size)
 
             // Create tile entity, set its position and rotation, and track it.
             const float tile_rotation = tile_data.rotation;
-            Entity tile = load_blueprint(TILE_TYPE_BLUEPRINTS.at(tile_type));
+            const Entity tile = load_blueprint(TILE_TYPE_BLUEPRINTS.at(tile_type));
             auto transform = (Transform *)get_component(tile, "transform");
             vec3 & position = transform->position;
             transform->rotation = tile_rotation;
