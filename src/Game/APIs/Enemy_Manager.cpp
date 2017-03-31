@@ -16,8 +16,8 @@
 #include "Game/Components.hpp"
 
 
-using std::vector;
 using std::string;
+using std::vector;
 
 // glm/glm.hpp
 using glm::vec3;
