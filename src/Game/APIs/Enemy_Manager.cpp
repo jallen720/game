@@ -129,24 +129,30 @@ void generate_enemies()
         }
     });
 
-    iterate_array_2d<Enemies>(enemies, enemies_width, enemies_height, [](int x, int y, Enemies & enemy) -> void
+    iterate_array_2d<Enemies>(enemies, enemies_width, enemies_height, [&](int x, int y, Enemies & enemy) -> void
     {
-        if (enemy == Enemies::TURRET)
+        static const map<Enemies, const string> ENEMY_BLUEPRINTS
         {
-            Entity turret = load_blueprint("turret");
-            ((Transform *)get_component(turret, "transform"))->position = vec3(x, y, 0) * *room_tile_texture_scale;
+            { Enemies::TURRET, "turret" },
+        };
 
+        if (enemy == Enemies::NONE)
+        {
+            return;
+        }
 
-            // If generated enemy dies (resulting in it bein deleted), stop tracking it to prevent attempting to delete
-            // it again.
-            ((Health *)get_component(turret, "health"))->death_handlers["enemy_manager"] = [&, turret]() -> void
+        Entity enemy_entity = load_blueprint(ENEMY_BLUEPRINTS.at(enemy));
+        ((Transform *)get_component(enemy_entity, "transform"))->position = vec3(x, y, 0) * *room_tile_texture_scale;
+
+        ((Health *)get_component(enemy_entity, "health"))->death_handlers["enemy_manager"] =
+            [&, enemy_entity]() -> void
             {
-                remove(enemy_entities, turret);
+                // If generated enemy dies and is deleted, stop tracking it to prevent attempting to delete it again.
+                remove(enemy_entities, enemy_entity);
             };
 
 
-            enemy_entities.push_back(turret);
-        }
+        enemy_entities.push_back(enemy_entity);
     });
 }
 
