@@ -38,7 +38,7 @@ namespace Game
 // Data
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static const string PAUSE_HANDLER_ID = "in_game_controls pause";
+static const string PAUSE_HANDLER_ID("in_game_controls pause");
 static bool entity_paused;
 static bool entity_game_over;
 
