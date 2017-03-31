@@ -9,6 +9,7 @@
 #include "Nito/APIs/Scene.hpp"
 #include "Cpp_Utils/Collection.hpp"
 #include "Cpp_Utils/JSON.hpp"
+#include "Cpp_Utils/Vector.hpp"
 
 #include "Game/APIs/Floor_Manager.hpp"
 #include "Game/Utilities.hpp"
@@ -44,6 +45,9 @@ using Cpp_Utils::for_each;
 // Cpp_Utils/JSON.hpp
 using Cpp_Utils::JSON;
 using Cpp_Utils::read_json_file;
+
+// Cpp_Utils/Vector.hpp
+using Cpp_Utils::remove;
 
 
 namespace Game
@@ -131,6 +135,16 @@ void generate_enemies()
         {
             Entity turret = load_blueprint("turret");
             ((Transform *)get_component(turret, "transform"))->position = vec3(x, y, 0) * *room_tile_texture_scale;
+
+
+            // If generated enemy dies (resulting in it bein deleted), stop tracking it to prevent attempting to delete
+            // it again.
+            ((Health *)get_component(turret, "health"))->death_handlers["enemy_manager"] = [&, turret]() -> void
+            {
+                remove(enemy_entities, turret);
+            };
+
+
             enemy_entities.push_back(turret);
         }
     });
