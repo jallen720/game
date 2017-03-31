@@ -59,7 +59,7 @@ struct Health
 {
     float max;
     float current;
-    std::function<void()> death_handler;
+    std::map<std::string, std::function<void()>> death_handlers;
 };
 
 

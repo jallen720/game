@@ -85,7 +85,8 @@ void in_game_controls_subscribe(Entity /*entity*/)
     entity_game_over = false;
     set_key_handler(PAUSE_HANDLER_ID, Keys::ESCAPE, Button_Actions::PRESS, toggle_paused);
     set_controller_button_handler(PAUSE_HANDLER_ID, DS4_Buttons::START, Button_Actions::PRESS, toggle_paused);
-    ((Health *)get_component(get_entity("player"), "health"))->death_handler = game_over;
+    auto player_health = (Health *)get_component(get_entity("player"), "health");
+    player_health->death_handlers["in_game_controls player death"] = game_over;
 }
 
 

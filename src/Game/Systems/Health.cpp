@@ -1,15 +1,17 @@
 #include "Game/Systems/Health.hpp"
 
 #include <map>
-#include <stdexcept>
+#include <string>
+#include <functional>
 #include "Cpp_Utils/Map.hpp"
-#include "Cpp_Utils/String.hpp"
+#include "Cpp_Utils/Collection.hpp"
 
 #include "Game/Components.hpp"
 
 
 using std::map;
-using std::runtime_error;
+using std::string;
+using std::function;
 
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
@@ -17,10 +19,9 @@ using Nito::get_component;
 
 // Cpp_Utils/Map.hpp
 using Cpp_Utils::remove;
-using Cpp_Utils::contains_key;
 
-// Cpp_Utils/String.hpp
-using Cpp_Utils::to_string;
+// Cpp_Utils/Collection.hpp
+using Cpp_Utils::for_each;
 
 
 namespace Game
@@ -69,12 +70,10 @@ void damage_entity(Entity entity, float amount)
 
     if (current_health == 0)
     {
-        if (!entity_health->death_handler)
+        for_each(entity_health->death_handlers, [](const string & /*id*/, const function<void()> & handler) -> void
         {
-            throw runtime_error("ERROR: no death handler set in Health component!");
-        }
-
-        entity_health->death_handler();
+            handler();
+        });
     }
 }
 

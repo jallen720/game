@@ -95,7 +95,7 @@ void turret_subscribe(Entity entity)
         0.0f,
     };
 
-    health->death_handler = [=]() -> void
+    health->death_handlers["turret death"] = [=]() -> void
     {
         flag_entity_for_deletion(entity);
     };
