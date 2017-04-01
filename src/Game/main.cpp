@@ -201,8 +201,15 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
         {
             [](const JSON & data) -> Component
             {
+                static const map<string, Room_Exit::Types> ROOM_EXIT_TYPES
+                {
+                    { "door"       , Room_Exit::Types::DOOR       },
+                    { "next_floor" , Room_Exit::Types::NEXT_FLOOR },
+                };
+
                 return new Room_Exit
                 {
+                    ROOM_EXIT_TYPES.at(data["type"]),
                     false,
                     data["locked_texture_path"],
                 };

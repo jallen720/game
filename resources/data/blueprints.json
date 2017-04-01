@@ -55,8 +55,29 @@
             }
         }
     },
+    "one_directional_tile_obstacle":
+    {
+        "components":
+        {
+            "transform": {},
+            "line_collider":
+            {
+                "begin": { "x": -0.25, "y": 0.25 },
+                "end": { "x": 0.25, "y": 0.25 }
+            }
+        }
+    },
 
 
+    "door_lock_tile":
+    {
+        "inherits":
+        [
+            "collidable",
+            "static_obstacle",
+            "one_directional_tile_obstacle"
+        ]
+    },
     "floor_tile":
     {
         "inherits":
@@ -77,18 +98,14 @@
         [
             "renderable",
             "collidable",
-            "static_obstacle"
+            "static_obstacle",
+            "one_directional_tile_obstacle"
         ],
         "components":
         {
             "sprite":
             {
                 "texture_path": "resources/textures/tiles/wall.png"
-            },
-            "line_collider":
-            {
-                "begin": { "x": -0.25, "y": 0.25 },
-                "end": { "x": 0.25, "y": 0.25 }
             }
         }
     },
@@ -112,6 +129,7 @@
             },
             "room_exit":
             {
+                "type": "door",
                 "locked_texture_path": "resources/textures/tiles/door_locked.png"
             }
         }
@@ -142,6 +160,7 @@
             },
             "room_exit":
             {
+                "type": "next_floor",
                 "locked_texture_path": "resources/textures/tiles/next_floor_locked.png"
             }
         }

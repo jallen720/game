@@ -72,6 +72,13 @@ struct Menu_Buttons_Handler
 
 struct Room_Exit
 {
+    enum class Types
+    {
+        DOOR,
+        NEXT_FLOOR,
+    };
+
+    Types type;
     bool locked;
     std::string locked_texture_path;
 };

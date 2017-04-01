@@ -59,5 +59,11 @@
     [
         "transform",
         "target_id"
+    ],
+    "room_exit_handler":
+    [
+        "transform",
+        "sprite",
+        "room_exit"
     ]
 }
