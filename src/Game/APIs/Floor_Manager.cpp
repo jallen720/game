@@ -14,6 +14,7 @@
 
 #include "Game/Utilities.hpp"
 #include "Game/Systems/Game_Manager.hpp"
+#include "Game/Systems/Room_Exit_Handler.hpp"
 
 
 using std::string;
@@ -92,6 +93,8 @@ static Floor current_floor;
 static vec2 spawn_position;
 static map<int, Room_Data> room_datas;
 static map<int, vector<bool *>> room_tile_render_flags;
+static map<int, int> room_enemy_counts;
+static map<int, vector<Entity>> room_exits;
 static int max_room_id;
 
 
@@ -188,6 +191,15 @@ static vec2 get_room_center(int room_x, int room_y)
 }
 
 
+static void set_room_locked(int room_id, bool locked)
+{
+    for (const Entity room_exit : room_exits.at(room_id))
+    {
+        room_exit_handler_set_locked(room_exit, locked);
+    }
+}
+
+
 static void generate_room(Floor & floor, int x, int y, int id, int max_size)
 {
     Possible_Rooms room_extensions;
@@ -201,9 +213,6 @@ static void generate_room(Floor & floor, int x, int y, int id, int max_size)
     const int room_size = random(1, max_size + 1);
     int room_generated = 1;
     set_room(floor, room_extensions, x, y, id);
-
-    // Spawn room is never locked.
-    rooms_locked[id] = id > SPAWN_ROOM_ID;
 
     while (room_generated < room_size)
     {
@@ -499,17 +508,17 @@ void generate_floor(int floor_size)
 
 
     // Create tiles for each room based on each tile's type.
-    iterate_rooms(current_floor, [&](int room_x, int room_y, int & room) -> void
+    iterate_rooms(current_floor, [&](int room_x, int room_y, int & room_id) -> void
     {
         // Don't generate tiles for empty rooms.
-        if (room == 0)
+        if (room_id == 0)
         {
             return;
         }
 
 
-        // Track tile's render flag.
-        vector<bool *> & render_flags = room_tile_render_flags[room];
+        // Track room tiles' render flags.
+        vector<bool *> & render_flags = room_tile_render_flags[room_id];
 
 
         iterate_room_tiles(current_floor, room_x, room_y, false, [&](
@@ -559,6 +568,8 @@ void generate_floor(int floor_size)
                         game_manager_change_rooms(tile_rotation);
                     }
                 };
+
+                room_exits[room_id].push_back(tile);
             }
             else if (tile_type == Tile_Types::NEXT_FLOOR)
             {
@@ -569,6 +580,8 @@ void generate_floor(int floor_size)
                         game_manager_complete_floor();
                     }
                 };
+
+                room_exits[room_id].push_back(tile);
             }
         });
     });
@@ -586,6 +599,13 @@ void generate_floor(int floor_size)
     {
         set_render_flags(last_room, false);
         set_render_flags(current_room, true);
+
+
+        // Lock current room if it has enemies.
+        if (room_enemy_counts[current_room] > 1)
+        {
+            set_room_locked(current_room, true);
+        }
     });
 }
 
@@ -610,6 +630,8 @@ void destroy_floor()
     entities.clear();
     room_datas.clear();
     room_tile_render_flags.clear();
+    room_enemy_counts.clear();
+    room_exits.clear();
     game_manager_remove_room_change_handler(ROOM_CHANGE_HANDLER_ID);
 }
 
@@ -684,6 +706,21 @@ const glm::vec3 & get_room_tile_texture_scale()
 int get_max_room_id()
 {
     return max_room_id;
+}
+
+
+void add_enemy(int room_id)
+{
+    room_enemy_counts[room_id]++;
+}
+
+
+void remove_enemy(int room_id)
+{
+    if (--room_enemy_counts[room_id] == 0)
+    {
+        set_room_locked(room_id, false);
+    }
 }
 
 

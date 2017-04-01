@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <glm/glm.hpp>
 #include "Nito/Components.hpp"
 #include "Nito/Collider_Component.hpp"
@@ -18,6 +19,7 @@
 
 using std::string;
 using std::vector;
+using std::map;
 
 // glm/glm.hpp
 using glm::vec3;
@@ -142,17 +144,22 @@ void generate_enemies()
         }
 
         Entity enemy_entity = load_blueprint(ENEMY_BLUEPRINTS.at(enemy));
-        ((Transform *)get_component(enemy_entity, "transform"))->position = vec3(x, y, 0) * *room_tile_texture_scale;
+        vec3 enemy_position = vec3(x, y, 0) * *room_tile_texture_scale;
+        int enemy_room = get_room(enemy_position);
+        ((Transform *)get_component(enemy_entity, "transform"))->position = enemy_position;
 
         ((Health *)get_component(enemy_entity, "health"))->death_handlers["enemy_manager"] =
-            [&, enemy_entity]() -> void
+            [&, enemy_entity, enemy_room]() -> void
             {
                 // If generated enemy dies and is deleted, stop tracking it to prevent attempting to delete it again.
                 remove(enemy_entities, enemy_entity);
+
+                // Remove enemy from its associated room's enemy count.
+                remove_enemy(enemy_room);
             };
 
-
         enemy_entities.push_back(enemy_entity);
+        add_enemy(enemy_room);
     });
 }
 
