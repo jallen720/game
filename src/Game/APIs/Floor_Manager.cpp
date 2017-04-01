@@ -87,6 +87,7 @@ static const int ROOM_TILE_HEIGHT = 9;
 static const float ROOM_Z = 100.0f;
 static const vec3 ROOM_TILE_TEXTURE_SCALE(0.5f, 0.5f, 1.0f);
 static const string ROOM_CHANGE_HANDLER_ID("floor_manager");
+static const int SPAWN_ROOM_ID = 1;
 static Floor current_floor;
 static vec2 spawn_position;
 static map<int, Room_Data> room_datas;
@@ -200,6 +201,9 @@ static void generate_room(Floor & floor, int x, int y, int id, int max_size)
     const int room_size = random(1, max_size + 1);
     int room_generated = 1;
     set_room(floor, room_extensions, x, y, id);
+
+    // Spawn room is never locked.
+    rooms_locked[id] = id > SPAWN_ROOM_ID;
 
     while (room_generated < room_size)
     {
@@ -406,9 +410,9 @@ void generate_floor(int floor_size)
 
     const int root_room_x = random(0, floor_size);
     const int root_room_y = random(0, floor_size);
-    generate_room(current_floor, root_room_x, root_room_y, 1, 1);
+    generate_room(current_floor, root_room_x, root_room_y, SPAWN_ROOM_ID, 1);
 
-    for (int room_id = 2; room_id <= max_room_id; room_id++)
+    for (int room_id = SPAWN_ROOM_ID + 1; room_id <= max_room_id; room_id++)
     {
         // No possible rooms available.
         if (possible_rooms.size() == 0)
@@ -423,6 +427,8 @@ void generate_floor(int floor_size)
             room_coordinates.x,
             room_coordinates.y,
             room_id,
+
+            // If boss room size changes, max_room_id calculation needs to be updated.
             room_id == max_room_id ? 1 : MAX_ROOM_SIZE);
     }
 
@@ -574,7 +580,7 @@ void generate_floor(int floor_size)
         set_render_flags(room, false);
     });
 
-    set_render_flags(1, true);
+    set_render_flags(SPAWN_ROOM_ID, true);
 
     game_manager_add_room_change_handler(ROOM_CHANGE_HANDLER_ID, [](int last_room, int current_room) -> void
     {
@@ -668,10 +674,12 @@ int get_room_tile_height()
     return ROOM_TILE_HEIGHT;
 }
 
+
 const glm::vec3 & get_room_tile_texture_scale()
 {
     return ROOM_TILE_TEXTURE_SCALE;
 }
+
 
 int get_max_room_id()
 {
