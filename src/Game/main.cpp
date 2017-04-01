@@ -197,10 +197,17 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
         }
     },
     {
-        "locked_texture_path",
+        "room_exit",
         {
-            get_component_allocator<string>(),
-            get_component_deallocator<string>(),
+            [](const JSON & data) -> Component
+            {
+                return new Room_Exit
+                {
+                    false,
+                    data["locked_texture_path"],
+                };
+            },
+            get_component_deallocator<Room_Exit>(),
         }
     },
     {

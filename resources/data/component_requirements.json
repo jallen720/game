@@ -23,7 +23,7 @@
     [
         "camera_controller"
     ],
-    "locked_texture_path":
+    "room_exit":
     [
         "room_exit_handler"
     ]

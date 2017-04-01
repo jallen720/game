@@ -7,6 +7,8 @@
 #include "Cpp_Utils/Map.hpp"
 #include "Cpp_Utils/String.hpp"
 
+#include "Game/Components.hpp"
+
 
 using std::string;
 using std::map;
@@ -38,7 +40,7 @@ namespace Game
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 struct Room_Exit_Handler_State
 {
-    const string * locked_texture_path;
+    Room_Exit * room_exit;
     Sprite * sprite;
     string original_texture_path;
 };
@@ -63,7 +65,7 @@ void room_exit_handler_subscribe(Entity entity)
 
     entity_states[entity] =
     {
-        (string *)get_component(entity, "locked_texture_path"),
+        (Room_Exit *)get_component(entity, "room_exit"),
         sprite,
         sprite->texture_path,
     };
@@ -84,7 +86,12 @@ void room_exit_handler_set_locked(Entity entity, bool locked)
     }
 
     Room_Exit_Handler_State & entity_state = entity_states[entity];
-    entity_state.sprite->texture_path = locked ? *entity_state.locked_texture_path : entity_state.original_texture_path;
+    Room_Exit * room_exit = entity_state.room_exit;
+
+    entity_state.sprite->texture_path =
+        (room_exit->locked = locked)
+        ? room_exit->locked_texture_path
+        : entity_state.original_texture_path;
 }
 
 

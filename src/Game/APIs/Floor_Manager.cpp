@@ -13,6 +13,7 @@
 #include "Cpp_Utils/Collection.hpp"
 
 #include "Game/Utilities.hpp"
+#include "Game/Components.hpp"
 #include "Game/Systems/Game_Manager.hpp"
 #include "Game/Systems/Room_Exit_Handler.hpp"
 
@@ -573,9 +574,11 @@ void generate_floor(int floor_size)
             }
             else if (tile_type == Tile_Types::NEXT_FLOOR)
             {
+                auto room_exit = (Room_Exit *)get_component(tile, "room_exit");
+
                 ((Collider *)get_component(tile, "collider"))->collision_handler = [=](Entity collision_entity) -> void
                 {
-                    if (in_layer(collision_entity, "player"))
+                    if (!room_exit->locked && in_layer(collision_entity, "player"))
                     {
                         game_manager_complete_floor();
                     }

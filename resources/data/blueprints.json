@@ -110,7 +110,10 @@
                 "begin": { "x": -0.25, "y": 0.1 },
                 "end": { "x": 0.25, "y": 0.1 }
             },
-            "locked_texture_path": "resources/textures/tiles/door_locked.png"
+            "room_exit":
+            {
+                "locked_texture_path": "resources/textures/tiles/door_locked.png"
+            }
         }
     },
     "next_floor_tile":
@@ -137,7 +140,10 @@
                     { "x":  0.2, "y": -0.2 }
                 ]
             },
-            "locked_texture_path": "resources/textures/tiles/next_floor_locked.png"
+            "room_exit":
+            {
+                "locked_texture_path": "resources/textures/tiles/next_floor_locked.png"
+            }
         }
     },
     "right_door_wall_tile":

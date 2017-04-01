@@ -70,4 +70,11 @@ struct Menu_Buttons_Handler
 };
 
 
+struct Room_Exit
+{
+    bool locked;
+    std::string locked_texture_path;
+};
+
+
 } // namespace Game
