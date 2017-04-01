@@ -27,6 +27,7 @@
 #include "Game/Systems/Menu_Controller.hpp"
 #include "Game/Systems/Camera_Controller.hpp"
 #include "Game/Systems/Game_Manager.hpp"
+#include "Game/Systems/Room_Exit_Handler.hpp"
 
 
 using std::string;
@@ -97,6 +98,7 @@ static const map<string, const System_Entity_Handlers> GAME_SYSTEM_ENTITY_HANDLE
     NITO_SYSTEM_ENTITY_HANDLERS(menu_controller),
     NITO_SYSTEM_ENTITY_HANDLERS(camera_controller),
     NITO_SYSTEM_ENTITY_HANDLERS(game_manager),
+    NITO_SYSTEM_ENTITY_HANDLERS(room_exit_handler),
 };
 
 
@@ -189,6 +191,13 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
     },
     {
         "target_id",
+        {
+            get_component_allocator<string>(),
+            get_component_deallocator<string>(),
+        }
+    },
+    {
+        "locked_texture_path",
         {
             get_component_allocator<string>(),
             get_component_deallocator<string>(),

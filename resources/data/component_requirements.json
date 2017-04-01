@@ -22,5 +22,9 @@
     "target_id":
     [
         "camera_controller"
+    ],
+    "locked_texture_path":
+    [
+        "room_exit_handler"
     ]
 }
