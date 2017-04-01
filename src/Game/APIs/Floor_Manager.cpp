@@ -564,29 +564,28 @@ void generate_floor(int floor_size)
                 tile_type == Tile_Types::NEXT_FLOOR)
             {
                 auto room_exit = (Room_Exit *)get_component(tile, "room_exit");
+                auto collider = ((Collider *)get_component(tile, "collider"));
                 room_exits[room_id].push_back(tile);
 
                 if (tile_type == Tile_Types::DOOR)
                 {
-                    ((Collider *)get_component(tile, "collider"))->collision_handler =
-                        [=](Entity collision_entity) -> void
+                    collider->collision_handler = [=](Entity collision_entity) -> void
+                    {
+                        if (!room_exit->locked && in_layer(collision_entity, "player"))
                         {
-                            if (!room_exit->locked && in_layer(collision_entity, "player"))
-                            {
-                                game_manager_change_rooms(tile_rotation);
-                            }
-                        };
+                            game_manager_change_rooms(tile_rotation);
+                        }
+                    };
                 }
                 else if (tile_type == Tile_Types::NEXT_FLOOR)
                 {
-                    ((Collider *)get_component(tile, "collider"))->collision_handler =
-                        [=](Entity collision_entity) -> void
+                    collider->collision_handler = [=](Entity collision_entity) -> void
+                    {
+                        if (!room_exit->locked && in_layer(collision_entity, "player"))
                         {
-                            if (!room_exit->locked && in_layer(collision_entity, "player"))
-                            {
-                                game_manager_complete_floor();
-                            }
-                        };
+                            game_manager_complete_floor();
+                        }
+                    };
                 }
             }
         });
