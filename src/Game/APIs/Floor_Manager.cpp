@@ -560,31 +560,34 @@ void generate_floor(int floor_size)
 
 
             // Set collision handlers for tiles that need them.
-            if (tile_type == Tile_Types::DOOR)
-            {
-                ((Collider *)get_component(tile, "collider"))->collision_handler = [=](Entity collision_entity) -> void
-                {
-                    if (in_layer(collision_entity, "player"))
-                    {
-                        game_manager_change_rooms(tile_rotation);
-                    }
-                };
-
-                room_exits[room_id].push_back(tile);
-            }
-            else if (tile_type == Tile_Types::NEXT_FLOOR)
+            if (tile_type == Tile_Types::DOOR ||
+                tile_type == Tile_Types::NEXT_FLOOR)
             {
                 auto room_exit = (Room_Exit *)get_component(tile, "room_exit");
-
-                ((Collider *)get_component(tile, "collider"))->collision_handler = [=](Entity collision_entity) -> void
-                {
-                    if (!room_exit->locked && in_layer(collision_entity, "player"))
-                    {
-                        game_manager_complete_floor();
-                    }
-                };
-
                 room_exits[room_id].push_back(tile);
+
+                if (tile_type == Tile_Types::DOOR)
+                {
+                    ((Collider *)get_component(tile, "collider"))->collision_handler =
+                        [=](Entity collision_entity) -> void
+                        {
+                            if (!room_exit->locked && in_layer(collision_entity, "player"))
+                            {
+                                game_manager_change_rooms(tile_rotation);
+                            }
+                        };
+                }
+                else if (tile_type == Tile_Types::NEXT_FLOOR)
+                {
+                    ((Collider *)get_component(tile, "collider"))->collision_handler =
+                        [=](Entity collision_entity) -> void
+                        {
+                            if (!room_exit->locked && in_layer(collision_entity, "player"))
+                            {
+                                game_manager_complete_floor();
+                            }
+                        };
+                }
             }
         });
     });
