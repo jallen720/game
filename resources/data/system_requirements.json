@@ -1,4 +1,46 @@
 {
+    "camera_controller":
+    [
+        "transform",
+        "target_id"
+    ],
+    "depth_handler":
+    [
+        "transform"
+    ],
+    "game_over_menu":
+    [
+        "menu_buttons_handler"
+    ],
+    "health":
+    [
+        "health"
+    ],
+    "health_bar":
+    [
+        "health"
+    ],
+    "main_menu":
+    [
+        "menu_buttons_handler"
+    ],
+    "menu_buttons_handler":
+    [
+        "menu_buttons_handler"
+    ],
+    "menu_controller":
+    [
+        "transform"
+    ],
+    "orientation_handler":
+    [
+        "orientation_handler",
+        "sprite"
+    ],
+    "pause_menu":
+    [
+        "menu_buttons_handler"
+    ],
     "player_controller":
     [
         "transform",
@@ -12,58 +54,15 @@
         "transform",
         "collider"
     ],
-    "depth_handler":
-    [
-        "transform"
-    ],
-    "turret":
-    [
-        "transform",
-        "orientation_handler"
-    ],
-    "orientation_handler":
-    [
-        "orientation_handler",
-        "sprite"
-    ],
-    "health_bar":
-    [
-        "health"
-    ],
-    "collider":
-    [
-        "transform",
-        "collider"
-    ],
-    "health":
-    [
-        "health"
-    ],
-    "menu_buttons_handler":
-    [
-        "menu_buttons_handler"
-    ],
-    "main_menu":
-    [
-        "menu_buttons_handler"
-    ],
-    "pause_menu":
-    [
-        "menu_buttons_handler"
-    ],
-    "menu_controller":
-    [
-        "transform"
-    ],
-    "camera_controller":
-    [
-        "transform",
-        "target_id"
-    ],
     "room_exit_handler":
     [
         "transform",
         "sprite",
         "room_exit"
+    ],
+    "turret":
+    [
+        "transform",
+        "orientation_handler"
     ]
 }
