@@ -607,7 +607,7 @@ void generate_floor(int floor_size)
 
 
         // Lock current room if it has enemies.
-        if (room_enemy_counts[current_room] > 1)
+        if (room_enemy_counts[current_room] > 0)
         {
             set_room_locked(current_room, true);
         }
