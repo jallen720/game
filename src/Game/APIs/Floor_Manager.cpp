@@ -714,6 +714,12 @@ int get_max_room_id()
 }
 
 
+int get_spawn_room_id()
+{
+    return SPAWN_ROOM_ID;
+}
+
+
 void add_enemy(int room_id)
 {
     room_enemy_counts[room_id]++;

@@ -60,6 +60,7 @@ int get_room_tile_width();
 int get_room_tile_height();
 const glm::vec3 & get_room_tile_texture_scale();
 int get_max_room_id();
+int get_spawn_room_id();
 void add_enemy(int room_id);
 void remove_enemy(int room_id);
 

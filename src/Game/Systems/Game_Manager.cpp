@@ -54,6 +54,7 @@ static vec3 * player_position;
 static const vec2 * spawn_position;
 static int last_room;
 static int current_room;
+static int spawn_room_id;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -63,10 +64,8 @@ static int current_room;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static void start_floor()
 {
-    static const int SPAWN_ROOM = 1;
-
-    last_room = SPAWN_ROOM;
-    current_room = SPAWN_ROOM;
+    last_room = spawn_room_id;
+    current_room = spawn_room_id;
     generate_floor(6);
     generate_minimap();
     generate_enemies();
@@ -90,6 +89,7 @@ static void cleanup_floor()
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void game_manager_subscribe(Entity /*entity*/)
 {
+    spawn_room_id = get_spawn_room_id();
     player_position = &((Transform *)get_component(get_entity("player"), "transform"))->position;
     spawn_position = &get_spawn_position();
     minimap_api_init();
