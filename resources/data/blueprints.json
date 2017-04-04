@@ -67,6 +67,13 @@
             }
         }
     },
+    "floor_entity":
+    {
+        "systems":
+        [
+            "floor_entity"
+        ]
+    },
 
 
     "door_lock_tile":
@@ -82,7 +89,8 @@
     {
         "inherits":
         [
-            "renderable"
+            "renderable",
+            "floor_entity"
         ],
         "components":
         {
@@ -99,7 +107,8 @@
             "renderable",
             "collidable",
             "static_obstacle",
-            "one_directional_tile_obstacle"
+            "one_directional_tile_obstacle",
+            "floor_entity"
         ],
         "components":
         {
@@ -114,7 +123,8 @@
         "inherits":
         [
             "renderable",
-            "collidable"
+            "collidable",
+            "floor_entity"
         ],
         "components":
         {
@@ -139,7 +149,8 @@
         "inherits":
         [
             "renderable",
-            "collidable"
+            "collidable",
+            "floor_entity"
         ],
         "components":
         {
@@ -173,7 +184,8 @@
             "collidable",
             "static_obstacle",
             "corner_wall_tile",
-            "door_adjacent_wall_tile"
+            "door_adjacent_wall_tile",
+            "floor_entity"
         ],
         "components":
         {
@@ -196,7 +208,8 @@
             "collidable",
             "static_obstacle",
             "corner_wall_tile",
-            "door_adjacent_wall_tile"
+            "door_adjacent_wall_tile",
+            "floor_entity"
         ],
         "components":
         {
@@ -215,7 +228,8 @@
     {
         "inherits":
         [
-            "renderable"
+            "renderable",
+            "floor_entity"
         ],
         "components":
         {
@@ -232,7 +246,8 @@
             "renderable",
             "collidable",
             "static_obstacle",
-            "corner_wall_tile"
+            "corner_wall_tile",
+            "floor_entity"
         ],
         "components":
         {
@@ -258,7 +273,8 @@
     {
         "inherits":
         [
-            "renderable"
+            "renderable",
+            "floor_entity"
         ],
         "components":
         {
@@ -296,6 +312,10 @@
     },
     "projectile":
     {
+        "inherits":
+        [
+            "floor_entity"
+        ],
         "components":
         {
             "render_layer": "world",
@@ -329,6 +349,10 @@
     },
     "minimap_tile":
     {
+        "inherits":
+        [
+            "floor_entity"
+        ],
         "components":
         {
             "render_layer": "ui",

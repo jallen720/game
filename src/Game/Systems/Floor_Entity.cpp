@@ -1,0 +1,56 @@
+#include "Game/Systems/Floor_Entity.hpp"
+
+#include <vector>
+#include "Cpp_Utils/Vector.hpp"
+#include "Cpp_Utils/Collection.hpp"
+
+
+using std::vector;
+
+// Nito/APIs/ECS.hpp
+using Nito::Entity;
+using Nito::flag_entity_for_deletion;
+
+// Cpp_Utils/Vector.hpp
+using Cpp_Utils::remove;
+
+// Cpp_Utils/Collection.hpp
+using Cpp_Utils::for_each;
+
+
+namespace Game
+{
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Data
+//
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+static vector<Entity> entities;
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Interface
+//
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void floor_entity_subscribe(Entity entity)
+{
+    entities.push_back(entity);
+}
+
+
+void floor_entity_unsubscribe(Entity entity)
+{
+    remove(entities, entity);
+}
+
+
+void floor_entity_destroy_all()
+{
+    for_each(entities, flag_entity_for_deletion);
+}
+
+
+} // namespace Game

@@ -36,20 +36,13 @@ using Nito::Collider;
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
 using Nito::get_component;
-using Nito::flag_entity_for_deletion;
 
 // Nito/APIs/Scene.hpp
 using Nito::load_blueprint;
 
-// Cpp_Utils/Collection.hpp
-using Cpp_Utils::for_each;
-
 // Cpp_Utils/JSON.hpp
 using Cpp_Utils::JSON;
 using Cpp_Utils::read_json_file;
-
-// Cpp_Utils/Vector.hpp
-using Cpp_Utils::remove;
 
 
 namespace Game
@@ -75,7 +68,6 @@ enum class Enemies
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static Enemies * enemies;
 static const vec3 * room_tile_texture_scale;
-static vector<Entity> enemy_entities;
 static vector<vector<JSON>> enemy_layouts;
 
 
@@ -148,17 +140,12 @@ void generate_enemies()
         int enemy_room = get_room(enemy_position);
         ((Transform *)get_component(enemy_entity, "transform"))->position = enemy_position;
 
-        ((Health *)get_component(enemy_entity, "health"))->death_handlers["enemy_manager"] =
-            [&, enemy_entity, enemy_room]() -> void
-            {
-                // If generated enemy dies and is deleted, stop tracking it to prevent attempting to delete it again.
-                remove(enemy_entities, enemy_entity);
+        ((Health *)get_component(enemy_entity, "health"))->death_handlers["enemy_manager"] = [=]() -> void
+        {
+            // Remove enemy from its associated room's enemy count.
+            remove_enemy(enemy_room);
+        };
 
-                // Remove enemy from its associated room's enemy count.
-                remove_enemy(enemy_room);
-            };
-
-        enemy_entities.push_back(enemy_entity);
         add_enemy(enemy_room);
     });
 }
@@ -167,8 +154,6 @@ void generate_enemies()
 void destroy_enemies()
 {
     delete[] enemies;
-    for_each(enemy_entities, flag_entity_for_deletion);
-    enemy_entities.clear();
 }
 
 

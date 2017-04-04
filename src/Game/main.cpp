@@ -28,6 +28,7 @@
 #include "Game/Systems/Camera_Controller.hpp"
 #include "Game/Systems/Game_Manager.hpp"
 #include "Game/Systems/Room_Exit_Handler.hpp"
+#include "Game/Systems/Floor_Entity.hpp"
 
 
 using std::string;
@@ -99,6 +100,7 @@ static const map<string, const System_Entity_Handlers> GAME_SYSTEM_ENTITY_HANDLE
     NITO_SYSTEM_ENTITY_HANDLERS(camera_controller),
     NITO_SYSTEM_ENTITY_HANDLERS(game_manager),
     NITO_SYSTEM_ENTITY_HANDLERS(room_exit_handler),
+    NITO_SYSTEM_ENTITY_HANDLERS(floor_entity),
 };
 
 

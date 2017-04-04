@@ -33,7 +33,6 @@ using Nito::Sprite;
 using Nito::Entity;
 using Nito::Component;
 using Nito::get_component;
-using Nito::flag_entity_for_deletion;
 
 // Nito/APIs/Scene.hpp
 using Nito::load_blueprint;
@@ -78,7 +77,6 @@ struct Minimap_Room
 static const string MINIMAP_ROOM_TEXTURE_PATH("resources/textures/ui/minimap_room.png");
 static const string MINIMAP_ROOM_CHANGE_HANDLER_ID("minimap");
 static vec3 room_texture_offset;
-static vector<Entity> minimap_entities;
 static map<int, vector<Minimap_Room>> minimap_room_groups;
 
 
@@ -106,7 +104,6 @@ static void generate_minimap_tile(
         vec3(0.1f, 0.1f, 0);
 
     ((Transform *)get_component(minimap_tile, "transform"))->rotation = rotation;
-    minimap_entities.push_back(minimap_tile);
 }
 
 
@@ -300,12 +297,6 @@ void generate_minimap()
 
 void destroy_minimap()
 {
-    for (const Entity minimap_entity : minimap_entities)
-    {
-        flag_entity_for_deletion(minimap_entity);
-    }
-
-    minimap_entities.clear();
     minimap_room_groups.clear();
     game_manager_remove_room_change_handler(MINIMAP_ROOM_CHANGE_HANDLER_ID);
 }

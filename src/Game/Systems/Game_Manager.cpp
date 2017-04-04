@@ -11,6 +11,7 @@
 #include "Game/APIs/Floor_Manager.hpp"
 #include "Game/APIs/Enemy_Manager.hpp"
 #include "Game/APIs/Minimap.hpp"
+#include "Game/Systems/Floor_Entity.hpp"
 
 
 using std::string;
@@ -160,6 +161,7 @@ void game_manager_remove_room_change_handler(const string & id)
 
 void game_manager_complete_floor()
 {
+    floor_entity_destroy_all();
     cleanup_floor();
     start_floor();
 }

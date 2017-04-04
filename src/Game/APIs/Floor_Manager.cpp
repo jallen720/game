@@ -32,7 +32,6 @@ using glm::ivec2;
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
 using Nito::get_component;
-using Nito::flag_entity_for_deletion;
 
 // Nito/APIs/Scene.hpp
 using Nito::load_blueprint;
@@ -75,7 +74,6 @@ struct Floor
     int * rooms;
     Tile * room_tiles;
     Possible_Rooms possible_rooms;
-    vector<Entity> entities;
 };
 
 
@@ -397,7 +395,6 @@ void generate_floor(int floor_size)
     // Create floor.
     const int room_tiles_width = floor_size * ROOM_TILE_WIDTH;
     Possible_Rooms & possible_rooms = current_floor.possible_rooms;
-    vector<Entity> & entities = current_floor.entities;
     current_floor.size = floor_size;
     current_floor.room_tiles_width = room_tiles_width;
     current_floor.rooms = new int[floor_size * floor_size];
@@ -556,7 +553,6 @@ void generate_floor(int floor_size)
             position = vec3(tile_x, tile_y, 0.0f) * ROOM_TILE_TEXTURE_SCALE;
             position.z = ROOM_Z;
             render_flags.push_back(&((Sprite *)get_component(tile, "sprite"))->render);
-            entities.push_back(tile);
 
 
             // Set collision handlers for tiles that need them.
@@ -617,7 +613,7 @@ void generate_floor(int floor_size)
 
 void destroy_floor()
 {
-    vector<Entity> & entities = current_floor.entities;
+    // Cleanup current floor data.
     current_floor.size = 0;
     current_floor.room_tiles_width = 0;
     delete[] current_floor.rooms;
@@ -625,11 +621,7 @@ void destroy_floor()
     current_floor.possible_rooms.clear();
 
 
-    // Delete all entities associated with floor.
-    for_each(entities, flag_entity_for_deletion);
-
-
-    entities.clear();
+    // Cleanup room data.
     room_datas.clear();
     room_tile_render_flags.clear();
     room_enemy_counts.clear();
