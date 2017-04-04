@@ -626,10 +626,7 @@ void destroy_floor()
 
 
     // Delete all entities associated with floor.
-    for (const Entity entity : entities)
-    {
-        flag_entity_for_deletion(entity);
-    }
+    for_each(entities, flag_entity_for_deletion);
 
 
     entities.clear();
