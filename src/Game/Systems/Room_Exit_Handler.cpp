@@ -98,6 +98,14 @@ void unset_door_lock(Entity entity)
 {
     static const vec3 UNUSED_DOOR_LOCK_POSITION(-100, -100, -100);
 
+    if (!contains_key(used_door_lock_transforms, entity))
+    {
+        throw runtime_error(
+            "ERROR: attempting to unset door lock from entity " + to_string(entity) + " which does not have a door "
+            "lock associated with it!");
+    }
+
+
     Transform * door_lock = used_door_lock_transforms[entity];
     remove(used_door_lock_transforms, entity);
     unused_door_lock_transforms.push_back(door_lock);
