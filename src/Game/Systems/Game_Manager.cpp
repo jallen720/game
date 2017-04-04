@@ -67,7 +67,7 @@ static void start_floor()
 {
     last_room = spawn_room_id;
     current_room = spawn_room_id;
-    generate_floor(6);
+    generate_floor(5);
     generate_minimap();
     generate_enemies();
     player_position->x = spawn_position->x;
