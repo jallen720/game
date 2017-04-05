@@ -83,6 +83,7 @@ static const Player_Controller * player_controller;
 static Transform * camera_transform;
 static vec3 * camera_origin;
 static int pixels_per_unit;
+static float time_scale;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -90,9 +91,23 @@ static int pixels_per_unit;
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+static bool is_paused()
+{
+    return time_scale == 0;
+}
+
+
 static void fire()
 {
     static const float VERTICAL_Y_OFFSET = 0.05f;
+
+
+    // Don't fire if the game is paused.
+    if (is_paused())
+    {
+        return;
+    }
+
 
     const vec3 & player_position = transform->position;
     const Orientation orientation = orientation_handler->orientation;
@@ -187,7 +202,7 @@ void player_controller_update()
         return;
     }
 
-    const float time_scale = get_time_scale();
+    time_scale = get_time_scale();
     const float delta_time = get_delta_time() * time_scale;
     vec3 & player_position = transform->position;
     vec3 move_direction;
@@ -254,7 +269,7 @@ void player_controller_update()
 
 
     // Don't update look direction if game is paused.
-    if (time_scale == 0.0f)
+    if (is_paused())
     {
         return;
     }
