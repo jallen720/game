@@ -14,8 +14,6 @@
 #include "Nito/APIs/Input.hpp"
 #include "Nito/APIs/Window.hpp"
 #include "Nito/APIs/Graphics.hpp"
-#include "Cpp_Utils/Map.hpp"
-#include "Cpp_Utils/Collection.hpp"
 
 #include "Game/Components.hpp"
 #include "Game/Utilities.hpp"
@@ -66,29 +64,9 @@ using Nito::get_window_size;
 // Nito/Graphics.hpp
 using Nito::get_pixels_per_unit;
 
-// Cpp_Utils/Map.hpp
-using Cpp_Utils::remove;
-
-// Cpp_Utils/Collection.hpp
-using Cpp_Utils::for_each;
-
 
 namespace Game
 {
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// Data Structures
-//
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-struct Player_Controller_State
-{
-    Transform * transform;
-    Dimensions * dimensions;
-    Orientation_Handler * orientation_handler;
-    const Player_Controller * player_controller;
-};
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -98,7 +76,10 @@ struct Player_Controller_State
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static const string FIRE_HANDLER_ID = "player_controller fire";
 static const vector<string> TARGET_LAYERS { "enemy" };
-static map<Entity, Player_Controller_State> entity_states;
+static Transform * transform;
+static Dimensions * dimensions;
+static Orientation_Handler * orientation_handler;
+static const Player_Controller * player_controller;
 static Transform * camera_transform;
 static vec3 * camera_origin;
 static int pixels_per_unit;
@@ -109,17 +90,16 @@ static int pixels_per_unit;
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static void player_fire(Entity entity)
+static void fire()
 {
     static const float VERTICAL_Y_OFFSET = 0.05f;
 
-    const Player_Controller_State & entity_state = entity_states[entity];
-    const vec3 & player_position = entity_state.transform->position;
-    const Orientation orientation = entity_state.orientation_handler->orientation;
+    const vec3 & player_position = transform->position;
+    const Orientation orientation = orientation_handler->orientation;
 
 
     // Calculate projectile's position.
-    const float horizontal_x_offset = (entity_state.dimensions->width / pixels_per_unit / 2) - 0.05f;
+    const float horizontal_x_offset = (dimensions->width / pixels_per_unit / 2) - 0.05f;
     vec3 projectile_position(player_position.x, player_position.y, 0.0f);
 
     if (orientation == Orientation::RIGHT)
@@ -143,7 +123,7 @@ static void player_fire(Entity entity)
 
 
     // Generate projectile entity.
-    fire_projectile(projectile_position, entity_state.orientation_handler->look_direction, 1.0f, TARGET_LAYERS);
+    fire_projectile(projectile_position, orientation_handler->look_direction, 1.0f, TARGET_LAYERS);
 }
 
 
@@ -154,140 +134,137 @@ static void player_fire(Entity entity)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void player_controller_subscribe(Entity entity)
 {
-    if (camera_transform == nullptr)
+    if (transform != nullptr)
     {
-        Entity camera = get_entity("camera");
-        camera_transform = (Transform *)get_component(camera, "transform");
-        camera_origin = &((Dimensions *)get_component(camera, "dimensions"))->origin;
+        throw runtime_error("ERROR: only one entity is allowed to be subscribed to the player_controller system!");
     }
 
-    entity_states[entity] =
-    {
-        (Transform *)get_component(entity, "transform"),
-        (Dimensions *)get_component(entity, "dimensions"),
-        (Orientation_Handler *)get_component(entity, "orientation_handler"),
-        (Player_Controller *)get_component(entity, "player_controller"),
-    };
+    Entity camera = get_entity("camera");
+    transform = (Transform *)get_component(entity, "transform");
+    dimensions = (Dimensions *)get_component(entity, "dimensions");
+    orientation_handler = (Orientation_Handler *)get_component(entity, "orientation_handler");
+    player_controller = (Player_Controller *)get_component(entity, "player_controller");
+    camera_transform = (Transform *)get_component(camera, "transform");
+    camera_origin = &((Dimensions *)get_component(camera, "dimensions"))->origin;
+    pixels_per_unit = get_pixels_per_unit();
 
 
     // Set player fire handler to controller button 5.
-    set_controller_button_handler(FIRE_HANDLER_ID, DS4_Buttons::R1, Button_Actions::PRESS, [=]() -> void
+    set_controller_button_handler(FIRE_HANDLER_ID, DS4_Buttons::R1, Button_Actions::PRESS, []() -> void
     {
-        player_fire(entity);
+        fire();
     });
 
 
     // Set player fire handler to left click.
-    set_mouse_button_handler(FIRE_HANDLER_ID, [=](Mouse_Buttons mouse_button, Button_Actions button_action) -> void
+    set_mouse_button_handler(FIRE_HANDLER_ID, [](Mouse_Buttons mouse_button, Button_Actions button_action) -> void
     {
         if (mouse_button == Mouse_Buttons::LEFT && button_action == Button_Actions::PRESS)
         {
-            player_fire(entity);
+            fire();
         }
     });
 }
 
 
-void player_controller_unsubscribe(Entity entity)
+void player_controller_unsubscribe(Entity /*entity*/)
 {
-    remove(entity_states, entity);
     remove_controller_button_handler(FIRE_HANDLER_ID);
     remove_mouse_button_handler(FIRE_HANDLER_ID);
-
-    if (entity_states.size() == 0)
-    {
-        camera_transform = nullptr;
-        camera_origin = nullptr;
-    }
+    transform = nullptr;
+    dimensions = nullptr;
+    orientation_handler = nullptr;
+    player_controller = nullptr;
+    camera_transform = nullptr;
+    camera_origin = nullptr;
 }
 
 
 void player_controller_update()
 {
+    if (transform == nullptr)
+    {
+        return;
+    }
+
     const float time_scale = get_time_scale();
     const float delta_time = get_delta_time() * time_scale;
-    pixels_per_unit = get_pixels_per_unit();
+    vec3 & player_position = transform->position;
+    vec3 move_direction;
+    vec3 look_direction;
 
-    for_each(entity_states, [=](Entity /*entity*/, Player_Controller_State & entity_state) -> void
+    if (player_controller->mode == Player_Controller::Modes::CONTROLLER)
     {
-        const Player_Controller * player_controller = entity_state.player_controller;
-        vec3 & player_position = entity_state.transform->position;
-        vec3 move_direction;
-        vec3 look_direction;
-
-        if (player_controller->mode == Player_Controller::Modes::CONTROLLER)
-        {
-            const float stick_dead_zone = player_controller->stick_dead_zone;
+        const float stick_dead_zone = player_controller->stick_dead_zone;
 
 
-            // Calculate move direction based on left stick.
-            const vec3 left_stick_direction(
-                get_controller_axis(DS4_Axes::LEFT_STICK_X),
-                -get_controller_axis(DS4_Axes::LEFT_STICK_Y),
-                0.0f);
+        // Calculate move direction based on left stick.
+        const vec3 left_stick_direction(
+            get_controller_axis(DS4_Axes::LEFT_STICK_X),
+            -get_controller_axis(DS4_Axes::LEFT_STICK_Y),
+            0.0f);
 
-            move_direction.x = fabsf(left_stick_direction.x) > stick_dead_zone ? left_stick_direction.x : 0.0f;
-            move_direction.y = fabsf(left_stick_direction.y) > stick_dead_zone ? left_stick_direction.y : 0.0f;
-
-
-            // Calculate look direction based on right stick.
-            const vec3 right_stick_direction(
-                get_controller_axis(DS4_Axes::RIGHT_STICK_X),
-                -get_controller_axis(DS4_Axes::RIGHT_STICK_Y),
-                0.0f);
-
-            look_direction =
-                fabsf(right_stick_direction.x) > stick_dead_zone ||
-                fabsf(right_stick_direction.y) > stick_dead_zone
-                ? right_stick_direction
-                : move_direction;
-        }
-        else if (player_controller->mode == Player_Controller::Modes::KEYBOARD_MOUSE)
-        {
-            move_direction.x =
-                get_key_button_action(Keys::D) == Button_Actions::PRESS ? 1 :
-                get_key_button_action(Keys::A) == Button_Actions::PRESS ? -1 :
-                0;
-
-            move_direction.y =
-                get_key_button_action(Keys::W) == Button_Actions::PRESS ? 1 :
-                get_key_button_action(Keys::S) == Button_Actions::PRESS ? -1 :
-                0;
-
-            const vec3 & camera_position = camera_transform->position;
-            const vec2 mouse_position = (vec2)get_mouse_position();
-            const vec2 mouse_unit_camera_position = mouse_position / (float)pixels_per_unit;
-            const vec3 window_camera_origin_offset = (get_window_size() * *camera_origin) / (float)pixels_per_unit;
-
-            const vec2 mouse_camera_offset =
-                (mouse_unit_camera_position - (vec2)window_camera_origin_offset) / (vec2)camera_transform->scale;
-
-            const vec2 mouse_world_position = (vec2)camera_position + mouse_camera_offset;
-            const vec2 mouse_direction = normalize(mouse_world_position - (vec2)player_position);
-            look_direction.x = mouse_direction.x;
-            look_direction.y = mouse_direction.y;
-        }
+        move_direction.x = fabsf(left_stick_direction.x) > stick_dead_zone ? left_stick_direction.x : 0.0f;
+        move_direction.y = fabsf(left_stick_direction.y) > stick_dead_zone ? left_stick_direction.y : 0.0f;
 
 
-        if (move_direction.x != 0.0f || move_direction.y != 0.0f)
-        {
-            player_position += normalize(move_direction) * player_controller->speed * delta_time;
-        }
+        // Calculate look direction based on right stick.
+        const vec3 right_stick_direction(
+            get_controller_axis(DS4_Axes::RIGHT_STICK_X),
+            -get_controller_axis(DS4_Axes::RIGHT_STICK_Y),
+            0.0f);
+
+        look_direction =
+            fabsf(right_stick_direction.x) > stick_dead_zone ||
+            fabsf(right_stick_direction.y) > stick_dead_zone
+            ? right_stick_direction
+            : move_direction;
+    }
+    else if (player_controller->mode == Player_Controller::Modes::KEYBOARD_MOUSE)
+    {
+        move_direction.x =
+            get_key_button_action(Keys::D) == Button_Actions::PRESS ? 1 :
+            get_key_button_action(Keys::A) == Button_Actions::PRESS ? -1 :
+            0;
+
+        move_direction.y =
+            get_key_button_action(Keys::W) == Button_Actions::PRESS ? 1 :
+            get_key_button_action(Keys::S) == Button_Actions::PRESS ? -1 :
+            0;
+
+        const vec3 & camera_position = camera_transform->position;
+        const vec2 mouse_position = (vec2)get_mouse_position();
+        const vec2 mouse_unit_camera_position = mouse_position / (float)pixels_per_unit;
+        const vec3 window_camera_origin_offset = (get_window_size() * *camera_origin) / (float)pixels_per_unit;
+
+        const vec2 mouse_camera_offset =
+            (mouse_unit_camera_position - (vec2)window_camera_origin_offset) / (vec2)camera_transform->scale;
+
+        const vec2 mouse_world_position = (vec2)camera_position + mouse_camera_offset;
+        const vec2 mouse_direction = normalize(mouse_world_position - (vec2)player_position);
+        look_direction.x = mouse_direction.x;
+        look_direction.y = mouse_direction.y;
+    }
 
 
-        // Don't update look direction if game is paused.
-        if (time_scale == 0.0f)
-        {
-            return;
-        }
+    if (move_direction.x != 0.0f || move_direction.y != 0.0f)
+    {
+        player_position += normalize(move_direction) * player_controller->speed * delta_time;
+    }
 
 
-        // Only update look direction if it's not (0, 0).
-        if (look_direction.x != 0.0f || look_direction.y != 0.0f)
-        {
-            entity_state.orientation_handler->look_direction = look_direction;
-        }
-    });
+    // Don't update look direction if game is paused.
+    if (time_scale == 0.0f)
+    {
+        return;
+    }
+
+
+    // Only update look direction if it's not (0, 0).
+    if (look_direction.x != 0.0f || look_direction.y != 0.0f)
+    {
+        orientation_handler->look_direction = look_direction;
+    }
 }
 
 
