@@ -111,10 +111,17 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
         {
             [](const JSON & data) -> Component
             {
+                static const map<string, const Player_Controller::Modes> MODES
+                {
+                    { "controller"     , Player_Controller::Modes::CONTROLLER     },
+                    { "keyboard_mouse" , Player_Controller::Modes::KEYBOARD_MOUSE },
+                };
+
                 return new Player_Controller
                 {
                     data["speed"],
                     data["stick_dead_zone"],
+                    MODES.at(data["mode"]),
                 };
             },
             get_component_deallocator<Player_Controller>(),

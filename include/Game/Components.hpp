@@ -33,8 +33,15 @@ enum class Orientation
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 struct Player_Controller
 {
+    enum class Modes
+    {
+        CONTROLLER,
+        KEYBOARD_MOUSE,
+    };
+
     float speed;
     float stick_dead_zone;
+    Modes mode;
 };
 
 

@@ -57,6 +57,7 @@
     {
         "components":
         {
+            "id": "camera",
             "dimensions":
             {
                 "origin": { "x": 0.5, "y": 0.5 }
@@ -95,7 +96,8 @@
             "player_controller":
             {
                 "speed": 3,
-                "stick_dead_zone": 0.35
+                "stick_dead_zone": 0.35,
+                "mode": "keyboard_mouse"
             },
             "orientation_handler":
             {
