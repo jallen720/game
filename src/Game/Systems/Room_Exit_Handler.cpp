@@ -73,26 +73,6 @@ static map<Entity, Transform *> used_door_lock_transforms;
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static void set_door_lock(Entity entity, const vec3 & position, float rotation)
-{
-    Transform * door_lock;
-
-    if (unused_door_lock_transforms.size() > 0)
-    {
-        door_lock = unused_door_lock_transforms.back();
-        unused_door_lock_transforms.pop_back();
-    }
-    else
-    {
-        door_lock = (Transform *)get_component(load_blueprint("door_lock_tile"), "transform");
-    }
-
-    used_door_lock_transforms[entity] = door_lock;
-    door_lock->position = position;
-    door_lock->rotation = rotation;
-}
-
-
 static void unset_door_lock(Entity entity)
 {
     static const vec3 UNUSED_DOOR_LOCK_POSITION(-100, -100, -100);
@@ -105,6 +85,7 @@ static void unset_door_lock(Entity entity)
     }
 
 
+    // Reset door lock position.
     Transform * door_lock = used_door_lock_transforms[entity];
     remove(used_door_lock_transforms, entity);
     unused_door_lock_transforms.push_back(door_lock);
@@ -173,8 +154,23 @@ void room_exit_handler_set_locked(Entity entity, bool locked)
     {
         if (locked)
         {
+            // Set door lock to room-exit's position and rotation.
             Transform * transform = entity_state.transform;
-            set_door_lock(entity, transform->position, transform->rotation);
+            Transform * door_lock;
+
+            if (unused_door_lock_transforms.size() > 0)
+            {
+                door_lock = unused_door_lock_transforms.back();
+                unused_door_lock_transforms.pop_back();
+            }
+            else
+            {
+                door_lock = (Transform *)get_component(load_blueprint("door_lock_tile"), "transform");
+            }
+
+            used_door_lock_transforms[entity] = door_lock;
+            door_lock->position = transform->position;
+            door_lock->rotation = transform->rotation;
         }
         else
         {
