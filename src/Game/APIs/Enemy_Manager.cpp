@@ -10,11 +10,12 @@
 #include "Nito/APIs/Scene.hpp"
 #include "Cpp_Utils/Collection.hpp"
 #include "Cpp_Utils/JSON.hpp"
-#include "Cpp_Utils/Vector.hpp"
+#include "Cpp_Utils/Map.hpp"
 
-#include "Game/APIs/Floor_Manager.hpp"
 #include "Game/Utilities.hpp"
 #include "Game/Components.hpp"
+#include "Game/APIs/Floor_Manager.hpp"
+#include "Game/Systems/Game_Manager.hpp"
 
 
 using std::string;
@@ -40,9 +41,15 @@ using Nito::get_component;
 // Nito/APIs/Scene.hpp
 using Nito::load_blueprint;
 
+// Cpp_Utils/Collection.hpp
+using Cpp_Utils::for_each;
+
 // Cpp_Utils/JSON.hpp
 using Cpp_Utils::JSON;
 using Cpp_Utils::read_json_file;
+
+// Cpp_Utils/Map.hpp
+using Cpp_Utils::remove;
 
 
 namespace Game
@@ -66,9 +73,25 @@ enum class Enemies
 // Data
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+static const string ROOM_CHANGE_HANDLER_ID("enemy_manager");
 static Enemies * enemies;
 static const vec3 * room_tile_texture_scale;
 static vector<vector<JSON>> enemy_layouts;
+static map<int, map<Entity, bool *>> room_enemy_render_flags;
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Utilities
+//
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+static void set_render_flags(int room, bool value)
+{
+    for_each(room_enemy_render_flags[room], [=](Entity /*entity*/, bool * render_flag) -> void
+    {
+        *render_flag = value;
+    });
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -139,14 +162,34 @@ void generate_enemies()
         vec3 enemy_position = vec3(x, y, 0) * *room_tile_texture_scale;
         int enemy_room = get_room(enemy_position);
         ((Transform *)get_component(enemy_entity, "transform"))->position = enemy_position;
+        map<Entity, bool *> & enemy_room_render_flags = room_enemy_render_flags[enemy_room];
 
-        ((Health *)get_component(enemy_entity, "health"))->death_handlers["enemy_manager"] = [=]() -> void
-        {
-            // Remove enemy from its associated room's enemy count.
-            remove_enemy(enemy_room);
-        };
+        ((Health *)get_component(enemy_entity, "health"))->death_handlers["enemy_manager"] =
+            [&, enemy_room, enemy_entity]() -> void
+            {
+                // Remove enemy from its associated room's enemy count.
+                remove_enemy(enemy_room);
+
+                remove(enemy_room_render_flags, enemy_entity);
+            };
 
         add_enemy(enemy_room);
+        enemy_room_render_flags[enemy_entity] = &((Sprite *)get_component(enemy_entity, "sprite"))->render;
+    });
+
+
+    // Initialize enemy render flags.
+    for_each(room_enemy_render_flags, [](int room, const map<Entity, bool *> & /*render_flags*/) -> void
+    {
+        set_render_flags(room, false);
+    });
+
+    set_render_flags(get_spawn_room_id(), true);
+
+    game_manager_add_room_change_handler(ROOM_CHANGE_HANDLER_ID, [](int last_room, int current_room) -> void
+    {
+        set_render_flags(last_room, false);
+        set_render_flags(current_room, true);
     });
 }
 
@@ -154,6 +197,8 @@ void generate_enemies()
 void destroy_enemies()
 {
     delete[] enemies;
+    room_enemy_render_flags.clear();
+    game_manager_remove_room_change_handler(ROOM_CHANGE_HANDLER_ID);
 }
 
 
