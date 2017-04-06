@@ -73,7 +73,7 @@ static map<Entity, Transform *> used_door_lock_transforms;
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void set_door_lock(Entity entity, const vec3 & position, float rotation)
+static void set_door_lock(Entity entity, const vec3 & position, float rotation)
 {
     Transform * door_lock;
 
@@ -90,11 +90,10 @@ void set_door_lock(Entity entity, const vec3 & position, float rotation)
     used_door_lock_transforms[entity] = door_lock;
     door_lock->position = position;
     door_lock->rotation = rotation;
-
 }
 
 
-void unset_door_lock(Entity entity)
+static void unset_door_lock(Entity entity)
 {
     static const vec3 UNUSED_DOOR_LOCK_POSITION(-100, -100, -100);
 
