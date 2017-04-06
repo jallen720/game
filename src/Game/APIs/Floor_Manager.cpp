@@ -10,7 +10,6 @@
 #include "Nito/APIs/Scene.hpp"
 #include "Nito/APIs/Graphics.hpp"
 #include "Cpp_Utils/Map.hpp"
-#include "Cpp_Utils/Collection.hpp"
 
 #include "Game/Utilities.hpp"
 #include "Game/Components.hpp"
@@ -38,7 +37,6 @@ using Nito::load_blueprint;
 
 // Nito/Components.hpp
 using Nito::Transform;
-using Nito::Sprite;
 
 // Nito/Collider_Component.hpp
 using Nito::Collider;
@@ -50,9 +48,6 @@ using Nito::get_pixels_per_unit;
 using Cpp_Utils::contains_key;
 using Cpp_Utils::remove;
 using Cpp_Utils::at_index;
-
-// Cpp_Utils/Collection.hpp
-using Cpp_Utils::for_each;
 
 
 namespace Game
@@ -91,7 +86,6 @@ static const int SPAWN_ROOM_ID = 1;
 static Floor current_floor;
 static vec2 spawn_position;
 static map<int, Room_Data> room_datas;
-static map<int, vector<bool *>> room_tile_render_flags;
 static map<int, int> room_enemy_counts;
 static map<int, vector<Entity>> room_exits;
 static int max_room_id;
@@ -376,15 +370,6 @@ static int get_room_position_coordinate(
 }
 
 
-static void set_render_flags(int room, bool value)
-{
-    for (bool * render_flag : room_tile_render_flags.at(room))
-    {
-        *render_flag = value;
-    }
-}
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Interface
@@ -515,10 +500,6 @@ void generate_floor(int floor_size)
         }
 
 
-        // Track room tiles' render flags.
-        vector<bool *> & render_flags = room_tile_render_flags[room_id];
-
-
         iterate_room_tiles(current_floor, room_x, room_y, false, [&](
             int tile_x,
             int tile_y,
@@ -552,7 +533,7 @@ void generate_floor(int floor_size)
             transform->rotation = tile_rotation;
             position = vec3(tile_x, tile_y, 0.0f) * ROOM_TILE_TEXTURE_SCALE;
             position.z = ROOM_Z;
-            render_flags.push_back(&((Sprite *)get_component(tile, "sprite"))->render);
+            game_manager_track_render_flag(room_id, tile);
 
 
             // Set collision handlers for tiles that need them.
@@ -588,21 +569,9 @@ void generate_floor(int floor_size)
     });
 
 
-    // Initialize floor.
-    for_each(room_tile_render_flags, [](int room, const vector<bool *> & /*render_flags*/) -> void
+    // Lock current room if its enemy count is > 0.
+    game_manager_add_room_change_handler(ROOM_CHANGE_HANDLER_ID, [](int /*last_room*/, int current_room) -> void
     {
-        set_render_flags(room, false);
-    });
-
-    set_render_flags(SPAWN_ROOM_ID, true);
-
-    game_manager_add_room_change_handler(ROOM_CHANGE_HANDLER_ID, [](int last_room, int current_room) -> void
-    {
-        set_render_flags(last_room, false);
-        set_render_flags(current_room, true);
-
-
-        // Lock current room if it has enemies.
         if (room_enemy_counts[current_room] > 0)
         {
             set_room_locked(current_room, true);
@@ -623,7 +592,6 @@ void destroy_floor()
 
     // Cleanup room data.
     room_datas.clear();
-    room_tile_render_flags.clear();
     room_enemy_counts.clear();
     room_exits.clear();
     game_manager_remove_room_change_handler(ROOM_CHANGE_HANDLER_ID);

@@ -30,6 +30,7 @@ using Nito::get_entity;
 
 // Nito/Components.hpp
 using Nito::Transform;
+using Nito::Sprite;
 
 // Cpp_Utils/String.hpp
 using Cpp_Utils::to_string;
@@ -56,6 +57,7 @@ static const vec2 * spawn_position;
 static int last_room;
 static int current_room;
 static int spawn_room_id;
+static map<int, map<Entity, bool *>> room_render_flags;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -63,6 +65,15 @@ static int spawn_room_id;
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+static void set_render_flags(int room, bool value)
+{
+    for_each(room_render_flags[room], [=](Entity /*entity*/, bool * render_flag) -> void
+    {
+        *render_flag = value;
+    });
+}
+
+
 static void start_floor()
 {
     last_room = spawn_room_id;
@@ -72,6 +83,15 @@ static void start_floor()
     generate_enemies();
     player_position->x = spawn_position->x;
     player_position->y = spawn_position->y;
+
+
+    // Initialize render flags.
+    for_each(room_render_flags, [](int room, const map<Entity, bool *> & /*render_flags*/) -> void
+    {
+        set_render_flags(room, false);
+    });
+
+    set_render_flags(spawn_room_id, true);
 }
 
 
@@ -80,6 +100,7 @@ static void cleanup_floor()
     destroy_floor();
     destroy_minimap();
     destroy_enemies();
+    room_render_flags.clear();
 }
 
 
@@ -144,6 +165,11 @@ void game_manager_change_rooms(float door_rotation)
     {
         room_change_handler(last_room, current_room);
     });
+
+
+    // Update render flags.
+    set_render_flags(last_room, false);
+    set_render_flags(current_room, true);
 }
 
 
@@ -164,6 +190,18 @@ void game_manager_complete_floor()
     floor_entity_destroy_all();
     cleanup_floor();
     start_floor();
+}
+
+
+void game_manager_track_render_flag(int room, Entity entity)
+{
+    room_render_flags[room][entity] = &((Sprite *)get_component(entity, "sprite"))->render;
+}
+
+
+void game_manager_untrack_render_flag(int room, Entity entity)
+{
+    remove(room_render_flags[room], entity);
 }
 
 

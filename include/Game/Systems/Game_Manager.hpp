@@ -25,6 +25,8 @@ void game_manager_add_room_change_handler(
 
 void game_manager_remove_room_change_handler(const std::string & id);
 void game_manager_complete_floor();
+void game_manager_track_render_flag(int room, Nito::Entity entity);
+void game_manager_untrack_render_flag(int room, Nito::Entity entity);
 
 
 } // namespace Game
