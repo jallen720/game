@@ -112,7 +112,6 @@
             "health": 100,
             "collider":
             {
-                "render": false,
                 "send_collision": true,
                 "receives_collision": true
             },

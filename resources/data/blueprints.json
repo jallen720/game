@@ -19,10 +19,7 @@
     {
         "components":
         {
-            "collider":
-            {
-                "render": false
-            }
+            "collider": {}
         }
     },
     "static_obstacle":
@@ -295,7 +292,6 @@
             },
             "collider":
             {
-                "render": false,
                 "send_collision": true
             },
             "circle_collider":
@@ -333,10 +329,7 @@
             {
                 "speed": 3
             },
-            "collider":
-            {
-                "render": false
-            },
+            "collider": {},
             "circle_collider":
             {
                 "radius": 0.065
