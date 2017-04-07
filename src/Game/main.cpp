@@ -12,6 +12,7 @@
 
 #include "Game/Components.hpp"
 #include "Game/APIs/Enemy_Manager.hpp"
+#include "Game/APIs/Audio_Manager.hpp"
 #include "Game/Systems/Player_Controller.hpp"
 #include "Game/Systems/Projectile.hpp"
 #include "Game/Systems/Depth_Handler.hpp"
@@ -269,6 +270,7 @@ int run()
     });
 
     enemy_manager_api_init();
+    audio_manager_api_init();
     return run_engine();
 }
 
