@@ -143,10 +143,12 @@ void generate_enemies()
             remove_enemy(enemy_room);
 
             game_manager_untrack_render_flag(enemy_room, enemy_entity);
+            game_manager_untrack_collider_enabled_flag(enemy_room, enemy_entity);
         };
 
         add_enemy(enemy_room);
         game_manager_track_render_flag(enemy_room, enemy_entity);
+        game_manager_track_collider_enabled_flag(enemy_room, enemy_entity);
     });
 }
 

@@ -31,6 +31,7 @@ using glm::ivec2;
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
 using Nito::get_component;
+using Nito::has_component;
 
 // Nito/APIs/Scene.hpp
 using Nito::load_blueprint;
@@ -534,6 +535,11 @@ void generate_floor(int floor_size)
             position = vec3(tile_x, tile_y, 0.0f) * ROOM_TILE_TEXTURE_SCALE;
             position.z = ROOM_Z;
             game_manager_track_render_flag(room_id, tile);
+
+            if (has_component(tile, "collider"))
+            {
+                game_manager_track_collider_enabled_flag(room_id, tile);
+            }
 
 
             // Set collision handlers for tiles that need them.

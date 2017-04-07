@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <glm/glm.hpp>
 #include "Nito/Components.hpp"
+#include "Nito/Collider_Component.hpp"
 #include "Cpp_Utils/String.hpp"
 #include "Cpp_Utils/Map.hpp"
 #include "Cpp_Utils/Collection.hpp"
@@ -32,6 +33,9 @@ using Nito::get_entity;
 using Nito::Transform;
 using Nito::Sprite;
 
+// Nito/Collider_Component.hpp
+using Nito::Collider;
+
 // Cpp_Utils/String.hpp
 using Cpp_Utils::to_string;
 
@@ -48,6 +52,14 @@ namespace Game
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
+// Data Structures
+//
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+using Room_Flags = map<int, map<Entity, bool *>>;
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
 // Data
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -57,7 +69,8 @@ static const vec2 * spawn_position;
 static int last_room;
 static int current_room;
 static int spawn_room_id;
-static map<int, map<Entity, bool *>> room_render_flags;
+static Room_Flags render_flags;
+static Room_Flags collider_enabled_flags;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,11 +78,11 @@ static map<int, map<Entity, bool *>> room_render_flags;
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static void set_render_flags(int room, bool value)
+static void set_room_flags(Room_Flags & room_flags, int room, bool value)
 {
-    for_each(room_render_flags[room], [=](Entity /*entity*/, bool * render_flag) -> void
+    for_each(room_flags[room], [=](Entity /*entity*/, bool * room_flag) -> void
     {
-        *render_flag = value;
+        *room_flag = value;
     });
 }
 
@@ -86,12 +99,18 @@ static void start_floor()
 
 
     // Initialize render flags.
-    for_each(room_render_flags, [](int room, const map<Entity, bool *> & /*render_flags*/) -> void
+    for_each(render_flags, [](int room, const map<Entity, bool *> & /*render_flags*/) -> void
     {
-        set_render_flags(room, false);
+        set_room_flags(render_flags, room, false);
     });
 
-    set_render_flags(spawn_room_id, true);
+    for_each(collider_enabled_flags, [](int room, const map<Entity, bool *> & /*collider_enabled_flags*/) -> void
+    {
+        set_room_flags(collider_enabled_flags, room, false);
+    });
+
+    set_room_flags(render_flags, spawn_room_id, true);
+    set_room_flags(collider_enabled_flags, spawn_room_id, true);
 }
 
 
@@ -100,7 +119,8 @@ static void cleanup_floor()
     destroy_floor();
     destroy_minimap();
     destroy_enemies();
-    room_render_flags.clear();
+    render_flags.clear();
+    collider_enabled_flags.clear();
 }
 
 
@@ -167,9 +187,11 @@ void game_manager_change_rooms(float door_rotation)
     });
 
 
-    // Update render flags.
-    set_render_flags(last_room, false);
-    set_render_flags(current_room, true);
+    // Update room flags.
+    set_room_flags(render_flags, last_room, false);
+    set_room_flags(render_flags, current_room, true);
+    set_room_flags(collider_enabled_flags, last_room, false);
+    set_room_flags(collider_enabled_flags, current_room, true);
 }
 
 
@@ -195,13 +217,25 @@ void game_manager_complete_floor()
 
 void game_manager_track_render_flag(int room, Entity entity)
 {
-    room_render_flags[room][entity] = &((Sprite *)get_component(entity, "sprite"))->render;
+    render_flags[room][entity] = &((Sprite *)get_component(entity, "sprite"))->render;
 }
 
 
 void game_manager_untrack_render_flag(int room, Entity entity)
 {
-    remove(room_render_flags[room], entity);
+    remove(render_flags[room], entity);
+}
+
+
+void game_manager_track_collider_enabled_flag(int room, Entity entity)
+{
+    collider_enabled_flags[room][entity] = &((Collider *)get_component(entity, "collider"))->enabled;
+}
+
+
+void game_manager_untrack_collider_enabled_flag(int room, Entity entity)
+{
+    remove(collider_enabled_flags[room], entity);
 }
 
 
