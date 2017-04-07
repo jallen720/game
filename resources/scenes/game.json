@@ -19,8 +19,8 @@
             {
                 "button_names":
                 [
-                    "Continue",
-                    "Quit"
+                    "CONTINUE",
+                    "QUIT"
                 ]
             }
         },
@@ -43,8 +43,8 @@
             {
                 "button_names":
                 [
-                    "Restart",
-                    "Quit"
+                    "RESTART",
+                    "QUIT"
                 ]
             }
         },

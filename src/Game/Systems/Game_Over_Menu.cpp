@@ -79,7 +79,7 @@ void game_over_menu_subscribe(Entity _entity)
     entity_menu_buttons_handler = (Menu_Buttons_Handler *)get_component(entity, "menu_buttons_handler");
     map<string, function<void()>> & button_handlers = entity_menu_buttons_handler->button_handlers;
 
-    button_handlers["Restart"] = []() -> void
+    button_handlers["RESTART"] = []() -> void
     {
         if (entity_on)
         {
@@ -87,7 +87,7 @@ void game_over_menu_subscribe(Entity _entity)
         }
     };
 
-    button_handlers["Quit"] = quit_handler;
+    button_handlers["QUIT"] = quit_handler;
     set_key_handler(QUIT_HANDLER_ID, Keys::ESCAPE, Button_Actions::PRESS, quit_handler);
     set_controller_button_handler(QUIT_HANDLER_ID, DS4_Buttons::CIRCLE, Button_Actions::PRESS, quit_handler);
     game_over_menu_set_on(false);
@@ -99,8 +99,8 @@ void game_over_menu_unsubscribe(Entity /*entity*/)
     static const auto DUD = []() -> void {};
 
     map<string, function<void()>> & button_handlers = entity_menu_buttons_handler->button_handlers;
-    button_handlers["Restart"] = DUD;
-    button_handlers["Quit"] = DUD;
+    button_handlers["RESTART"] = DUD;
+    button_handlers["QUIT"] = DUD;
     entity_menu_buttons_handler = nullptr;
     remove_key_handler(QUIT_HANDLER_ID);
     remove_controller_button_handler(QUIT_HANDLER_ID);

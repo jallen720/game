@@ -77,9 +77,9 @@ void pause_menu_subscribe(Entity _entity)
 
     entity_menu_buttons_handler = (Menu_Buttons_Handler *)get_component(entity, "menu_buttons_handler");
     map<string, function<void()>> & button_handlers = entity_menu_buttons_handler->button_handlers;
-    button_handlers["Continue"] = unpause;
+    button_handlers["CONTINUE"] = unpause;
 
-    button_handlers["Quit"] = []() -> void
+    button_handlers["QUIT"] = []() -> void
     {
         if (entity_on)
         {
@@ -97,8 +97,8 @@ void pause_menu_unsubscribe(Entity /*entity*/)
     static const auto DUD = []() -> void {};
 
     map<string, function<void()>> & button_handlers = entity_menu_buttons_handler->button_handlers;
-    button_handlers["Continue"] = DUD;
-    button_handlers["Quit"] = DUD;
+    button_handlers["CONTINUE"] = DUD;
+    button_handlers["QUIT"] = DUD;
     entity_menu_buttons_handler = nullptr;
     remove_controller_button_handler(UNPAUSE_HANDLER_ID);
 }

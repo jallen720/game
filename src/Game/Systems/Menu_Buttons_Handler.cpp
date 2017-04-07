@@ -118,12 +118,12 @@ static Button * generate_button(
 
     generate_entity(
         {
-            { "parent_id"       , new string(button_id)                                                },
-            { "render_layer"    , new string("ui")                                                     },
-            { "text"            , new Text { "resources/fonts/Ubuntu-L.ttf", vec3(0.0f), button_name } },
-            { "transform"       , new Transform { vec3(), vec3(), 0.0f }                               },
-            { "dimensions"      , new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.45f, 0.0f) }               },
-            { "local_transform" , new Transform { vec3(0.0f, 0.0f, -1.0f), vec3(1.0f), 0.0f }          },
+            { "parent_id"       , new string(button_id)                                                    },
+            { "render_layer"    , new string("ui")                                                         },
+            { "text"            , new Text { "resources/fonts/UbuntuMono-R.ttf", vec3(0.0f), button_name } },
+            { "transform"       , new Transform { vec3(), vec3(), 0.0f }                                   },
+            { "dimensions"      , new Dimensions { 0.0f, 0.0f, vec3(0.5f, 0.45f, 0.0f) }                   },
+            { "local_transform" , new Transform { vec3(0.0f, 0.0f, -1.0f), vec3(1.0f), 0.0f }              },
         },
         BUTTON_TEXT_SYSTEMS);
 

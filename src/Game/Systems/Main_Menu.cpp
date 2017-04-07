@@ -66,12 +66,12 @@ void main_menu_subscribe(Entity entity)
     entity_menu_buttons_handler = (Menu_Buttons_Handler *)get_component(entity, "menu_buttons_handler");
     map<string, function<void()>> & button_handlers = entity_menu_buttons_handler->button_handlers;
 
-    button_handlers["Play"] = []() -> void
+    button_handlers["PLAY"] = []() -> void
     {
         set_scene_to_load("game");
     };
 
-    button_handlers["Exit"] = close_window;
+    button_handlers["EXIT"] = close_window;
     set_key_handler(EXIT_HANDLER_ID, Keys::ESCAPE, Button_Actions::PRESS, close_window);
     set_controller_button_handler(EXIT_HANDLER_ID, DS4_Buttons::CIRCLE, Button_Actions::PRESS, close_window);
 }
@@ -82,8 +82,8 @@ void main_menu_unsubscribe(Entity /*entity*/)
     static const auto DUD = []() -> void {};
 
     map<string, function<void()>> & button_handlers = entity_menu_buttons_handler->button_handlers;
-    button_handlers["Play"] = DUD;
-    button_handlers["Exit"] = DUD;
+    button_handlers["PLAY"] = DUD;
+    button_handlers["EXIT"] = DUD;
     entity_menu_buttons_handler = nullptr;
     remove_key_handler(EXIT_HANDLER_ID);
     remove_controller_button_handler(EXIT_HANDLER_ID);
