@@ -271,7 +271,8 @@
         "inherits":
         [
             "renderable",
-            "floor_entity"
+            "floor_entity",
+            "static_obstacle"
         ],
         "components":
         {
@@ -289,10 +290,6 @@
                     "right": "resources/textures/turret_right.png",
                     "down": "resources/textures/turret_down.png"
                 }
-            },
-            "collider":
-            {
-                "send_collision": true
             },
             "circle_collider":
             {
