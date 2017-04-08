@@ -12,6 +12,7 @@
 
 #include "Game/Components.hpp"
 #include "Game/Systems/Health.hpp"
+#include "Game/APIs/Audio_Manager.hpp"
 
 
 using std::map;
@@ -103,6 +104,9 @@ void projectile_subscribe(Entity entity)
             }
         }
     };
+
+    // Play sound for projectile
+    play_sound("resources/audio/laser.wav");
 }
 
 
