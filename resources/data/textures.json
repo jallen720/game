@@ -50,7 +50,8 @@
             "resources/textures/ui/minimap_room_connector.png",
             "resources/textures/ui/minimap_room_vacant.png",
             "resources/textures/ui/minimap_room_connector_vacant.png",
-            "resources/textures/ui/minimap_room_base.png"
+            "resources/textures/ui/minimap_room_base.png",
+            "resources/textures/bosses/boss.png"
         ]
     }
 ]
