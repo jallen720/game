@@ -77,7 +77,6 @@
     {
         "inherits":
         [
-            "collidable",
             "static_obstacle",
             "one_directional_tile_obstacle"
         ]
@@ -102,7 +101,6 @@
         "inherits":
         [
             "renderable",
-            "collidable",
             "static_obstacle",
             "one_directional_tile_obstacle",
             "floor_entity"
@@ -178,7 +176,6 @@
         "inherits":
         [
             "renderable",
-            "collidable",
             "static_obstacle",
             "corner_wall_tile",
             "door_adjacent_wall_tile",
@@ -202,7 +199,6 @@
         "inherits":
         [
             "renderable",
-            "collidable",
             "static_obstacle",
             "corner_wall_tile",
             "door_adjacent_wall_tile",
@@ -241,7 +237,6 @@
         "inherits":
         [
             "renderable",
-            "collidable",
             "static_obstacle",
             "corner_wall_tile",
             "floor_entity"
