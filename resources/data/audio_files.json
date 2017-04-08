@@ -1,4 +1,5 @@
 [
     "resources/audio/loading_loop.wav",
-    "resources/audio/androids.wav"
+    "resources/audio/androids.wav",
+    "resources/audio/laser.wav"
 ]
