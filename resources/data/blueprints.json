@@ -15,7 +15,7 @@
             "transform": {}
         }
     },
-    "collidable":
+    "triggerable":
     {
         "components":
         {
@@ -118,7 +118,7 @@
         "inherits":
         [
             "renderable",
-            "collidable",
+            "triggerable",
             "floor_entity"
         ],
         "components":
@@ -144,7 +144,7 @@
         "inherits":
         [
             "renderable",
-            "collidable",
+            "triggerable",
             "floor_entity"
         ],
         "components":
@@ -405,5 +405,13 @@
                 "position": { "z": -1 }
             }
         }
+    },
+    "boss":
+    {
+        "inherits":
+        [
+            "renderable",
+            "static_obstacle"
+        ]
     }
 }
