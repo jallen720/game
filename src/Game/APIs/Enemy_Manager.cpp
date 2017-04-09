@@ -90,6 +90,8 @@ void generate_enemies()
     enemies = new Enemies[enemies_width * enemies_height];
     room_tile_texture_scale = &get_room_tile_texture_scale();
 
+
+    // Generate enemy data.
     iterate_array_2d<Enemies>(enemies, enemies_width, enemies_height, [](int /*x*/, int /*y*/, Enemies & enemy) -> void
     {
         enemy = Enemies::NONE;
@@ -120,6 +122,8 @@ void generate_enemies()
         }
     });
 
+
+    // Use enemy data to generate enemy entities.
     iterate_array_2d<Enemies>(enemies, enemies_width, enemies_height, [&](int x, int y, Enemies & enemy) -> void
     {
         static const map<Enemies, const string> ENEMY_BLUEPRINTS
