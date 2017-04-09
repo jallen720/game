@@ -61,7 +61,6 @@ struct Turret_State
 {
     Transform * transform;
     Orientation_Handler * orientation_handler;
-    Health * health;
     const vec3 * target_position;
     float cooldown;
 };
@@ -84,20 +83,12 @@ static map<Entity, Turret_State> entity_states;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void turret_subscribe(Entity entity)
 {
-    auto health = (Health *)get_component(entity, "health");
-
     entity_states[entity] =
     {
         (Transform *)get_component(entity, "transform"),
         (Orientation_Handler *)get_component(entity, "orientation_handler"),
-        health,
         &((Transform *)get_component(get_entity("player"), "transform"))->position,
         0.0f,
-    };
-
-    health->death_handlers["turret death"] = [=]() -> void
-    {
-        flag_entity_for_deletion(entity);
     };
 }
 

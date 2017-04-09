@@ -71,6 +71,17 @@
             "floor_entity"
         ]
     },
+    "enemy":
+    {
+        "components":
+        {
+            "layer": "enemy"
+        },
+        "systems":
+        [
+            "enemy"
+        ]
+    },
 
 
     "door_lock_tile":
@@ -267,11 +278,11 @@
         [
             "renderable",
             "floor_entity",
-            "static_obstacle"
+            "static_obstacle",
+            "enemy"
         ],
         "components":
         {
-            "layer": "enemy",
             "sprite":
             {
                 "texture_path": "resources/textures/turret_up.png"
