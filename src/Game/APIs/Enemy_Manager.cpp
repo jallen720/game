@@ -136,9 +136,9 @@ void generate_enemies()
             return;
         }
 
-        Entity enemy_entity = load_blueprint(ENEMY_BLUEPRINTS.at(enemy));
-        vec3 enemy_position = vec3(x, y, 0) * *room_tile_texture_scale;
-        int enemy_room = get_room(enemy_position);
+        const Entity enemy_entity = load_blueprint(ENEMY_BLUEPRINTS.at(enemy));
+        const vec3 enemy_position = vec3(x, y, 0) * *room_tile_texture_scale;
+        const int enemy_room = get_room(enemy_position);
         ((Transform *)get_component(enemy_entity, "transform"))->position = enemy_position;
 
         ((Health *)get_component(enemy_entity, "health"))->death_handlers["enemy_manager"] = [=]() -> void
