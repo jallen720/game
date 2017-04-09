@@ -105,6 +105,7 @@ void projectile_subscribe(Entity entity)
         }
     };
 
+
     // Play sound for projectile
     play_sound("resources/audio/laser.wav");
 }
