@@ -412,6 +412,13 @@
         [
             "renderable",
             "static_obstacle"
-        ]
+        ],
+        "components":
+        {
+            "sprite":
+            {
+                "texture_path": "resources/textures/bosses/boss.png"
+            }
+        }
     }
 }
