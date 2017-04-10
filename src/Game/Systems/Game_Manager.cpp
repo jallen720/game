@@ -135,6 +135,7 @@ void game_manager_subscribe(Entity /*entity*/)
     player_position = &((Transform *)get_component(get_entity("player"), "transform"))->position;
     spawn_position = &get_spawn_position();
     minimap_api_init();
+    floor_manager_api_init();
     start_floor();
 }
 

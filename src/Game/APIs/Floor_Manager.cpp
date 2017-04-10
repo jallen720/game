@@ -81,9 +81,11 @@ struct Floor
 static const int ROOM_TILE_WIDTH = 13;
 static const int ROOM_TILE_HEIGHT = 9;
 static const float ROOM_Z = 100.0f;
-static const vec3 ROOM_TILE_TEXTURE_SCALE(0.5f, 0.5f, 1.0f);
+static const int ROOM_TILE_TEXTURE_SIZE = 32;
+static const float ROOM_TILE_TEXTURE_ORIGINS = 0.5f;
 static const string ROOM_CHANGE_HANDLER_ID("floor_manager");
 static const int SPAWN_ROOM_ID = 1;
+static vec3 room_tile_unit_size;
 static Floor current_floor;
 static vec2 spawn_position;
 static map<int, Room_Data> room_datas;
@@ -171,17 +173,17 @@ static void set_room(Floor & floor, Possible_Rooms & room_extensions, int x, int
 }
 
 
-static float get_room_center_coordinate(int room_coordinate, int tile_dimension_size, float texture_dimension_scale)
+static float get_room_center_coordinate(int room_coordinate, int tile_dimension_size, float tile_unit_size)
 {
-    return ((room_coordinate * tile_dimension_size) + (tile_dimension_size / 2)) * texture_dimension_scale;
+    return ((room_coordinate * tile_dimension_size) + (tile_dimension_size / 2)) * tile_unit_size;
 }
 
 
 static vec2 get_room_center(int room_x, int room_y)
 {
     return vec2(
-        get_room_center_coordinate(room_x, ROOM_TILE_WIDTH, ROOM_TILE_TEXTURE_SCALE.x),
-        get_room_center_coordinate(room_y, ROOM_TILE_HEIGHT, ROOM_TILE_TEXTURE_SCALE.y));
+        get_room_center_coordinate(room_x, ROOM_TILE_WIDTH, room_tile_unit_size.x),
+        get_room_center_coordinate(room_y, ROOM_TILE_HEIGHT, room_tile_unit_size.y));
 }
 
 
@@ -365,9 +367,10 @@ static void generate_wall_tile(
 static int get_room_position_coordinate(
     float position_coordinate,
     int tile_dimension_size,
-    float texture_dimension_scale)
+    float tile_unit_size)
 {
-    return (position_coordinate + (texture_dimension_scale / 2.0f)) / (tile_dimension_size * texture_dimension_scale);
+    return (position_coordinate + (tile_unit_size * ROOM_TILE_TEXTURE_ORIGINS)) /
+           (tile_dimension_size * tile_unit_size);
 }
 
 
@@ -376,6 +379,13 @@ static int get_room_position_coordinate(
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void floor_manager_api_init()
+{
+    room_tile_unit_size = vec3(1) * (float)(ROOM_TILE_TEXTURE_SIZE / get_pixels_per_unit());
+    room_tile_unit_size.z = 1;
+}
+
+
 void generate_floor(int floor_size)
 {
     // Create floor.
@@ -532,7 +542,7 @@ void generate_floor(int floor_size)
             auto transform = (Transform *)get_component(tile, "transform");
             vec3 & position = transform->position;
             transform->rotation = tile_rotation;
-            position = vec3(tile_x, tile_y, 0.0f) * ROOM_TILE_TEXTURE_SCALE;
+            position = vec3(tile_x, tile_y, 0.0f) * room_tile_unit_size;
             position.z = ROOM_Z;
             game_manager_track_render_flag(room_id, tile);
 
@@ -624,8 +634,8 @@ int get_room(int x, int y)
 int get_room(const vec3 & position)
 {
     return get_room(
-        get_room_position_coordinate(position.x, ROOM_TILE_WIDTH, ROOM_TILE_TEXTURE_SCALE.x),
-        get_room_position_coordinate(position.y, ROOM_TILE_HEIGHT, ROOM_TILE_TEXTURE_SCALE.y));
+        get_room_position_coordinate(position.x, ROOM_TILE_WIDTH, room_tile_unit_size.x),
+        get_room_position_coordinate(position.y, ROOM_TILE_HEIGHT, room_tile_unit_size.y));
 }
 
 
@@ -667,7 +677,7 @@ int get_room_tile_height()
 
 const glm::vec3 & get_room_tile_texture_scale()
 {
-    return ROOM_TILE_TEXTURE_SCALE;
+    return room_tile_unit_size;
 }
 
 
