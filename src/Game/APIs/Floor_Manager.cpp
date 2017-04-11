@@ -364,13 +364,22 @@ static void generate_wall_tile(
 }
 
 
-static int get_room_position_coordinate(
-    float position_coordinate,
-    int tile_dimension_size,
-    float tile_unit_size)
+static int get_room_position_coordinate(float position, int tile_dimension_size, float tile_unit_size)
 {
-    return (position_coordinate + (tile_unit_size * ROOM_TILE_TEXTURE_ORIGINS)) /
+    return (position + (tile_unit_size * ROOM_TILE_TEXTURE_ORIGINS)) /
            (tile_dimension_size * tile_unit_size);
+}
+
+
+static int get_room_tile_position_coordinate(float position, float tile_unit_size)
+{
+    return (position + (tile_unit_size * ROOM_TILE_TEXTURE_ORIGINS)) / tile_unit_size;
+}
+
+
+static float get_room_tile_coordinate_position(int coordinate, float tile_unit_size)
+{
+    return coordinate * tile_unit_size;
 }
 
 
@@ -705,6 +714,22 @@ void remove_enemy(int room_id)
     {
         set_room_locked(room_id, false);
     }
+}
+
+
+vec2 get_room_tile_coordinates(const vec2 & position)
+{
+    return vec2(
+        get_room_tile_position_coordinate(position.x, room_tile_unit_size.x),
+        get_room_tile_position_coordinate(position.y, room_tile_unit_size.y));
+}
+
+
+vec2 get_room_tile_position(const vec2 & coordinates)
+{
+    return vec2(
+        get_room_tile_coordinate_position(coordinates.x, room_tile_unit_size.x),
+        get_room_tile_coordinate_position(coordinates.y, room_tile_unit_size.y));
 }
 
 

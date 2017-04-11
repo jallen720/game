@@ -64,6 +64,8 @@ int get_max_room_id();
 int get_spawn_room_id();
 void add_enemy(int room_id);
 void remove_enemy(int room_id);
+glm::vec2 get_room_tile_coordinates(const glm::vec2 & position);
+glm::vec2 get_room_tile_position(const glm::vec2 & coordinates);
 
 
 } // namespace Game
