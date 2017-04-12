@@ -37,7 +37,7 @@ using Nito::Transform;
 // Nito/Engine.hpp
 using Nito::get_time_scale;
 
-// Nito/Window.hpp
+// Nito/APIs/Window.hpp
 using Nito::get_delta_time;
 
 
