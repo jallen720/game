@@ -107,6 +107,8 @@ void boss_update()
 
     const float time_scale = get_time_scale();
 
+
+    // Don't update boss position/orientation if game is paused.
     if (time_scale == 0)
     {
         return;
