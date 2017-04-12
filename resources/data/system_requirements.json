@@ -71,6 +71,7 @@
     ],
     "boss":
     [
-        "transform"
+        "transform",
+        "orientation_handler"
     ]
 }

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <stdexcept>
+#include <cmath>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include "Nito/Components.hpp"
@@ -9,11 +10,13 @@
 #include "Nito/APIs/Window.hpp"
 
 #include "Game/Utilities.hpp"
+#include "Game/Components.hpp"
 #include "Game/APIs/Floor_Manager.hpp"
 
 
 using std::vector;
 using std::runtime_error;
+using std::isnan;
 
 // glm/glm.hpp
 using glm::vec3;
@@ -48,6 +51,7 @@ namespace Game
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static vec3 * position;
+static vec3 * look_direction;
 static int direction_index = 0;
 static vec2 destination(-1);
 
@@ -73,6 +77,7 @@ static int wrap_index(int index, int container_size)
 void boss_subscribe(Entity entity)
 {
     position = &((Transform *)get_component(entity, "transform"))->position;
+    look_direction = &((Orientation_Handler *)get_component(entity, "orientation_handler"))->look_direction;
     direction_index = 0;
     destination = vec2(-1);
 }
@@ -81,6 +86,7 @@ void boss_subscribe(Entity entity)
 void boss_unsubscribe(Entity /*entity*/)
 {
     position = nullptr;
+    look_direction = nullptr;
 }
 
 
@@ -145,10 +151,27 @@ void boss_update()
 
 
     const vec2 position_2d = (vec2)*position;
-    const vec2 movement_direction = destination - position_2d;
+
+
+    // Calculate movement_direction.
+    vec2 movement_direction = destination - position_2d;
+
+    if (isnan(movement_direction.x))
+    {
+        movement_direction.x = 0;
+    }
+
+    if (isnan(movement_direction.y))
+    {
+        movement_direction.y = 0;
+    }
+
+
     const vec2 movement = normalize(movement_direction) * get_delta_time() * get_time_scale();
     position->x += movement.x;
     position->y += movement.y;
+    look_direction->x = movement.x;
+    look_direction->y = movement.y;
 
 
     // Boss is close enough to destination or has passed it, so unset destination to be reset next frame.

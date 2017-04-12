@@ -430,11 +430,21 @@
         {
             "sprite":
             {
-                "texture_path": "resources/textures/bosses/boss.png"
+                "texture_path": "resources/textures/bosses/boss_down.png"
             },
             "circle_collider":
             {
                 "radius": 0.25
+            },
+            "orientation_handler":
+            {
+                "texture_paths":
+                {
+                    "left": "resources/textures/bosses/boss_left.png",
+                    "up": "resources/textures/bosses/boss_up.png",
+                    "right": "resources/textures/bosses/boss_right.png",
+                    "down": "resources/textures/bosses/boss_down.png"
+                }
             },
             "health": 500
         },
