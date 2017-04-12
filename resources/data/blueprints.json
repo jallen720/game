@@ -438,6 +438,10 @@
                 "radius": 0.25
             },
             "health": 500
-        }
+        },
+        "systems":
+        [
+            "boss"
+        ]
     }
 }

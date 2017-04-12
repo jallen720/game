@@ -31,6 +31,7 @@
 #include "Game/Systems/Room_Exit_Handler.hpp"
 #include "Game/Systems/Floor_Entity.hpp"
 #include "Game/Systems/Enemy.hpp"
+#include "Game/Systems/Boss.hpp"
 
 
 using std::string;
@@ -81,6 +82,7 @@ static const vector<Update_Handler> GAME_UPDATE_HANDLERS
     health_bar_update,
     menu_buttons_handler_update,
     camera_controller_update,
+    boss_update,
 };
 
 
@@ -104,6 +106,7 @@ static const map<string, const System_Entity_Handlers> GAME_SYSTEM_ENTITY_HANDLE
     NITO_SYSTEM_ENTITY_HANDLERS(room_exit_handler),
     NITO_SYSTEM_ENTITY_HANDLERS(floor_entity),
     NITO_SYSTEM_ENTITY_HANDLERS(enemy),
+    NITO_SYSTEM_ENTITY_HANDLERS(boss),
 };
 
 

@@ -68,5 +68,9 @@
     "enemy":
     [
         "health"
+    ],
+    "boss":
+    [
+        "transform"
     ]
 }
