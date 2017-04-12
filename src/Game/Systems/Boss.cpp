@@ -105,6 +105,13 @@ void boss_update()
         vec2( 0,-1),
     };
 
+    const float time_scale = get_time_scale();
+
+    if (time_scale == 0)
+    {
+        return;
+    }
+
 
     // If destination is unset, search neighboring tiles for a new destination.
     if (destination.x == -1)
