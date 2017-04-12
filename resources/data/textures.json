@@ -54,7 +54,11 @@
             "resources/textures/bosses/boss_down.png",
             "resources/textures/bosses/boss_left.png",
             "resources/textures/bosses/boss_right.png",
-            "resources/textures/bosses/boss_up.png"
+            "resources/textures/bosses/boss_up.png",
+            "resources/textures/bosses/boss_tail_segment_down.png",
+            "resources/textures/bosses/boss_tail_segment_left.png",
+            "resources/textures/bosses/boss_tail_segment_right.png",
+            "resources/textures/bosses/boss_tail_segment_up.png"
         ]
     }
 ]
