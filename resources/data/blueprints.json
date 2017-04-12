@@ -422,7 +422,7 @@
         "inherits":
         [
             "renderable",
-            "static_obstacle",
+            "triggerable",
             "floor_entity",
             "enemy"
         ],
@@ -432,7 +432,6 @@
             {
                 "texture_path": "resources/textures/bosses/boss.png"
             },
-            "collider": { "render": true },
             "circle_collider":
             {
                 "radius": 0.25
