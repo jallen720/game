@@ -154,7 +154,7 @@ void boss_update()
 
 
     // Calculate movement_direction.
-    vec2 movement_direction = destination - position_2d;
+    vec2 movement_direction = normalize(destination - position_2d);
 
     if (isnan(movement_direction.x))
     {
@@ -167,7 +167,7 @@ void boss_update()
     }
 
 
-    const vec2 movement = normalize(movement_direction) * get_delta_time() * get_time_scale();
+    const vec2 movement = movement_direction * get_delta_time() * time_scale;
     position->x += movement.x;
     position->y += movement.y;
     look_direction->x = movement.x;
