@@ -446,7 +446,8 @@
                     "down": "resources/textures/bosses/boss_down.png"
                 }
             },
-            "health": 500
+            "health": 500,
+            "boss_segment": {}
         },
         "systems":
         [
@@ -480,7 +481,12 @@
                     "right": "resources/textures/bosses/boss_tail_segment_right.png",
                     "down": "resources/textures/bosses/boss_tail_segment_down.png"
                 }
-            }
-        }
+            },
+            "boss_segment": {}
+        },
+        "systems":
+        [
+            "boss_segment"
+        ]
     }
 }

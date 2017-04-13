@@ -61,6 +61,7 @@ namespace Game
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static vec3 * position;
 static vec3 * look_direction;
+static vec2 * previous_destination;
 static int direction_index = 0;
 static vec2 destination(-1);
 static vector<Entity> tail_segments;
@@ -88,6 +89,7 @@ void boss_subscribe(Entity entity)
 {
     position = &((Transform *)get_component(entity, "transform"))->position;
     look_direction = &((Orientation_Handler *)get_component(entity, "orientation_handler"))->look_direction;
+    previous_destination = &((Boss_Segment *)get_component(entity, "boss_segment"))->previous_destination;
     direction_index = 0;
     destination = vec2(-1);
 }
@@ -198,6 +200,7 @@ void boss_update()
     // Boss is close enough to destination or has passed it, so unset destination to be reset next frame.
     if (distance(destination, position_2d) < length(movement))
     {
+        *previous_destination = destination;
         destination = vec2(-1);
     }
 }
@@ -205,11 +208,19 @@ void boss_update()
 
 void boss_init()
 {
+    // Initialize previous_destination as boss' current position.
+    *previous_destination = *position;
+    vec2 * parent_previous_destination = previous_destination;
+
+
     // Create boss "tail".
-    for (int i = 0; i < 1; i++)
+    for (int i = 0; i < 12; i++)
     {
         Entity tail_segment = load_blueprint("boss_tail_segment");
         ((Transform *)get_component(tail_segment, "transform"))->position = *position;
+        auto boss_segment = (Boss_Segment *)get_component(tail_segment, "boss_segment");
+        boss_segment->parent_previous_destination = parent_previous_destination;
+        parent_previous_destination = &boss_segment->previous_destination;
         tail_segments.push_back(tail_segment);
     }
 }

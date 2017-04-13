@@ -32,6 +32,7 @@
 #include "Game/Systems/Floor_Entity.hpp"
 #include "Game/Systems/Enemy.hpp"
 #include "Game/Systems/Boss.hpp"
+#include "Game/Systems/Boss_Segment.hpp"
 
 
 using std::string;
@@ -83,6 +84,7 @@ static const vector<Update_Handler> GAME_UPDATE_HANDLERS
     menu_buttons_handler_update,
     camera_controller_update,
     boss_update,
+    boss_segment_update,
 };
 
 
@@ -107,6 +109,7 @@ static const map<string, const System_Entity_Handlers> GAME_SYSTEM_ENTITY_HANDLE
     NITO_SYSTEM_ENTITY_HANDLERS(floor_entity),
     NITO_SYSTEM_ENTITY_HANDLERS(enemy),
     NITO_SYSTEM_ENTITY_HANDLERS(boss),
+    NITO_SYSTEM_ENTITY_HANDLERS(boss_segment),
 };
 
 
@@ -248,6 +251,16 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
                 return menu_buttons_handler;
             },
             get_component_deallocator<Menu_Buttons_Handler>(),
+        }
+    },
+    {
+        "boss_segment",
+        {
+            [](const JSON & /*data*/) -> Component
+            {
+                return new Boss_Segment;
+            },
+            get_component_deallocator<Boss_Segment>(),
         }
     }
 };
