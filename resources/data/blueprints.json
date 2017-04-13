@@ -452,5 +452,35 @@
         [
             "boss"
         ]
+    },
+    "boss_tail_segment":
+    {
+        "inherits":
+        [
+            "renderable",
+            "triggerable",
+            "floor_entity"
+        ],
+        "components":
+        {
+            "sprite":
+            {
+                "texture_path": "resources/textures/bosses/boss_tail_segment_down.png"
+            },
+            "circle_collider":
+            {
+                "radius": 0.25
+            },
+            "orientation_handler":
+            {
+                "texture_paths":
+                {
+                    "left": "resources/textures/bosses/boss_tail_segment_left.png",
+                    "up": "resources/textures/bosses/boss_tail_segment_up.png",
+                    "right": "resources/textures/bosses/boss_tail_segment_right.png",
+                    "down": "resources/textures/bosses/boss_tail_segment_down.png"
+                }
+            }
+        }
     }
 }

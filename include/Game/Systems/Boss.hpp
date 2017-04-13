@@ -16,6 +16,7 @@ namespace Game
 void boss_subscribe(Nito::Entity entity);
 void boss_unsubscribe(Nito::Entity entity);
 void boss_update();
+void boss_init();
 
 
 } // namespace Game

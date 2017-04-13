@@ -7,6 +7,7 @@
 #include "Nito/Components.hpp"
 #include "Nito/APIs/ECS.hpp"
 #include "Nito/APIs/Scene.hpp"
+#include "Cpp_Utils/Map.hpp"
 #include "Cpp_Utils/Collection.hpp"
 #include "Cpp_Utils/JSON.hpp"
 
@@ -14,6 +15,7 @@
 #include "Game/Components.hpp"
 #include "Game/APIs/Floor_Manager.hpp"
 #include "Game/Systems/Game_Manager.hpp"
+#include "Game/Systems/Boss.hpp"
 
 
 using std::string;
@@ -32,6 +34,9 @@ using Nito::get_component;
 
 // Nito/APIs/Scene.hpp
 using Nito::load_blueprint;
+
+// Cpp_Utils/Map.hpp
+using Cpp_Utils::contains_key;
 
 // Cpp_Utils/Collection.hpp
 using Cpp_Utils::for_each;
@@ -185,6 +190,11 @@ void generate_enemies()
         "boss",
     };
 
+    static const map<string, void(*)()> BOSS_INITIALIZERS
+    {
+        { "boss", boss_init },
+    };
+
     const string & boss_id = BOSS_IDS[random(0, BOSS_IDS.size())];
     const JSON & boss_spawn_position = boss_datas.at(boss_id)["spawn_position"];
     const int boss_room_origin_x = boss_room_x * room_tile_width;
@@ -198,6 +208,11 @@ void generate_enemies()
         *room_tile_texture_scale;
 
     generate_enemy(boss_id, boss_position, boss_room);
+
+    if (contains_key(BOSS_INITIALIZERS, boss_id))
+    {
+        BOSS_INITIALIZERS.at(boss_id)();
+    }
 }
 
 
