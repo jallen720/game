@@ -3,12 +3,8 @@
 #include <vector>
 #include <stdexcept>
 #include <algorithm>
-#include <cmath>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
 #include "Nito/Components.hpp"
-#include "Nito/Engine.hpp"
-#include "Nito/APIs/Window.hpp"
 #include "Nito/APIs/Scene.hpp"
 #include "Cpp_Utils/Collection.hpp"
 
@@ -20,16 +16,12 @@
 using std::vector;
 using std::runtime_error;
 using std::fill;
-using std::isnan;
 
 // glm/glm.hpp
 using glm::vec3;
 using glm::vec2;
 using glm::distance;
 using glm::length;
-
-// glm/gtc/matrix_transform.hpp
-using glm::normalize;
 
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
@@ -38,12 +30,6 @@ using Nito::flag_entity_for_deletion;
 
 // Nito/Components.hpp
 using Nito::Transform;
-
-// Nito/Engine.hpp
-using Nito::get_time_scale;
-
-// Nito/APIs/Window.hpp
-using Nito::get_delta_time;
 
 // Nito/APIs/Scene.hpp
 using Nito::load_blueprint;
@@ -133,15 +119,6 @@ void boss_update()
         vec2( 0,-1),
     };
 
-    const float time_scale = get_time_scale();
-
-
-    // Don't update boss position/orientation if game is paused.
-    if (time_scale == 0)
-    {
-        return;
-    }
-
 
     // If destination is unset, search neighboring tiles for a new destination.
     if (destination.x == -1)
@@ -187,32 +164,11 @@ void boss_update()
     }
 
 
-    const vec2 position_2d = (vec2)*position;
-
-
-    // Calculate movement_direction.
-    vec2 movement_direction = normalize(destination - position_2d);
-
-    if (isnan(movement_direction.x))
-    {
-        movement_direction.x = 0;
-    }
-
-    if (isnan(movement_direction.y))
-    {
-        movement_direction.y = 0;
-    }
-
-
-    const vec2 movement = movement_direction * get_delta_time() * time_scale;
-    position->x += movement.x;
-    position->y += movement.y;
-    look_direction->x = movement.x;
-    look_direction->y = movement.y;
+    const vec2 movement = move_entity(*position, *look_direction, destination);
 
 
     // Boss is close enough to destination or has passed it, so unset destination to be reset next frame.
-    if (distance(destination, position_2d) < length(movement))
+    if (distance(destination, (vec2)*position) < length(movement))
     {
         // Update destinations with completed destination.
         destinations.insert(destinations.begin(), destination);
