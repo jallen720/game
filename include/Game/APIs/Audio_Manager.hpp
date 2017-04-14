@@ -14,7 +14,7 @@ namespace Game
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void audio_manager_api_init();
-void play_sound(const std::string & path);
+void play_sound(const std::string & path, float volume);
 
 
 } // namespace Game
