@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <stdexcept>
+#include <algorithm>
 #include <cmath>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -18,6 +19,7 @@
 
 using std::vector;
 using std::runtime_error;
+using std::fill;
 using std::isnan;
 
 // glm/glm.hpp
@@ -59,12 +61,14 @@ namespace Game
 // Data
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+static const int SEGMENT_COUNT = 7;
 static vec3 * position;
 static vec3 * look_direction;
-static vec2 * previous_destination;
 static int direction_index = 0;
 static vec2 destination(-1);
-static vector<Entity> tail_segments;
+static vector<Entity> segments;
+static vector<vec2 *> segment_destinations;
+static vector<vec2> destinations;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,6 +84,15 @@ static int wrap_index(int index, int container_size)
 }
 
 
+static void update_segments()
+{
+    for (int i = 0; i < SEGMENT_COUNT; i++)
+    {
+        *segment_destinations[i] = destinations[i];
+    }
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Interface
@@ -89,7 +102,6 @@ void boss_subscribe(Entity entity)
 {
     position = &((Transform *)get_component(entity, "transform"))->position;
     look_direction = &((Orientation_Handler *)get_component(entity, "orientation_handler"))->look_direction;
-    previous_destination = &((Boss_Segment *)get_component(entity, "boss_segment"))->previous_destination;
     direction_index = 0;
     destination = vec2(-1);
 }
@@ -99,8 +111,10 @@ void boss_unsubscribe(Entity /*entity*/)
 {
     position = nullptr;
     look_direction = nullptr;
-    for_each(tail_segments, flag_entity_for_deletion);
-    tail_segments.clear();
+    for_each(segments, flag_entity_for_deletion);
+    segments.clear();
+    segment_destinations.clear();
+    destinations.clear();
 }
 
 
@@ -200,7 +214,12 @@ void boss_update()
     // Boss is close enough to destination or has passed it, so unset destination to be reset next frame.
     if (distance(destination, position_2d) < length(movement))
     {
-        *previous_destination = destination;
+        // Update destinations with completed destination.
+        destinations.insert(destinations.begin(), destination);
+        destinations.pop_back();
+
+
+        update_segments();
         destination = vec2(-1);
     }
 }
@@ -208,21 +227,22 @@ void boss_update()
 
 void boss_init()
 {
-    // Initialize previous_destination as boss' current position.
-    *previous_destination = *position;
-    vec2 * parent_previous_destination = previous_destination;
+    // Initialize all destinations to boss' position.
+    destinations.resize(SEGMENT_COUNT);
+    fill(destinations.begin(), destinations.end(), *position);
 
 
-    // Create boss "tail".
-    for (int i = 0; i < 12; i++)
+    // Create boss segments.
+    for (int i = 0; i < SEGMENT_COUNT; i++)
     {
-        Entity tail_segment = load_blueprint("boss_tail_segment");
-        ((Transform *)get_component(tail_segment, "transform"))->position = *position;
-        auto boss_segment = (Boss_Segment *)get_component(tail_segment, "boss_segment");
-        boss_segment->parent_previous_destination = parent_previous_destination;
-        parent_previous_destination = &boss_segment->previous_destination;
-        tail_segments.push_back(tail_segment);
+        Entity segment = load_blueprint("boss_segment");
+        ((Transform *)get_component(segment, "transform"))->position = *position;
+        segment_destinations.push_back((vec2 *)get_component(segment, "destination"));
+        segments.push_back(segment);
     }
+
+
+    update_segments();
 }
 
 

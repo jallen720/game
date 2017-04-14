@@ -91,11 +91,4 @@ struct Room_Exit
 };
 
 
-struct Boss_Segment
-{
-    glm::vec2 * parent_previous_destination;
-    glm::vec2 previous_destination;
-};
-
-
 } // namespace Game

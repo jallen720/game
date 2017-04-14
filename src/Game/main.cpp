@@ -41,6 +41,7 @@ using std::map;
 
 // glm/glm.hpp
 using glm::vec3;
+using glm::vec2;
 
 // Nito/Engine.hpp
 using Nito::add_update_handler;
@@ -254,13 +255,13 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
         }
     },
     {
-        "boss_segment",
+        "destination",
         {
             [](const JSON & /*data*/) -> Component
             {
-                return new Boss_Segment;
+                return new vec2;
             },
-            get_component_deallocator<Boss_Segment>(),
+            get_component_deallocator<vec2>(),
         }
     }
 };

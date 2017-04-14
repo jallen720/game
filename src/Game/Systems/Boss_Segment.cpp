@@ -19,8 +19,6 @@ using std::isnan;
 // glm/glm.hpp
 using glm::vec3;
 using glm::vec2;
-using glm::distance;
-using glm::length;
 
 // glm/gtc/matrix_transform.hpp
 using glm::normalize;
@@ -58,8 +56,7 @@ struct Boss_Segment_State
 {
     vec3 * position;
     vec3 * look_direction;
-    Boss_Segment * boss_segment;
-    vec2 destination;
+    vec2 * destination;
 };
 
 
@@ -78,16 +75,11 @@ struct map<Entity, Boss_Segment_State> entity_states;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void boss_segment_subscribe(Entity entity)
 {
-    auto boss_segment = (Boss_Segment *)get_component(entity, "boss_segment");
-    vec3 * position = &((Transform *)get_component(entity, "transform"))->position;
-    boss_segment->previous_destination = *position;
-
     entity_states[entity] =
     {
-        position,
+        &((Transform *)get_component(entity, "transform"))->position,
         &((Orientation_Handler *)get_component(entity, "orientation_handler"))->look_direction,
-        boss_segment,
-        vec2(-1),
+        (vec2 *)get_component(entity, "destination"),
     };
 }
 
@@ -100,23 +92,24 @@ void boss_segment_unsubscribe(Entity entity)
 
 void boss_segment_update()
 {
-    for_each(entity_states, [](Entity /*entity*/, Boss_Segment_State & entity_state) -> void
+    const float time_scale = get_time_scale();
+
+    for_each(entity_states, [=](Entity /*entity*/, Boss_Segment_State & entity_state) -> void
     {
         vec3 * position = entity_state.position;
         vec3 * look_direction = entity_state.look_direction;
-        Boss_Segment * boss_segment = entity_state.boss_segment;
-        vec2 & destination = entity_state.destination;
-
-        if (destination.x == -1)
-        {
-            destination = *boss_segment->parent_previous_destination;
-        }
-
         const vec2 position_2d = (vec2)*position;
 
 
+        // Don't update boss position/orientation if game is paused.
+        if (time_scale == 0)
+        {
+            return;
+        }
+
+
         // Calculate movement_direction.
-        vec2 movement_direction = normalize(destination - position_2d);
+        vec2 movement_direction = normalize(*entity_state.destination - position_2d);
 
         if (isnan(movement_direction.x))
         {
@@ -129,19 +122,11 @@ void boss_segment_update()
         }
 
 
-        const vec2 movement = movement_direction * get_delta_time() * get_time_scale();
+        const vec2 movement = movement_direction * get_delta_time() * time_scale;
         position->x += movement.x;
         position->y += movement.y;
         look_direction->x = movement.x;
         look_direction->y = movement.y;
-
-
-        // Boss segment is close enough to destination or has passed it, so unset destination to be reset next frame.
-        if (distance(destination, position_2d) <= length(movement))
-        {
-            boss_segment->previous_destination = destination;
-            destination = vec2(-1);
-        }
     });
 }
 

@@ -72,13 +72,12 @@
     "boss":
     [
         "transform",
-        "orientation_handler",
-        "boss_segment"
+        "orientation_handler"
     ],
     "boss_segment":
     [
         "transform",
         "orientation_handler",
-        "boss_segment"
+        "destination"
     ]
 }

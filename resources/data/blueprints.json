@@ -446,15 +446,15 @@
                     "down": "resources/textures/bosses/boss_down.png"
                 }
             },
-            "health": 500,
-            "boss_segment": {}
+            "health": 500
         },
         "systems":
         [
-            "boss"
+            "boss",
+            "depth_handler"
         ]
     },
-    "boss_tail_segment":
+    "boss_segment":
     {
         "inherits":
         [
@@ -482,11 +482,12 @@
                     "down": "resources/textures/bosses/boss_tail_segment_down.png"
                 }
             },
-            "boss_segment": {}
+            "destination": {}
         },
         "systems":
         [
-            "boss_segment"
+            "boss_segment",
+            "depth_handler"
         ]
     }
 }
