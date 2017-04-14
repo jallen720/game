@@ -1,6 +1,7 @@
 #include "Game/Systems/Boss.hpp"
 
 #include <vector>
+#include <deque>
 #include <stdexcept>
 #include <algorithm>
 #include <glm/glm.hpp>
@@ -15,6 +16,7 @@
 
 
 using std::vector;
+using std::deque;
 using std::runtime_error;
 using std::fill;
 
@@ -56,7 +58,7 @@ static int direction_index = 0;
 static int boss_room;
 static vector<Entity> segments;
 static vector<vec2 *> segment_destinations;
-static vector<vec2> destinations;
+static deque<vec2> destinations;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -185,7 +187,7 @@ void boss_update()
     if (distance(destination, (vec2)*position) < length(movement))
     {
         // Update destinations with completed destination.
-        destinations.insert(destinations.begin(), destination);
+        destinations.push_front(destination);
         destinations.pop_back();
 
 
