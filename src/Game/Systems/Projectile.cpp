@@ -99,7 +99,7 @@ void projectile_subscribe(Entity entity)
 
             if (contains(projectile->target_layers, *collision_layer))
             {
-                damage_entity(collision_entity, 10.0f);
+                damage_entity(collision_entity, projectile->damage);
                 flag_entity_for_deletion(entity);
             }
         }

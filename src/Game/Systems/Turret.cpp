@@ -102,6 +102,7 @@ void turret_unsubscribe(Entity entity)
 void turret_update()
 {
     static const float TURRET_RANGE = 3.0f;
+    static const string PROJECTILE_NAME("projectile_blue_orb");
 
     const float delta_time = get_delta_time() * get_time_scale();
 
@@ -119,7 +120,7 @@ void turret_update()
         }
         else if (distance((vec2)target_position, (vec2)position) < TURRET_RANGE)
         {
-            fire_projectile(position, look_direction, 1.0f, TARGET_LAYERS);
+            fire_projectile(PROJECTILE_NAME, position, look_direction, 1.0f, TARGET_LAYERS);
             cooldown = FIRE_COOLDOWN;
         }
     });

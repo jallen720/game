@@ -50,6 +50,7 @@ struct Projectile
     float speed;
     glm::vec3 direction;
     float duration;
+    float damage;
     std::vector<std::string> target_layers;
 };
 

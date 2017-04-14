@@ -309,40 +309,6 @@
             "depth_handler"
         ]
     },
-    "projectile":
-    {
-        "inherits":
-        [
-            "floor_entity"
-        ],
-        "components":
-        {
-            "render_layer": "world",
-            "sprite":
-            {
-                "texture_path": "resources/textures/projectile.png",
-                "shader_pipeline_name": "texture"
-            },
-            "dimensions":
-            {
-                "origin": { "x": 0.5, "y": 0.5 }
-            },
-            "transform": {},
-            "projectile":
-            {
-                "speed": 3
-            },
-            "collider": {},
-            "circle_collider":
-            {
-                "radius": 0.065
-            }
-        },
-        "systems":
-        [
-            "depth_handler"
-        ]
-    },
     "minimap_tile":
     {
         "inherits":
@@ -487,6 +453,35 @@
         "systems":
         [
             "boss_segment",
+            "depth_handler"
+        ]
+    },
+    "projectile_blue_orb":
+    {
+        "inherits":
+        [
+            "renderable",
+            "triggerable",
+            "floor_entity"
+        ],
+        "components":
+        {
+            "projectile":
+            {
+                "speed": 3,
+                "damage": 10
+            },
+            "sprite":
+            {
+                "texture_path": "resources/textures/projectiles/blue_orb.png"
+            },
+            "circle_collider":
+            {
+                "radius": 0.065
+            }
+        },
+        "systems":
+        [
             "depth_handler"
         ]
     }

@@ -18,10 +18,12 @@ namespace Game
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void fire_projectile(
+    const std::string & name,
     const glm::vec3 & origin,
     const glm::vec3 & direction,
     float duration,
-    const std::vector<std::string> & target_layers);
+    const std::vector<std::string> & target_layers,
+    float damage_modifier = 1.0f);
 
 int random(int min, int max);
 bool in_layer(Nito::Entity entity, const std::string & layer);

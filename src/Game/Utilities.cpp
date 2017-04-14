@@ -57,15 +57,21 @@ namespace Game
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void fire_projectile(const vec3 & origin, const vec3 & direction, float duration, const vector<string> & target_layers)
+void fire_projectile(
+    const string & name,
+    const vec3 & origin,
+    const vec3 & direction,
+    float duration,
+    const vector<string> & target_layers,
+    float damage_modifier)
 {
-    Entity projectile_entity = load_blueprint("projectile");
+    Entity projectile_entity = load_blueprint(name);
     auto projectile = (Projectile *)get_component(projectile_entity, "projectile");
     ((Transform *)get_component(projectile_entity, "transform"))->position = origin;
-    projectile->speed = 3.0f;
     projectile->direction = normalize(direction);
     projectile->duration = duration;
     projectile->target_layers = target_layers;
+    projectile->damage *= damage_modifier;
 }
 
 

@@ -41,7 +41,6 @@
             "resources/textures/player_left.png",
             "resources/textures/player_right.png",
             "resources/textures/player_up.png",
-            "resources/textures/projectile.png",
             "resources/textures/turret_down.png",
             "resources/textures/turret_left.png",
             "resources/textures/turret_right.png",
@@ -58,7 +57,8 @@
             "resources/textures/bosses/boss_tail_segment_down.png",
             "resources/textures/bosses/boss_tail_segment_left.png",
             "resources/textures/bosses/boss_tail_segment_right.png",
-            "resources/textures/bosses/boss_tail_segment_up.png"
+            "resources/textures/bosses/boss_tail_segment_up.png",
+            "resources/textures/projectiles/blue_orb.png"
         ]
     }
 ]

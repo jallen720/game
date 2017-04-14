@@ -100,6 +100,7 @@ static bool is_paused()
 static void fire()
 {
     static const float VERTICAL_Y_OFFSET = 0.05f;
+    static const string PROJECTILE_NAME("projectile_blue_orb");
 
 
     // Don't fire if the game is paused.
@@ -137,8 +138,14 @@ static void fire()
     projectile_position.z = projectile_position.y;
 
 
-    // Generate projectile entity.
-    fire_projectile(projectile_position, orientation_handler->look_direction, 1.0f, TARGET_LAYERS);
+    // Fire projectile in look-direction.
+    fire_projectile(
+        PROJECTILE_NAME,
+        projectile_position,
+        orientation_handler->look_direction,
+        1.0f,
+        TARGET_LAYERS,
+        10.0f);
 }
 
 

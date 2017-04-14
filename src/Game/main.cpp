@@ -145,6 +145,7 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
                 auto projectile = new Projectile;
                 projectile->speed = contains_key(data, "speed") ? data["speed"].get<float>() : 1.0f;
                 projectile->duration = contains_key(data, "duration") ? data["duration"].get<float>() : 1.0f;
+                projectile->damage = contains_key(data, "damage") ? data["damage"].get<float>() : 10.0f;
                 vec3 & direction = projectile->direction;
 
                 if (contains_key(data, "direction"))
