@@ -107,7 +107,7 @@ void projectile_subscribe(Entity entity)
 
 
     // Play sound for projectile
-    play_sound("resources/audio/laser.wav");
+    play_sound("resources/audio/laser.wav", 0.025f);
 }
 
 
