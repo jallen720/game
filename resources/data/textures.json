@@ -58,7 +58,9 @@
             "resources/textures/bosses/boss_tail_segment_left.png",
             "resources/textures/bosses/boss_tail_segment_right.png",
             "resources/textures/bosses/boss_tail_segment_up.png",
-            "resources/textures/projectiles/blue_orb.png"
+            "resources/textures/projectiles/blue_orb.png",
+            "resources/textures/projectiles/red_orb.png",
+            "resources/textures/projectiles/purple_orb.png"
         ]
     }
 ]

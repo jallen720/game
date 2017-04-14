@@ -102,7 +102,7 @@ void turret_unsubscribe(Entity entity)
 void turret_update()
 {
     static const float TURRET_RANGE = 3.0f;
-    static const string PROJECTILE_NAME("projectile_blue_orb");
+    static const string PROJECTILE_NAME("projectile_red_orb");
 
     const float delta_time = get_delta_time() * get_time_scale();
 

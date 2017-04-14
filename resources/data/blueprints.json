@@ -270,6 +270,24 @@
             }
         }
     },
+    "orb_projectile":
+    {
+        "components":
+        {
+            "projectile":
+            {
+                "speed": 3
+            },
+            "circle_collider":
+            {
+                "radius": 0.065
+            }
+        },
+        "systems":
+        [
+            "depth_handler"
+        ]
+    },
 
 
     "turret":
@@ -462,27 +480,61 @@
         [
             "renderable",
             "triggerable",
-            "floor_entity"
+            "floor_entity",
+            "orb_projectile"
         ],
         "components":
         {
             "projectile":
             {
-                "speed": 3,
                 "damage": 10
             },
             "sprite":
             {
                 "texture_path": "resources/textures/projectiles/blue_orb.png"
-            },
-            "circle_collider":
-            {
-                "radius": 0.065
             }
-        },
-        "systems":
+        }
+    },
+    "projectile_red_orb":
+    {
+        "inherits":
         [
-            "depth_handler"
-        ]
+            "renderable",
+            "triggerable",
+            "floor_entity",
+            "orb_projectile"
+        ],
+        "components":
+        {
+            "projectile":
+            {
+                "damage": 20
+            },
+            "sprite":
+            {
+                "texture_path": "resources/textures/projectiles/red_orb.png"
+            }
+        }
+    },
+    "projectile_purple_orb":
+    {
+        "inherits":
+        [
+            "renderable",
+            "triggerable",
+            "floor_entity",
+            "orb_projectile"
+        ],
+        "components":
+        {
+            "projectile":
+            {
+                "damage": 30
+            },
+            "sprite":
+            {
+                "texture_path": "resources/textures/projectiles/purple_orb.png"
+            }
+        }
     }
 }
