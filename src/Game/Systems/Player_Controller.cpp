@@ -165,10 +165,7 @@ void player_controller_subscribe(Entity entity)
 
 
     // Set player fire handler to controller button 5.
-    set_controller_button_handler(FIRE_HANDLER_ID, DS4_Buttons::R1, Button_Actions::PRESS, []() -> void
-    {
-        fire();
-    });
+    set_controller_button_handler(FIRE_HANDLER_ID, DS4_Buttons::R1, Button_Actions::PRESS, fire);
 
 
     // Set player fire handler to left click.
