@@ -1,12 +1,15 @@
 #include "Game/Systems/Boss.hpp"
 
 #include <vector>
+#include <string>
 #include <deque>
 #include <stdexcept>
 #include <algorithm>
 #include <glm/glm.hpp>
 #include "Nito/Components.hpp"
+#include "Nito/Engine.hpp"
 #include "Nito/APIs/Scene.hpp"
+#include "Nito/APIs/Window.hpp"
 #include "Cpp_Utils/Collection.hpp"
 
 #include "Game/Utilities.hpp"
@@ -16,6 +19,7 @@
 
 
 using std::vector;
+using std::string;
 using std::deque;
 using std::runtime_error;
 using std::fill;
@@ -34,8 +38,14 @@ using Nito::flag_entity_for_deletion;
 // Nito/Components.hpp
 using Nito::Transform;
 
+// Nito/Engine.hpp
+using Nito::get_time_scale;
+
 // Nito/APIs/Scene.hpp
 using Nito::load_blueprint;
+
+// Nito/APIs/Window.hpp
+using Nito::get_delta_time;
 
 // Cpp_Utils/Collection.hpp
 using Cpp_Utils::for_each;
@@ -51,13 +61,21 @@ namespace Game
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static const int SEGMENT_COUNT = 7;
+static const float FIRE_COOLDOWN = 2.0f;
+static const float SEGMENT_FIRE_INTERVAL = FIRE_COOLDOWN / (SEGMENT_COUNT + 1);
 static vec3 * position;
 static vec3 * look_direction;
 static vec2 destination(-1);
+static float cooldown;
+static float segment_cooldown;
+static float segment_fire_index;
+static float time_scale;
 static int direction_index = 0;
 static int boss_room;
 static vector<Entity> segments;
 static vector<vec2 *> segment_destinations;
+static vector<vec3 *> segment_positions;
+static vector<vec3 *> segment_look_directions;
 static deque<vec2> destinations;
 
 
@@ -83,6 +101,85 @@ static void update_segments()
 }
 
 
+static const vec3 get_fire_direction_offset(const vec3 & fire_direction, int fire_direction_index)
+{
+    static const float HORIZONTAL_OFFSET = 0.3f;
+    static const float VERTICAL_OFFSET = 0.15f;
+
+    return fire_direction * ((fire_direction_index % 2 == 0) ? VERTICAL_OFFSET : HORIZONTAL_OFFSET);
+}
+
+
+static void fire_boss_projectiles(const vec3 & position, const vec3 & look_direction, bool forward = false)
+{
+    static const vector<vec3> FIRE_DIRECTIONS
+    {
+        vec3( 0, 1, 0),
+        vec3( 1, 0, 0),
+        vec3( 0,-1, 0),
+        vec3(-1, 0, 0),
+    };
+
+    static const vector<string> TARGET_LAYERS
+    {
+        "player",
+    };
+
+    static const string PROJECTILE_NAME("projectile_purple_orb");
+    static const float DURATION = 2.0f;
+
+
+    // Don't fire projectile if game is paused.
+    if (time_scale == 0)
+    {
+        return;
+    }
+
+
+    int fire_direction_index =
+        look_direction.y > 0 ? 0 :
+        look_direction.x > 0 ? 1 :
+        look_direction.y < 0 ? 2 :
+        look_direction.x < 0 ? 3 :
+        0;
+
+    vec3 fire_direction;
+
+    // Forward
+    if (forward)
+    {
+        fire_direction = FIRE_DIRECTIONS[fire_direction_index];
+
+        fire_projectile(
+            PROJECTILE_NAME,
+            position + get_fire_direction_offset(fire_direction, fire_direction_index),
+            fire_direction,
+            DURATION,
+            TARGET_LAYERS);
+    }
+
+    // Right
+    fire_direction = FIRE_DIRECTIONS[wrap_index(fire_direction_index + 1, FIRE_DIRECTIONS.size())];
+
+    fire_projectile(
+        PROJECTILE_NAME,
+        position + get_fire_direction_offset(fire_direction, fire_direction_index + 1),
+        fire_direction,
+        DURATION,
+        TARGET_LAYERS);
+
+    // Left
+    fire_direction = FIRE_DIRECTIONS[wrap_index(fire_direction_index - 1, FIRE_DIRECTIONS.size())];
+
+    fire_projectile(
+        PROJECTILE_NAME,
+        position + get_fire_direction_offset(fire_direction, fire_direction_index - 1),
+        fire_direction,
+        DURATION,
+        TARGET_LAYERS);
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Interface
@@ -93,6 +190,9 @@ void boss_subscribe(Entity entity)
     position = &((Transform *)get_component(entity, "transform"))->position;
     look_direction = &((Orientation_Handler *)get_component(entity, "orientation_handler"))->look_direction;
     destination = vec2(-1);
+    cooldown = 0.0f;
+    segment_cooldown = SEGMENT_FIRE_INTERVAL;
+    segment_fire_index = 0;
     direction_index = 0;
     boss_room = get_max_room_id();
 
@@ -116,6 +216,8 @@ void boss_unsubscribe(Entity /*entity*/)
     for_each(segments, flag_entity_for_deletion);
     segments.clear();
     segment_destinations.clear();
+    segment_positions.clear();
+    segment_look_directions.clear();
     destinations.clear();
 }
 
@@ -134,6 +236,10 @@ void boss_update()
         vec2(-1, 0),
         vec2( 0,-1),
     };
+
+
+    time_scale = get_time_scale();
+    const float delta_time = get_delta_time() * time_scale;
 
 
     // If destination is unset, search neighboring tiles for a new destination.
@@ -194,6 +300,25 @@ void boss_update()
         update_segments();
         destination = vec2(-1);
     }
+
+
+    // Handle firing.
+    cooldown -= delta_time;
+    segment_cooldown -= delta_time;
+
+
+    if (cooldown <= 0.0f)
+    {
+        fire_boss_projectiles(*position, *look_direction, true);
+        cooldown = FIRE_COOLDOWN;
+        segment_cooldown = SEGMENT_FIRE_INTERVAL;
+    }
+    else if (segment_cooldown <= 0.0f)
+    {
+        fire_boss_projectiles(*segment_positions[segment_fire_index], *segment_look_directions[segment_fire_index]);
+        segment_fire_index = wrap_index(segment_fire_index + 1, SEGMENT_COUNT);
+        segment_cooldown = SEGMENT_FIRE_INTERVAL;
+    }
 }
 
 
@@ -208,8 +333,14 @@ void boss_init()
     for (int i = 0; i < SEGMENT_COUNT; i++)
     {
         Entity segment = load_blueprint("boss_segment");
-        ((Transform *)get_component(segment, "transform"))->position = *position;
+        vec3 * segment_position = &((Transform *)get_component(segment, "transform"))->position;
+        *segment_position = *position;
         segment_destinations.push_back((vec2 *)get_component(segment, "destination"));
+        segment_positions.push_back(segment_position);
+
+        segment_look_directions.push_back(
+            &((Orientation_Handler *)get_component(segment, "orientation_handler"))->look_direction);
+
         segments.push_back(segment);
         game_manager_track_render_flag(boss_room, segment);
         game_manager_track_collider_enabled_flag(boss_room, segment);
