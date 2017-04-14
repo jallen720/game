@@ -72,7 +72,8 @@
     "boss":
     [
         "transform",
-        "orientation_handler"
+        "orientation_handler",
+        "health"
     ],
     "boss_segment":
     [

@@ -11,6 +11,7 @@
 #include "Game/Utilities.hpp"
 #include "Game/Components.hpp"
 #include "Game/APIs/Floor_Manager.hpp"
+#include "Game/Systems/Game_Manager.hpp"
 
 
 using std::vector;
@@ -50,8 +51,9 @@ namespace Game
 static const int SEGMENT_COUNT = 7;
 static vec3 * position;
 static vec3 * look_direction;
-static int direction_index = 0;
 static vec2 destination(-1);
+static int direction_index = 0;
+static int boss_room;
 static vector<Entity> segments;
 static vector<vec2 *> segment_destinations;
 static vector<vec2> destinations;
@@ -88,8 +90,20 @@ void boss_subscribe(Entity entity)
 {
     position = &((Transform *)get_component(entity, "transform"))->position;
     look_direction = &((Orientation_Handler *)get_component(entity, "orientation_handler"))->look_direction;
-    direction_index = 0;
     destination = vec2(-1);
+    direction_index = 0;
+    boss_room = get_max_room_id();
+
+
+    // Remove boss entity flags from game manager when boss dies.
+    ((Health *)get_component(entity, "health"))->death_handlers["boss"] = [&]() -> void
+    {
+        for (const Entity segment : segments)
+        {
+            game_manager_untrack_render_flag(boss_room, segment);
+            game_manager_untrack_collider_enabled_flag(boss_room, segment);
+        }
+    };
 }
 
 
@@ -195,6 +209,8 @@ void boss_init()
         ((Transform *)get_component(segment, "transform"))->position = *position;
         segment_destinations.push_back((vec2 *)get_component(segment, "destination"));
         segments.push_back(segment);
+        game_manager_track_render_flag(boss_room, segment);
+        game_manager_track_collider_enabled_flag(boss_room, segment);
     }
 
 
