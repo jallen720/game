@@ -262,7 +262,7 @@ void boss_update()
         }
 
 
-        for (int count = 0; count < DIRECTIONS.size(); count++)
+        for (size_t count = 0; count < DIRECTIONS.size(); count++)
         {
             const vec2 & direction = DIRECTIONS[direction_index];
 
@@ -335,9 +335,9 @@ void boss_update()
 
     for (int i = 0; i < SEGMENT_COUNT; i++)
     {
-        vec3 from_position = *segment_positions[i];
-        vec2 to_position_2d = (vec2)to_position;
-        vec2 from_position_2d = (vec2)from_position;
+        const vec3 from_position = *segment_positions[i];
+        const vec2 to_position_2d = (vec2)to_position;
+        const vec2 from_position_2d = (vec2)from_position;
         Transform * segment_connector_transform = segment_connector_transforms[i];
         vec3 & segment_connector_position = segment_connector_transform->position;
         segment_connector_position.x = from_position.x;
