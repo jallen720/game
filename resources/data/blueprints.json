@@ -470,6 +470,30 @@
             "depth_handler"
         ]
     },
+    "boss_segment_connector":
+    {
+        "inherits":
+        [
+            "renderable",
+            "floor_entity"
+        ],
+        "components":
+        {
+            "sprite":
+            {
+                "texture_path": "resources/textures/bosses/boss_tail_segment_connector.png"
+            },
+            "dimensions":
+            {
+                "origin": { "y": 0.0 }
+            },
+            "transform":
+            {
+                "scale": { "x": 2.0 },
+                "position": { "z": 99.0 }
+            }
+        }
+    },
     "projectile_blue_orb":
     {
         "inherits":
@@ -533,30 +557,6 @@
             "sprite":
             {
                 "texture_path": "resources/textures/projectiles/purple_orb.png"
-            }
-        }
-    },
-    "boss_segment_connector":
-    {
-        "inherits":
-        [
-            "renderable",
-            "floor_entity"
-        ],
-        "components":
-        {
-            "sprite":
-            {
-                "texture_path": "resources/textures/bosses/boss_tail_segment_connector.png"
-            },
-            "dimensions":
-            {
-                "origin": { "y": 0.0 }
-            },
-            "transform":
-            {
-                "scale": { "x": 2.0 },
-                "position": { "z": 99.0 }
             }
         }
     }
