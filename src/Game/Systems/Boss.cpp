@@ -324,7 +324,9 @@ void boss_init()
     // Create boss segments.
     for (int i = 0; i < SEGMENT_COUNT; i++)
     {
+        // Load and track segment entity.
         Entity segment = load_blueprint("boss_segment");
+        segments.push_back(segment);
         vec3 * segment_position = &((Transform *)get_component(segment, "transform"))->position;
         *segment_position = *position;
         segment_destinations.push_back((vec2 *)get_component(segment, "destination"));
@@ -333,7 +335,6 @@ void boss_init()
         segment_look_directions.push_back(
             &((Orientation_Handler *)get_component(segment, "orientation_handler"))->look_direction);
 
-        segments.push_back(segment);
         game_manager_track_render_flag(boss_room, segment);
         game_manager_track_collider_enabled_flag(boss_room, segment);
     }
