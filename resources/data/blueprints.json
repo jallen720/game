@@ -419,6 +419,7 @@
         ],
         "components":
         {
+            "id": "boss",
             "sprite":
             {
                 "texture_path": "resources/textures/bosses/boss_down.png"
@@ -567,5 +568,36 @@
                 "texture_path": "resources/textures/projectiles/purple_orb.png"
             }
         }
+    },
+    "boss_health_bar":
+    {
+        "components":
+        {
+            "id": "boss_health_bar",
+            "target_id": "boss",
+            "render_layer": "ui",
+            "parent_id": "boss_health_bar_container",
+            "sprite":
+            {
+                "texture_path": "resources/textures/ui/boss_health_bar_foreground.png",
+                "shader_pipeline_name": "texture"
+            },
+            "dimensions":
+            {
+                "width": 600,
+                "height": 10,
+                "origin": { "x": 0.5, "y": 0 }
+            },
+            "transform": {},
+            "local_transform":
+            {
+                "position": { "z": -1 }
+            }
+        },
+        "systems":
+        [
+            "health_bar",
+            "floor_entity"
+        ]
     }
 }

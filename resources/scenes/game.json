@@ -123,8 +123,7 @@
         "systems":
         [
             "renderer",
-            "depth_handler",
-            "health_bar"
+            "depth_handler"
         ]
     },
     {
@@ -162,7 +161,7 @@
     {
         "components":
         {
-            "id": "health_bar_foreground",
+            "target_id": "player",
             "render_layer": "ui",
             "parent_id": "health_bar_container",
             "sprite":
@@ -181,6 +180,42 @@
             {
                 "position": { "z": -1 }
             }
+        },
+        "systems":
+        [
+            "health_bar"
+        ]
+    },
+    {
+        "components":
+        {
+            "id": "boss_health_bar_container",
+            "transform": {},
+            "ui_transform":
+            {
+                "position": { "y": 0.1, "x": 0.0 },
+                "anchor": { "x": 0.5, "y": 0.0 }
+            }
+        }
+    },
+    {
+        "components":
+        {
+            "render_layer": "ui",
+            "parent_id": "boss_health_bar_container",
+            "sprite":
+            {
+                "texture_path": "resources/textures/ui/health_bar_background.png",
+                "shader_pipeline_name": "texture"
+            },
+            "dimensions":
+            {
+                "width": 600,
+                "height": 10,
+                "origin": { "x": 0.5, "y": 0 }
+            },
+            "transform": {},
+            "local_transform": {}
         }
     }
 ]

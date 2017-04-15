@@ -213,6 +213,8 @@ void generate_enemies()
     {
         BOSS_INITIALIZERS.at(boss_id)();
     }
+
+    load_blueprint("boss_health_bar");
 }
 
 
