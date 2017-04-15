@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <glm/glm.hpp>
+#include <glm/gtx/vector_angle.hpp>
 #include "Nito/Components.hpp"
 #include "Nito/Engine.hpp"
 #include "Nito/APIs/Scene.hpp"
@@ -29,6 +30,10 @@ using glm::vec3;
 using glm::vec2;
 using glm::distance;
 using glm::length;
+using glm::degrees;
+
+// glm/gtx/vector_angle.hpp
+using glm::orientedAngle;
 
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
@@ -73,9 +78,11 @@ static float time_scale;
 static int direction_index = 0;
 static int boss_room;
 static vector<Entity> segments;
+static vector<Entity> segment_connectors;
 static vector<vec2 *> segment_destinations;
 static vector<vec3 *> segment_positions;
 static vector<vec3 *> segment_look_directions;
+static vector<Transform *> segment_connector_transforms;
 static deque<vec2> destinations;
 
 
@@ -197,6 +204,11 @@ void boss_subscribe(Entity entity)
             game_manager_untrack_render_flag(boss_room, segment);
             game_manager_untrack_collider_enabled_flag(boss_room, segment);
         }
+
+        for (const Entity segment : segment_connectors)
+        {
+            game_manager_untrack_render_flag(boss_room, segment);
+        }
     };
 }
 
@@ -206,10 +218,13 @@ void boss_unsubscribe(Entity /*entity*/)
     position = nullptr;
     look_direction = nullptr;
     for_each(segments, flag_entity_for_deletion);
+    for_each(segment_connectors, flag_entity_for_deletion);
     segments.clear();
+    segment_connectors.clear();
     segment_destinations.clear();
     segment_positions.clear();
     segment_look_directions.clear();
+    segment_connector_transforms.clear();
     destinations.clear();
 }
 
@@ -311,6 +326,29 @@ void boss_update()
         segment_fire_index = wrap_index(segment_fire_index + 1, SEGMENT_COUNT);
         segment_cooldown = SEGMENT_FIRE_INTERVAL;
     }
+
+
+    // Update boss segment connectors.
+    static const vec2 BASE_ANGLE_VECTOR(0.0f, 1.0f);
+
+    vec3 to_position = *position;
+
+    for (int i = 0; i < SEGMENT_COUNT; i++)
+    {
+        vec3 from_position = *segment_positions[i];
+        vec2 to_position_2d = (vec2)to_position;
+        vec2 from_position_2d = (vec2)from_position;
+        Transform * segment_connector_transform = segment_connector_transforms[i];
+        vec3 & segment_connector_position = segment_connector_transform->position;
+        segment_connector_position.x = from_position.x;
+        segment_connector_position.y = from_position.y;
+        segment_connector_transform->scale.y = distance(to_position_2d, from_position_2d);
+
+        segment_connector_transform->rotation =
+            degrees(orientedAngle(BASE_ANGLE_VECTOR, normalize(to_position_2d - from_position_2d)));
+
+        to_position = from_position;
+    }
 }
 
 
@@ -337,6 +375,13 @@ void boss_init()
 
         game_manager_track_render_flag(boss_room, segment);
         game_manager_track_collider_enabled_flag(boss_room, segment);
+
+
+        // Load and track segment connector entity.
+        Entity segment_connector = load_blueprint("boss_segment_connector");
+        segment_connectors.push_back(segment_connector);
+        segment_connector_transforms.push_back((Transform *)get_component(segment_connector, "transform"));
+        game_manager_track_render_flag(boss_room, segment_connector);
     }
 
 
