@@ -82,6 +82,16 @@
             "enemy"
         ]
     },
+    "boss_segment_collider":
+    {
+        "components":
+        {
+            "circle_collider":
+            {
+                "radius": 0.2
+            }
+        }
+    },
 
 
     "door_lock_tile":
@@ -404,17 +414,14 @@
             "renderable",
             "triggerable",
             "floor_entity",
-            "enemy"
+            "enemy",
+            "boss_segment_collider"
         ],
         "components":
         {
             "sprite":
             {
                 "texture_path": "resources/textures/bosses/boss_down.png"
-            },
-            "circle_collider":
-            {
-                "radius": 0.25
             },
             "orientation_handler":
             {
@@ -426,7 +433,11 @@
                     "down": "resources/textures/bosses/boss_down.png"
                 }
             },
-            "health": 500
+            "health": 500,
+            "transform":
+            {
+                "scale": { "x": 1.2, "y": 1.2 }
+            }
         },
         "systems":
         [
@@ -440,17 +451,14 @@
         [
             "renderable",
             "triggerable",
-            "floor_entity"
+            "floor_entity",
+            "boss_segment_collider"
         ],
         "components":
         {
             "sprite":
             {
                 "texture_path": "resources/textures/bosses/boss_tail_segment_down.png"
-            },
-            "circle_collider":
-            {
-                "radius": 0.25
             },
             "orientation_handler":
             {
