@@ -27,9 +27,11 @@ using glm::vec3;
 
 // Nito/Components.hpp
 using Nito::Transform;
+using Nito::Sprite;
 
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
+using Nito::get_entity;
 using Nito::get_component;
 
 // Nito/APIs/Scene.hpp
@@ -79,12 +81,12 @@ static map<string, const JSON> boss_datas;
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static void generate_enemy(const string & blueprint, const vec3 & position, const int room)
+static Entity generate_enemy(const string & blueprint, const vec3 & position, const int room)
 {
     const Entity enemy_entity = load_blueprint(blueprint);
     ((Transform *)get_component(enemy_entity, "transform"))->position = position;
 
-    ((Health *)get_component(enemy_entity, "health"))->death_handlers["enemy_manager"] = [=]() -> void
+    ((Health *)get_component(enemy_entity, "health"))->death_handlers["enemy_manager enemy death"] = [=]() -> void
     {
         // Remove enemy from its associated room's enemy count.
         remove_enemy(room);
@@ -96,6 +98,7 @@ static void generate_enemy(const string & blueprint, const vec3 & position, cons
     add_enemy(room);
     game_manager_track_render_flag(room, enemy_entity);
     game_manager_track_collider_enabled_flag(room, enemy_entity);
+    return enemy_entity;
 }
 
 
@@ -207,20 +210,36 @@ void generate_enemies()
             0) *
         *room_tile_texture_scale;
 
-    generate_enemy(boss_id, boss_position, boss_room);
+    Entity boss = generate_enemy(boss_id, boss_position, boss_room);
+
+    bool * boss_health_bar_backround_render =
+        &((Sprite *)get_component(get_entity("boss_health_bar_background"), "sprite"))->render;
 
     if (contains_key(BOSS_INITIALIZERS, boss_id))
     {
         BOSS_INITIALIZERS.at(boss_id)();
     }
 
-    load_blueprint("boss_health_bar");
+    game_manager_add_room_change_handler(ROOM_CHANGE_HANDLER_ID, [=](int /*room_a*/, int room_b) -> void
+    {
+        if (room_b == boss_room)
+        {
+            load_blueprint("boss_health_bar");
+            *boss_health_bar_backround_render = true;
+        }
+    });
+
+    ((Health *)get_component(boss, "health"))->death_handlers["enemy_manager boss death"] = [=]() -> void
+    {
+        *boss_health_bar_backround_render = false;
+    };
 }
 
 
 void destroy_enemies()
 {
     delete[] enemies;
+    game_manager_remove_room_change_handler(ROOM_CHANGE_HANDLER_ID);
 }
 
 

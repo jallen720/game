@@ -201,10 +201,12 @@
     {
         "components":
         {
+            "id": "boss_health_bar_background",
             "render_layer": "ui",
             "parent_id": "boss_health_bar_container",
             "sprite":
             {
+                "render": false,
                 "texture_path": "resources/textures/ui/health_bar_background.png",
                 "shader_pipeline_name": "texture"
             },
