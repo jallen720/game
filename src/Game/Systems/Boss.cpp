@@ -199,6 +199,7 @@ void boss_subscribe(Entity entity)
     // Remove boss entity flags from game manager when boss dies.
     ((Health *)get_component(entity, "health"))->death_handlers["boss"] = [&]() -> void
     {
+        // Track segment entity flags.
         for (const Entity segment : segments)
         {
             game_manager_untrack_render_flag(boss_room, segment);
