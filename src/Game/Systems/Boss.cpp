@@ -110,7 +110,7 @@ static const vec3 get_fire_direction_offset(const vec3 & fire_direction, int fir
 }
 
 
-static void fire_boss_projectiles(const vec3 & position, const vec3 & look_direction, bool forward = false)
+static void fire_boss_projectile(int fire_direction_index, const vec3 & position)
 {
     static const vector<vec3> FIRE_DIRECTIONS
     {
@@ -128,7 +128,19 @@ static void fire_boss_projectiles(const vec3 & position, const vec3 & look_direc
     static const string PROJECTILE_NAME("projectile_purple_orb");
     static const float DURATION = 2.0f;
 
+    const vec3 & fire_direction = FIRE_DIRECTIONS[wrap_index(fire_direction_index, FIRE_DIRECTIONS.size())];
 
+    fire_projectile(
+        PROJECTILE_NAME,
+        position + get_fire_direction_offset(fire_direction, fire_direction_index),
+        fire_direction,
+        DURATION,
+        TARGET_LAYERS);
+}
+
+
+static void fire_boss_projectiles(const vec3 & position, const vec3 & look_direction, bool forward = false)
+{
     // Don't fire projectile if game is paused.
     if (time_scale == 0)
     {
@@ -143,40 +155,20 @@ static void fire_boss_projectiles(const vec3 & position, const vec3 & look_direc
         look_direction.x < 0 ? 3 :
         0;
 
-    vec3 fire_direction;
 
     // Forward
     if (forward)
     {
-        fire_direction = FIRE_DIRECTIONS[fire_direction_index];
-
-        fire_projectile(
-            PROJECTILE_NAME,
-            position + get_fire_direction_offset(fire_direction, fire_direction_index),
-            fire_direction,
-            DURATION,
-            TARGET_LAYERS);
+        fire_boss_projectile(fire_direction_index, position);
     }
 
-    // Right
-    fire_direction = FIRE_DIRECTIONS[wrap_index(fire_direction_index + 1, FIRE_DIRECTIONS.size())];
 
-    fire_projectile(
-        PROJECTILE_NAME,
-        position + get_fire_direction_offset(fire_direction, fire_direction_index + 1),
-        fire_direction,
-        DURATION,
-        TARGET_LAYERS);
+    // Right
+    fire_boss_projectile(fire_direction_index + 1, position);
+
 
     // Left
-    fire_direction = FIRE_DIRECTIONS[wrap_index(fire_direction_index - 1, FIRE_DIRECTIONS.size())];
-
-    fire_projectile(
-        PROJECTILE_NAME,
-        position + get_fire_direction_offset(fire_direction, fire_direction_index - 1),
-        fire_direction,
-        DURATION,
-        TARGET_LAYERS);
+    fire_boss_projectile(fire_direction_index - 1, position);
 }
 
 
