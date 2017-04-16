@@ -52,6 +52,7 @@ struct Projectile
     float duration;
     float damage;
     std::vector<std::string> target_layers;
+    std::vector<std::string> ignore_layers;
 };
 
 

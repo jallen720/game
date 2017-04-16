@@ -2,6 +2,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 #include "Nito/Engine.hpp"
 #include "Nito/Components.hpp"
 #include "Nito/Collider_Component.hpp"
@@ -17,6 +18,7 @@
 
 using std::map;
 using std::string;
+using std::vector;
 
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
@@ -93,13 +95,34 @@ void projectile_subscribe(Entity entity)
 
     collider->collision_handler = [=](Entity collision_entity) -> void
     {
-        if (has_component(collision_entity, "layer"))
+        if (has_component(collision_entity, "layers"))
         {
-            const auto collision_layer = (string *)get_component(collision_entity, "layer");
+            const auto collision_layers = (vector<string> *)get_component(collision_entity, "layers");
 
-            if (contains(projectile->target_layers, *collision_layer))
+            for (const string & collision_layer : *collision_layers)
             {
-                damage_entity(collision_entity, projectile->damage);
+                if (contains(projectile->ignore_layers, collision_layer))
+                {
+                    return;
+                }
+            }
+
+
+            // If projectile has hit a target, damage target and destroy projectile.
+            for (const string & collision_layer : *collision_layers)
+            {
+                if (contains(projectile->target_layers, collision_layer))
+                {
+                    damage_entity(collision_entity, projectile->damage);
+                    flag_entity_for_deletion(entity);
+                    return;
+                }
+            }
+
+
+            // If projectile hit an entity in the projectile_impassable layer, destroy projectile.
+            if (contains(*collision_layers, string("projectile_impassable")))
+            {
                 flag_entity_for_deletion(entity);
             }
         }
@@ -107,7 +130,7 @@ void projectile_subscribe(Entity entity)
 
 
     // Play sound for projectile
-    play_sound("resources/audio/laser.wav", 0.025f);
+    play_sound("resources/audio/laser.wav", 0);
 }
 
 

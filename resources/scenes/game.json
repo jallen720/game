@@ -78,7 +78,7 @@
         "components":
         {
             "id": "player",
-            "layer": "player",
+            "layers": [ "player" ],
             "render_layer": "world",
             "sprite":
             {

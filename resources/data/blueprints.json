@@ -26,6 +26,7 @@
     {
         "components":
         {
+            "layers": [ "projectile_impassable" ],
             "collider":
             {
                 "send_collision": true
@@ -75,7 +76,7 @@
     {
         "components":
         {
-            "layer": "enemy"
+            "layers": [ "enemy" ]
         },
         "systems":
         [
@@ -144,6 +145,7 @@
         ],
         "components":
         {
+            "layers": [ "projectile_impassable" ],
             "sprite":
             {
                 "texture_path": "resources/textures/tiles/door.png"
@@ -457,6 +459,7 @@
         ],
         "components":
         {
+            "layers": [ "boss_segment", "projectile_impassable" ],
             "sprite":
             {
                 "texture_path": "resources/textures/bosses/boss_tail_segment_down.png"
@@ -561,7 +564,8 @@
             "projectile":
             {
                 "damage": 0,
-                "speed": 2
+                "speed": 2,
+                "ignore_layers": [ "boss_segment" ]
             },
             "sprite":
             {

@@ -9,6 +9,7 @@
 #include "Nito/Engine.hpp"
 #include "Nito/APIs/Scene.hpp"
 #include "Nito/APIs/Window.hpp"
+#include "Cpp_Utils/Vector.hpp"
 
 #include "Game/Components.hpp"
 
@@ -46,6 +47,9 @@ using Nito::load_blueprint;
 
 // Nito/APIs/Window.hpp
 using Nito::get_delta_time;
+
+// Cpp_Utils/Vector.hpp
+using Cpp_Utils::contains;
 
 
 namespace Game
@@ -91,7 +95,7 @@ int random(int min, int max)
 
 bool in_layer(Entity entity, const string & layer)
 {
-    return has_component(entity, "layer") && *(string *)get_component(entity, "layer") == layer;
+    return has_component(entity, "layers") && contains(*(vector<string> *)get_component(entity, "layers"), layer);
 }
 
 

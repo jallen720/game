@@ -160,6 +160,11 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
                     projectile->target_layers = data["target_layers"].get<vector<string>>();
                 }
 
+                if (contains_key(data, "ignore_layers"))
+                {
+                    projectile->ignore_layers = data["ignore_layers"].get<vector<string>>();
+                }
+
                 return projectile;
             },
             get_component_deallocator<Projectile>(),
@@ -203,10 +208,10 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
         }
     },
     {
-        "layer",
+        "layers",
         {
-            get_component_allocator<string>(),
-            get_component_deallocator<string>(),
+            get_component_allocator<vector<string>>(),
+            get_component_deallocator<vector<string>>(),
         }
     },
     {
