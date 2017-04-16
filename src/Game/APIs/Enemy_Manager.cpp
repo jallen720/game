@@ -234,6 +234,10 @@ void generate_enemies()
     ((Health *)get_component(boss, "health"))->death_handlers["enemy_manager boss death"] = [=]() -> void
     {
         *boss_health_bar_backround_render = false;
+
+
+        // Preventing loading health bar when entering boss room after boss has already died.
+        game_manager_remove_room_change_handler(ROOM_CHANGE_HANDLER_ID);
     };
 }
 
@@ -241,7 +245,6 @@ void generate_enemies()
 void destroy_enemies()
 {
     delete[] enemies;
-    game_manager_remove_room_change_handler(ROOM_CHANGE_HANDLER_ID);
 }
 
 
