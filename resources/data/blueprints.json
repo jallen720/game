@@ -542,7 +542,8 @@
             "projectile":
             {
                 "damage": 20,
-                "speed": 3
+                "speed": 3,
+                "ignore_layers": [ "enemy" ]
             },
             "sprite":
             {
