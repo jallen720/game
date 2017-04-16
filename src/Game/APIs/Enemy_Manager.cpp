@@ -93,11 +93,13 @@ static Entity generate_enemy(const string & blueprint, const vec3 & position, co
 
         game_manager_untrack_render_flag(room, enemy_entity);
         game_manager_untrack_collider_enabled_flag(room, enemy_entity);
+        game_manager_untrack_enemy_enabled_flag(room, enemy_entity);
     };
 
     add_enemy(room);
     game_manager_track_render_flag(room, enemy_entity);
     game_manager_track_collider_enabled_flag(room, enemy_entity);
+    game_manager_track_enemy_enabled_flag(room, enemy_entity);
     return enemy_entity;
 }
 

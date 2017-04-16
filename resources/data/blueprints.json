@@ -76,7 +76,8 @@
     {
         "components":
         {
-            "layers": [ "enemy" ]
+            "layers": [ "enemy" ],
+            "enemy_enabled": false
         },
         "systems":
         [

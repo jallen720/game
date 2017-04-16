@@ -269,7 +269,14 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
             },
             get_component_deallocator<vec2>(),
         }
-    }
+    },
+    {
+        "enemy_enabled",
+        {
+            get_component_allocator<bool>(),
+            get_component_deallocator<bool>(),
+        }
+    },
 };
 
 

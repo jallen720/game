@@ -71,6 +71,7 @@ static int current_room;
 static int spawn_room_id;
 static Room_Flags render_flags;
 static Room_Flags collider_enabled_flags;
+static Room_Flags enemy_enabled_flags;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -98,7 +99,7 @@ static void start_floor()
     player_position->y = spawn_position->y;
 
 
-    // Initialize render flags.
+    // Initialize render and collider flags.
     for_each(render_flags, [](int room, const map<Entity, bool *> & /*render_flags*/) -> void
     {
         set_room_flags(render_flags, room, false);
@@ -111,6 +112,7 @@ static void start_floor()
 
     set_room_flags(render_flags, spawn_room_id, true);
     set_room_flags(collider_enabled_flags, spawn_room_id, true);
+    set_room_flags(enemy_enabled_flags, spawn_room_id, true);
 }
 
 
@@ -121,6 +123,7 @@ static void cleanup_floor()
     destroy_enemies();
     render_flags.clear();
     collider_enabled_flags.clear();
+    enemy_enabled_flags.clear();
 }
 
 
@@ -193,6 +196,8 @@ void game_manager_change_rooms(float door_rotation)
     set_room_flags(render_flags, current_room, true);
     set_room_flags(collider_enabled_flags, last_room, false);
     set_room_flags(collider_enabled_flags, current_room, true);
+    set_room_flags(enemy_enabled_flags, last_room, false);
+    set_room_flags(enemy_enabled_flags, current_room, true);
 }
 
 
@@ -237,6 +242,18 @@ void game_manager_track_collider_enabled_flag(int room, Entity entity)
 void game_manager_untrack_collider_enabled_flag(int room, Entity entity)
 {
     remove(collider_enabled_flags[room], entity);
+}
+
+
+void game_manager_track_enemy_enabled_flag(int room, Entity entity)
+{
+    enemy_enabled_flags[room][entity] = (bool *)get_component(entity, "enemy_enabled");
+}
+
+
+void game_manager_untrack_enemy_enabled_flag(int room, Entity entity)
+{
+    remove(enemy_enabled_flags[room], entity);
 }
 
 

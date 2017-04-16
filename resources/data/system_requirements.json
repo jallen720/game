@@ -63,7 +63,8 @@
     "turret":
     [
         "transform",
-        "orientation_handler"
+        "orientation_handler",
+        "enemy_enabled"
     ],
     "enemy":
     [
@@ -73,7 +74,8 @@
     [
         "transform",
         "orientation_handler",
-        "health"
+        "health",
+        "enemy_enabled"
     ],
     "boss_segment":
     [

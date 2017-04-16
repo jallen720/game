@@ -70,6 +70,7 @@ static const float FIRE_COOLDOWN = 2.0f;
 static const float SEGMENT_FIRE_INTERVAL = FIRE_COOLDOWN / (SEGMENT_COUNT + 1);
 static vec3 * position;
 static vec3 * look_direction;
+static bool * enemy_enabled;
 static vec2 destination(-1);
 static float cooldown;
 static float segment_cooldown;
@@ -188,6 +189,7 @@ void boss_subscribe(Entity entity)
 {
     position = &((Transform *)get_component(entity, "transform"))->position;
     look_direction = &((Orientation_Handler *)get_component(entity, "orientation_handler"))->look_direction;
+    enemy_enabled = (bool *)get_component(entity, "enemy_enabled");
     destination = vec2(-1);
     cooldown = 0.0f;
     segment_cooldown = SEGMENT_FIRE_INTERVAL;
@@ -232,11 +234,6 @@ void boss_unsubscribe(Entity /*entity*/)
 
 void boss_update()
 {
-    if (position == nullptr)
-    {
-        return;
-    }
-
     static const vector<vec2> DIRECTIONS
     {
         vec2( 1, 0),
@@ -244,6 +241,20 @@ void boss_update()
         vec2(-1, 0),
         vec2( 0,-1),
     };
+
+
+    // No entity subscribed.
+    if (position == nullptr)
+    {
+        return;
+    }
+
+
+    // Boss is disabled.
+    if (!*enemy_enabled)
+    {
+        return;
+    }
 
 
     time_scale = get_time_scale();

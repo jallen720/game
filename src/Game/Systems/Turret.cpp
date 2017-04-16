@@ -61,6 +61,7 @@ struct Turret_State
 {
     Transform * transform;
     Orientation_Handler * orientation_handler;
+    bool * enemy_enabled;
     const vec3 * target_position;
     float cooldown;
 };
@@ -87,6 +88,7 @@ void turret_subscribe(Entity entity)
     {
         (Transform *)get_component(entity, "transform"),
         (Orientation_Handler *)get_component(entity, "orientation_handler"),
+        (bool *)get_component(entity, "enemy_enabled"),
         &((Transform *)get_component(get_entity("player"), "transform"))->position,
         0.0f,
     };
@@ -108,6 +110,11 @@ void turret_update()
 
     for_each(entity_states, [&](Entity /*entity*/, Turret_State & entity_state) -> void
     {
+        if (!*entity_state.enemy_enabled)
+        {
+            return;
+        }
+
         const vec3 & position = entity_state.transform->position;
         const vec3 & target_position = *entity_state.target_position;
         float & cooldown = entity_state.cooldown;
