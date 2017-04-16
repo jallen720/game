@@ -542,7 +542,7 @@
         {
             "projectile":
             {
-                "damage": 20,
+                "damage": 0,
                 "speed": 3,
                 "ignore_layers": [ "enemy" ]
             },
