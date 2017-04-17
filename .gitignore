@@ -20,3 +20,13 @@
 /run
 /memcheck
 /debug
+
+
+# Visual Studio
+.vs/
+*.VC.opendb
+*.sdf
+*.sln
+*.vcxproj*
+Debug/
+Release/
