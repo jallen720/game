@@ -285,7 +285,7 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-int run()
+int run(char ** argv)
 {
     for_each(GAME_UPDATE_HANDLERS, add_update_handler);
 
@@ -303,14 +303,14 @@ int run()
 
     enemy_manager_api_init();
     audio_manager_api_init();
-    return run_engine();
+    return run_engine(argv);
 }
 
 
 } // namespace Game
 
 
-int main()
+int main(int /*argc*/, char ** argv)
 {
-    return Game::run();
+    return Game::run(argv);
 }
