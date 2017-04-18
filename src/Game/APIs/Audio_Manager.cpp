@@ -124,7 +124,7 @@ void play_sound(const string & path, float volume = GLOBAL_VOLUME)
     string sound_audio_source_id;
 
 
-    // Check for and existing audio source that isn't playing to be used to play the sound.
+    // Check for an existing audio source that isn't playing to be used to play the sound.
     for (const string & sound_audio_source_pool_id : sound_audio_source_pool)
     {
         if (!audio_source_playing(sound_audio_source_pool_id))
