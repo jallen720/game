@@ -127,7 +127,27 @@ void turret_update()
         }
         else if (distance((vec2)target_position, (vec2)position) < TURRET_RANGE)
         {
-            fire_projectile(PROJECTILE_NAME, position, look_direction, 1.0f, TARGET_LAYERS);
+            static const vector<vec3> FIRE_POSITIONS
+            {
+                // Left
+                vec3(-0.3f, 0.1f, 0),
+
+                // Right
+                vec3(0.284375f, 0.1f, 0),
+
+                // Down
+                vec3(-0.015625f, -0.08f, 0),
+
+                // Up
+                vec3(-0.015625f, 0.3f, 0),
+            };
+
+            int fire_position_index =
+                fabsf(look_direction.x) > fabsf(look_direction.y)
+                ? (look_direction.x < 0 ? 0 : 1)
+                : (look_direction.y < 0 ? 2 : 3);
+
+            fire_projectile(PROJECTILE_NAME, position + FIRE_POSITIONS[fire_position_index], look_direction, 1.0f, TARGET_LAYERS);
             cooldown = FIRE_COOLDOWN;
         }
     });
