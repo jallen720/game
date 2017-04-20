@@ -336,6 +336,43 @@
             "depth_handler"
         ]
     },
+    "wall_launcher":
+    {
+        "inherits":
+        [
+            "renderable",
+            "floor_entity",
+            "triggerable",
+            "enemy"
+        ],
+        "components":
+        {
+            "sprite":
+            {
+                "texture_path": "resources/textures/turret_up.png"
+            },
+            "orientation_handler":
+            {
+                "texture_paths":
+                {
+                    "left": "resources/textures/turret_left.png",
+                    "up": "resources/textures/turret_up.png",
+                    "right": "resources/textures/turret_right.png",
+                    "down": "resources/textures/turret_down.png"
+                }
+            },
+            "circle_collider":
+            {
+                "radius": 0.2
+            },
+            "health": 100
+        },
+        "systems":
+        [
+            "wall_launcher",
+            "depth_handler"
+        ]
+    },
     "minimap_tile":
     {
         "inherits":

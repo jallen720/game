@@ -14,6 +14,7 @@
 #include "Game/Systems/Game_Manager.hpp"
 #include "Game/Systems/Boss.hpp"
 #include "Game/Systems/Turret.hpp"
+#include "Game/Systems/Wall_Launcher.hpp"
 
 
 using std::string;
@@ -115,7 +116,7 @@ void generate_enemies()
         static const vector<Enemies> POSSIBLE_ENEMIES
         {
             Enemies::TURRET,
-            // Enemies::WALL_LAUNCHER,
+            Enemies::WALL_LAUNCHER,
         };
 
 
@@ -154,7 +155,7 @@ void generate_enemies()
         static const map<Enemies, Enemy_Generator> ENEMY_GENERATORS
         {
             { Enemies::TURRET        , turret_generate        },
-            // { Enemies::WALL_LAUNCHER , wall_launcher_generate },
+            { Enemies::WALL_LAUNCHER , wall_launcher_generate },
         };
 
         for (const Enemies enemy : room_enemy_group.enemies)

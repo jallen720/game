@@ -32,6 +32,7 @@
 #include "Game/Systems/Enemy.hpp"
 #include "Game/Systems/Boss.hpp"
 #include "Game/Systems/Boss_Segment.hpp"
+#include "Game/Systems/Wall_Launcher.hpp"
 
 
 using std::string;
@@ -85,6 +86,7 @@ static const vector<Update_Handler> GAME_UPDATE_HANDLERS
     camera_controller_update,
     boss_update,
     boss_segment_update,
+    wall_launcher_update,
 };
 
 
@@ -110,6 +112,7 @@ static const map<string, const System_Entity_Handlers> GAME_SYSTEM_ENTITY_HANDLE
     NITO_SYSTEM_ENTITY_HANDLERS(enemy),
     NITO_SYSTEM_ENTITY_HANDLERS(boss),
     NITO_SYSTEM_ENTITY_HANDLERS(boss_segment),
+    NITO_SYSTEM_ENTITY_HANDLERS(wall_launcher),
 };
 
 
