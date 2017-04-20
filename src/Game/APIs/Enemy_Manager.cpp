@@ -206,7 +206,7 @@ void generate_enemies()
         *boss_health_bar_backround_render = false;
 
 
-        // Preventing loading health bar when entering boss room after boss has already died.
+        // Prevent loading health bar when entering boss room after boss has already died.
         game_manager_remove_room_change_handler(ROOM_CHANGE_HANDLER_ID);
     };
 }
