@@ -286,7 +286,8 @@ void boss_update()
                 destination_tile_coordinates.x,
                 destination_tile_coordinates.y).type;
 
-            if (destination_tile_type != Tile_Types::FLOOR)
+            if (destination_tile_type != Tile_Types::FLOOR &&
+                destination_tile_type != Tile_Types::NEXT_FLOOR)
             {
                 direction_index = wrap_index(direction_index + 1, DIRECTIONS.size());
                 continue;
@@ -367,7 +368,7 @@ void boss_update()
 Entity boss_generate(int room_origin_x, int room_origin_y)
 {
     const Entity boss = load_blueprint("boss");
-    *position = vec3(room_origin_x + 2, room_origin_y + 2, 0) * get_room_tile_texture_scale();
+    *position = vec3(room_origin_x + 6, room_origin_y + 4, 0) * get_room_tile_texture_scale();
 
 
     // Initialize all destinations to boss' position.
