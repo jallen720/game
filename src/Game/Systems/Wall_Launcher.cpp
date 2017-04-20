@@ -100,11 +100,7 @@ vector<Entity> wall_launcher_generate(int room_origin_x, int room_origin_y)
         wall_launchers.push_back(wall_launcher);
 
         *entity_states[wall_launcher].position =
-            vec3(
-                room_origin_x + spawn_coordinates.x,
-                room_origin_y + spawn_coordinates.y,
-                0) *
-            room_tile_texture_scale;
+            vec3(room_origin_x + spawn_coordinates.x, room_origin_y + spawn_coordinates.y, 0) * room_tile_texture_scale;
     }
 
     return wall_launchers;
