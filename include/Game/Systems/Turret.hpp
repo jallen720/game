@@ -1,6 +1,7 @@
 #pragma once
 
 
+#include <vector>
 #include "Nito/APIs/ECS.hpp"
 
 
@@ -13,9 +14,11 @@ namespace Game
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void turret_init();
 void turret_subscribe(Nito::Entity entity);
 void turret_unsubscribe(Nito::Entity entity);
 void turret_update();
+std::vector<Nito::Entity> turret_generate(int room_origin_x, int room_origin_y);
 
 
 } // namespace Game

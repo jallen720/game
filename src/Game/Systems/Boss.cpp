@@ -364,8 +364,12 @@ void boss_update()
 }
 
 
-void boss_init()
+Entity boss_generate(int room_origin_x, int room_origin_y)
 {
+    const Entity boss = load_blueprint("boss");
+    *position = vec3(room_origin_x + 2, room_origin_y + 2, 0) * get_room_tile_texture_scale();
+
+
     // Initialize all destinations to boss' position.
     destinations.resize(SEGMENT_COUNT);
     fill(destinations.begin(), destinations.end(), *position);
@@ -398,6 +402,7 @@ void boss_init()
 
 
     update_segments();
+    return boss;
 }
 
 

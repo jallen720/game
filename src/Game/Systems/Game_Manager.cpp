@@ -120,7 +120,6 @@ static void cleanup_floor()
 {
     destroy_floor();
     destroy_minimap();
-    destroy_enemies();
     render_flags.clear();
     collider_enabled_flags.clear();
     enemy_enabled_flags.clear();

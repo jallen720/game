@@ -11,7 +11,6 @@
 #include "Cpp_Utils/JSON.hpp"
 
 #include "Game/Components.hpp"
-#include "Game/APIs/Enemy_Manager.hpp"
 #include "Game/APIs/Audio_Manager.hpp"
 #include "Game/Systems/Player_Controller.hpp"
 #include "Game/Systems/Projectile.hpp"
@@ -301,8 +300,8 @@ int run()
         set_component_handlers(type, component_handlers.allocator, component_handlers.deallocator);
     });
 
-    enemy_manager_api_init();
     audio_manager_api_init();
+    turret_init();
     return run_engine();
 }
 
