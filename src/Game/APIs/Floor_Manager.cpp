@@ -2,7 +2,6 @@
 
 #include <vector>
 #include <map>
-#include <string>
 #include <stdexcept>
 #include "Nito/Components.hpp"
 #include "Nito/Collider_Component.hpp"
@@ -10,6 +9,7 @@
 #include "Nito/APIs/Scene.hpp"
 #include "Nito/APIs/Graphics.hpp"
 #include "Cpp_Utils/Map.hpp"
+#include "Cpp_Utils/Collection.hpp"
 
 #include "Game/Utilities.hpp"
 #include "Game/Components.hpp"
@@ -49,6 +49,9 @@ using Nito::get_pixels_per_unit;
 using Cpp_Utils::contains_key;
 using Cpp_Utils::remove;
 using Cpp_Utils::at_index;
+
+// Cpp_Utils/Collection.hpp
+using Cpp_Utils::for_each;
 
 
 namespace Game
@@ -92,6 +95,7 @@ static map<int, Room_Data> room_datas;
 static map<int, int> room_enemy_counts;
 static map<int, vector<Entity>> room_exits;
 static int max_room_id;
+static map<string, function<void()>> floor_generated_handlers;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -602,6 +606,13 @@ void generate_floor(int floor_size)
             set_room_locked(current_room, true);
         }
     });
+
+
+    // Trigger floor generated handlers.
+    for_each(floor_generated_handlers, [](const string & /*id*/, const function<void()> & handler) -> void
+    {
+        handler();
+    });
 }
 
 
@@ -730,6 +741,18 @@ vec2 get_room_tile_position(const vec2 & coordinates)
     return vec2(
         get_room_tile_coordinate_position(coordinates.x, room_tile_unit_size.x),
         get_room_tile_coordinate_position(coordinates.y, room_tile_unit_size.y));
+}
+
+
+void add_floor_generated_handler(const string & id, const function<void()> & handler)
+{
+    floor_generated_handlers[id] = handler;
+}
+
+
+void remove_floor_generated_handler(const string & id)
+{
+    remove(floor_generated_handlers, id);
 }
 
 
