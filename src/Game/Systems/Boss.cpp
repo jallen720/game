@@ -92,14 +92,6 @@ static deque<vec2> destinations;
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static int wrap_index(int index, int container_size)
-{
-    return index >= container_size ? index - container_size :
-           index < 0 ? index + container_size :
-           index;
-}
-
-
 static void update_segments()
 {
     for (int i = 0; i < SEGMENT_COUNT; i++)

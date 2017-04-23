@@ -46,6 +46,7 @@ template<typename T>
 void iterate_array_2d(T * array_2d, int width, int height, const std::function<void(int, int, T &)> & callback);
 
 glm::vec2 move_entity(glm::vec3 & position, glm::vec3 & look_direction, const glm::vec2 & destination);
+int wrap_index(int index, int container_size);
 
 
 } // namespace Game

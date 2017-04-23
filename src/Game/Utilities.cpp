@@ -134,4 +134,12 @@ vec2 move_entity(vec3 & position, vec3 & look_direction, const vec2 & destinatio
 }
 
 
+int wrap_index(int index, int container_size)
+{
+    return index >= container_size ? index - container_size :
+           index < 0 ? index + container_size :
+           index;
+}
+
+
 } // namespace Game
