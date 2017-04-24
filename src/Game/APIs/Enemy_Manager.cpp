@@ -58,7 +58,7 @@ struct Room_Enemy_Group
 };
 
 
-using Enemy_Generator = vector<Entity>(*)(int, int);
+using Enemy_Generator = vector<Entity>(*)(int, int, int);
 using Boss_Generator = Entity(*)(int, int);
 
 
@@ -160,7 +160,10 @@ void generate_enemies()
 
         for (const Enemies enemy : room_enemy_group.enemies)
         {
+            const int room_id = room_enemy_group.room_id;
+
             const vector<Entity> generated_enemies = ENEMY_GENERATORS.at(enemy)(
+                room_id,
                 room_enemy_group.room_origin_x,
                 room_enemy_group.room_origin_y);
 
@@ -168,7 +171,7 @@ void generate_enemies()
             // Track enemies generated for this room.
             for (const Entity enemy_entity : generated_enemies)
             {
-                track_enemy(enemy_entity, room_enemy_group.room_id);
+                track_enemy(enemy_entity, room_id);
             }
         }
     }

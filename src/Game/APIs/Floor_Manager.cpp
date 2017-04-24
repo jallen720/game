@@ -464,6 +464,9 @@ void generate_floor(int floor_size)
 
         iterate_room_tiles(current_floor, room_x, room_y, true, [&](int x, int y, Tile & tile) -> void
         {
+            tile.room = room;
+
+
             // Floor
             if (x > 0 && x < ROOM_TILE_WIDTH - 1 &&
                 y > 0 && y < ROOM_TILE_HEIGHT - 1)

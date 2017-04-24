@@ -18,7 +18,7 @@ void turret_init();
 void turret_subscribe(Nito::Entity entity);
 void turret_unsubscribe(Nito::Entity entity);
 void turret_update();
-std::vector<Nito::Entity> turret_generate(int room_origin_x, int room_origin_y);
+std::vector<Nito::Entity> turret_generate(int room, int room_origin_x, int room_origin_y);
 
 
 } // namespace Game

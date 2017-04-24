@@ -169,7 +169,7 @@ void turret_update()
 }
 
 
-vector<Entity> turret_generate(int room_origin_x, int room_origin_y)
+vector<Entity> turret_generate(int /*room*/, int room_origin_x, int room_origin_y)
 {
     vector<Entity> turrets;
     const vector<JSON> & enemy_layout = enemy_layouts[random(0, enemy_layouts.size())];

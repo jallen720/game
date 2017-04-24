@@ -40,6 +40,7 @@ struct Tile
 {
     Tile_Types type;
     float rotation;
+    int room;
 };
 
 

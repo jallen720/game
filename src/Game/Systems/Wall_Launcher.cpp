@@ -1,20 +1,26 @@
 #include "Game/Systems/Wall_Launcher.hpp"
 
 #include <map>
+#include <functional>
 #include <glm/glm.hpp>
 #include "Nito/Components.hpp"
 #include "Nito/APIs/Scene.hpp"
 #include "Cpp_Utils/Map.hpp"
+#include "Cpp_Utils/Vector.hpp"
+#include "Cpp_Utils/Collection.hpp"
 
+#include "Game/Utilities.hpp"
 #include "Game/APIs/Floor_Manager.hpp"
 
 
 using std::vector;
 using std::map;
+using std::function;
 
 // glm/glm.hpp
 using glm::vec3;
 using glm::vec2;
+using glm::ivec2;
 
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
@@ -28,6 +34,12 @@ using Nito::load_blueprint;
 
 // Cpp_Utils/Map.hpp
 using Cpp_Utils::remove;
+
+// Cpp_Utils/Vector.hpp
+using Cpp_Utils::contains;
+
+// Cpp_Utils/Collection.hpp
+using Cpp_Utils::for_each;
 
 
 namespace Game
@@ -46,12 +58,79 @@ struct Wall_Launcher_Entity_State
 };
 
 
+struct Wall_Segment
+{
+    vector<ivec2> tiles;
+    Entity wall_launcher;
+};
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 // Data
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static map<Entity, Wall_Launcher_Entity_State> entity_states;
+static map<int, vector<Wall_Segment>> room_wall_segments;
+static int room_tile_width;
+static int room_tile_height;
+static int floor_room_tile_width;
+static int floor_room_tile_height;
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Utilities
+//
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void traverse_wall(const ivec2 & origin, const function<bool(const ivec2 &)> & callback)
+{
+    static const vector<ivec2> DIRECTIONS
+    {
+        ivec2(0, 1),
+        ivec2(1, 0),
+        ivec2(0, -1),
+        ivec2(-1, 0),
+    };
+
+    ivec2 current_tile = origin;
+    ivec2 previous_tile(-1);
+    int direction_index = 0;
+    int room = get_room_tile(origin.x, origin.y).room;
+
+
+    // Find clockwise traversal direction from origin tile.
+    for (size_t i = 0; i < DIRECTIONS.size(); i++)
+    {
+        const ivec2 & direction = DIRECTIONS[i];
+
+        if (get_room_tile(origin.x + direction.x, origin.y + direction.y).room != room)
+        {
+            direction_index = wrap_index(i + 1, DIRECTIONS.size());
+            break;
+        }
+    }
+
+
+    while (callback(current_tile))
+    {
+        // Find valid next tile.
+        ivec2 next_tile = current_tile + DIRECTIONS[direction_index];
+
+        while (next_tile.x < 0 || next_tile.x >= floor_room_tile_width ||
+               next_tile.y < 0 || next_tile.y >= floor_room_tile_height ||
+               get_room_tile(next_tile.x, next_tile.y).room != room ||
+               next_tile == previous_tile)
+        {
+            direction_index = wrap_index(direction_index + 1, DIRECTIONS.size());
+            next_tile = current_tile + DIRECTIONS[direction_index];
+        }
+
+
+        previous_tile = current_tile;
+        current_tile = next_tile;
+    }
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -59,6 +138,86 @@ static map<Entity, Wall_Launcher_Entity_State> entity_states;
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void wall_launcher_init()
+{
+    add_floor_generated_handler("wall_launcher", [&]() -> void
+    {
+        // Update floor and room dimensional data.
+        const int floor_size = get_floor_size();
+        room_tile_width = get_room_tile_width();
+        room_tile_height = get_room_tile_height();
+        floor_room_tile_width = room_tile_width * floor_size;
+        floor_room_tile_height = room_tile_height * floor_size;
+
+
+        room_wall_segments.clear();
+        vector<int> processed_rooms;
+
+        iterate_rooms([&](int x, int y, int & room) -> void
+        {
+            if (room < 1 || contains(processed_rooms, room))
+            {
+                return;
+            }
+
+            processed_rooms.push_back(room);
+            vector<Wall_Segment> & wall_segments = room_wall_segments[room];
+
+
+            // Find startring point for generating wall segments for room.
+            const ivec2 room_origin(x * room_tile_width, y * room_tile_height);
+            ivec2 wall_segments_origin;
+
+            traverse_wall(room_origin, [&](const ivec2 & wall_tile) -> bool
+            {
+                if (get_room_tile(wall_tile.x, wall_tile.y).type == Tile_Types::DOOR)
+                {
+                    wall_segments_origin = wall_tile;
+                    return false;
+                }
+
+                return true;
+            });
+
+
+            // Traverse wall and track contiguous segments of traversable tiles.
+            ivec2 wall_segment_start = wall_segments_origin;
+
+            do
+            {
+                Wall_Segment wall_segment;
+                wall_segment.wall_launcher = -1;
+                vector<ivec2> & tiles = wall_segment.tiles;
+
+                traverse_wall(wall_segment_start, [&](const ivec2 & wall_tile) -> bool
+                {
+                    // Ignore wall segment start unless it has been reached again after looping the entire room's wall.
+                    if (wall_tile == wall_segment_start && tiles.size() == 0)
+                    {
+                        return true;
+                    }
+
+
+                    // Break wall segment at first traversed door.
+                    if (get_room_tile(wall_tile.x, wall_tile.y).type == Tile_Types::DOOR)
+                    {
+                        wall_segment_start = wall_tile;
+                        return false;
+                    }
+
+
+                    tiles.push_back(wall_tile);
+                    return true;
+                });
+
+                wall_segments.push_back(wall_segment);
+            }
+            while (wall_segment_start != wall_segments_origin);
+        });
+    });
+}
+
+
 void wall_launcher_subscribe(Entity entity)
 {
     entity_states[entity] =
@@ -81,26 +240,25 @@ void wall_launcher_update()
 }
 
 
-vector<Entity> wall_launcher_generate(int room_origin_x, int room_origin_y)
+vector<Entity> wall_launcher_generate(int room, int /*room_origin_x*/, int /*room_origin_y*/)
 {
-    static const vector<vec2> SPAWN_COORDINATES
-    {
-        vec2(1, 1),
-        vec2(1, 7),
-        vec2(11, 7),
-        vec2(11, 1),
-    };
-
     const vec3 room_tile_texture_scale = get_room_tile_texture_scale();
     vector<Entity> wall_launchers;
+    vector<Wall_Segment> & wall_segments = room_wall_segments[room];
 
-    for (const vec2 & spawn_coordinates : SPAWN_COORDINATES)
+    for (Wall_Segment & wall_segment : wall_segments)
     {
-        const Entity wall_launcher = load_blueprint("wall_launcher");
-        wall_launchers.push_back(wall_launcher);
+        Entity & wall_launcher = wall_segment.wall_launcher;
 
-        *entity_states[wall_launcher].position =
-            vec3(room_origin_x + spawn_coordinates.x, room_origin_y + spawn_coordinates.y, 0) * room_tile_texture_scale;
+        if (wall_launcher == -1)
+        {
+            wall_launcher = load_blueprint("wall_launcher");
+            wall_launchers.push_back(wall_launcher);
+            const ivec2 & wall_segment_origin_tile = wall_segment.tiles[0];
+
+            ((Transform *)get_component(wall_launcher, "transform"))->position =
+                vec3(wall_segment_origin_tile.x, wall_segment_origin_tile.y, 0.0f) * room_tile_texture_scale;
+        }
     }
 
     return wall_launchers;

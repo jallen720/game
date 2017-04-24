@@ -305,6 +305,7 @@ int run()
 
     audio_manager_api_init();
     turret_init();
+    wall_launcher_init();
     return run_engine();
 }
 
