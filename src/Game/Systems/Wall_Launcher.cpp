@@ -60,7 +60,7 @@ struct Wall_Launcher_Entity_State
 
 struct Wall_Segment
 {
-    vector<ivec2> tiles;
+    vector<vec3> tile_positions;
     Entity wall_launcher;
 };
 
@@ -72,8 +72,6 @@ struct Wall_Segment
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static map<Entity, Wall_Launcher_Entity_State> entity_states;
 static map<int, vector<Wall_Segment>> room_wall_segments;
-static int room_tile_width;
-static int room_tile_height;
 static int floor_room_tile_width;
 static int floor_room_tile_height;
 
@@ -155,16 +153,14 @@ void wall_launcher_init()
 {
     add_floor_generated_handler("wall_launcher", [&]() -> void
     {
-        // Update floor and room dimensional data.
         const int floor_size = get_floor_size();
-        room_tile_width = get_room_tile_width();
-        room_tile_height = get_room_tile_height();
+        const vec3 & room_tile_texture_scale = get_room_tile_texture_scale();
+        const int room_tile_width = get_room_tile_width();
+        const int room_tile_height = get_room_tile_height();
         floor_room_tile_width = room_tile_width * floor_size;
         floor_room_tile_height = room_tile_height * floor_size;
-
-
-        room_wall_segments.clear();
         vector<int> processed_rooms;
+        room_wall_segments.clear();
 
         iterate_rooms([&](int x, int y, int & room) -> void
         {
@@ -200,12 +196,12 @@ void wall_launcher_init()
             {
                 Wall_Segment wall_segment;
                 wall_segment.wall_launcher = -1;
-                vector<ivec2> & tiles = wall_segment.tiles;
+                vector<vec3> & tile_positions = wall_segment.tile_positions;
 
                 traverse_wall(wall_segment_start, [&](const ivec2 & wall_tile) -> bool
                 {
                     // Ignore wall segment start unless it has been reached again after looping the entire room's wall.
-                    if (wall_tile == wall_segment_start && tiles.size() == 0)
+                    if (wall_tile == wall_segment_start && tile_positions.size() == 0)
                     {
                         return true;
                     }
@@ -219,7 +215,7 @@ void wall_launcher_init()
                     }
 
 
-                    tiles.push_back(wall_tile);
+                    tile_positions.push_back(vec3(wall_tile.x, wall_tile.y, 0) * room_tile_texture_scale);
                     return true;
                 });
 
@@ -255,7 +251,6 @@ void wall_launcher_update()
 
 vector<Entity> wall_launcher_generate(int room, int /*room_origin_x*/, int /*room_origin_y*/)
 {
-    const vec3 room_tile_texture_scale = get_room_tile_texture_scale();
     vector<Entity> wall_launchers;
     vector<Wall_Segment> & wall_segments = room_wall_segments[room];
 
@@ -267,10 +262,7 @@ vector<Entity> wall_launcher_generate(int room, int /*room_origin_x*/, int /*roo
         {
             wall_launcher = load_blueprint("wall_launcher");
             wall_launchers.push_back(wall_launcher);
-            const ivec2 & wall_segment_origin_tile = wall_segment.tiles[0];
-
-            ((Transform *)get_component(wall_launcher, "transform"))->position =
-                vec3(wall_segment_origin_tile.x, wall_segment_origin_tile.y, 0.0f) * room_tile_texture_scale;
+            ((Transform *)get_component(wall_launcher, "transform"))->position = wall_segment.tile_positions[0];
         }
     }
 
