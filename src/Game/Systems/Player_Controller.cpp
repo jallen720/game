@@ -84,6 +84,7 @@ static Transform * camera_transform;
 static vec3 * camera_origin;
 static int pixels_per_unit;
 static float time_scale;
+static vec2 mouse_world_position;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -116,33 +117,38 @@ static void fire()
 
     // Calculate projectile's position.
     const float horizontal_x_offset = (dimensions->width / pixels_per_unit / 2) - 0.05f;
-    vec3 projectile_position(player_position.x, player_position.y, 0.0f);
+    vec3 projectile_origin(player_position.x, player_position.y, 0);
 
     if (orientation == Orientation::RIGHT)
     {
-        projectile_position.x += horizontal_x_offset;
+        projectile_origin.x += horizontal_x_offset;
     }
     else if (orientation == Orientation::LEFT)
     {
-        projectile_position.x -= horizontal_x_offset;
+        projectile_origin.x -= horizontal_x_offset;
     }
     else if (orientation == Orientation::UP)
     {
-        projectile_position.y += VERTICAL_Y_OFFSET;
+        projectile_origin.y += VERTICAL_Y_OFFSET;
     }
     else
     {
-        projectile_position.y -= VERTICAL_Y_OFFSET;
+        projectile_origin.y -= VERTICAL_Y_OFFSET;
     }
 
-    projectile_position.z = projectile_position.y;
+    projectile_origin.z = projectile_origin.y;
 
 
-    // Fire projectile in look-direction.
+    // Fire projectile.
+    const vec3 fire_direction =
+        player_controller->mode == Player_Controller::Modes::CONTROLLER
+        ? orientation_handler->look_direction
+        : vec3(mouse_world_position.x, mouse_world_position.y, 0) - projectile_origin;
+
     fire_projectile(
         PROJECTILE_NAME,
-        projectile_position,
-        orientation_handler->look_direction,
+        projectile_origin,
+        fire_direction,
         1.0f,
         TARGET_LAYERS,
         10.0f);
@@ -259,7 +265,7 @@ void player_controller_update()
         const vec2 mouse_camera_offset =
             (mouse_unit_camera_position - (vec2)window_camera_origin_offset) / (vec2)camera_transform->scale;
 
-        const vec2 mouse_world_position = (vec2)camera_position + mouse_camera_offset;
+        mouse_world_position = (vec2)camera_position + mouse_camera_offset;
         const vec2 mouse_direction = normalize(mouse_world_position - (vec2)player_position);
         look_direction.x = mouse_direction.x;
         look_direction.y = mouse_direction.y;

@@ -72,7 +72,7 @@ void fire_projectile(
     Entity projectile_entity = load_blueprint(name);
     auto projectile = (Projectile *)get_component(projectile_entity, "projectile");
     ((Transform *)get_component(projectile_entity, "transform"))->position = origin;
-    projectile->direction = normalize(direction);
+    projectile->direction = normalize(vec3(direction.x, direction.y, 0));
     projectile->duration = duration;
     projectile->target_layers = target_layers;
     projectile->damage *= damage_modifier;

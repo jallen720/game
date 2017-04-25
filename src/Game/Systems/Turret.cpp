@@ -156,10 +156,12 @@ void turret_update()
                 ? (look_direction.x < 0 ? 0 : 1)
                 : (look_direction.y < 0 ? 2 : 3);
 
+            const vec3 fire_origin = position + FIRE_POSITION_OFFSETS[fire_position_offset_index];
+
             fire_projectile(
                 PROJECTILE_NAME,
-                position + FIRE_POSITION_OFFSETS[fire_position_offset_index],
-                look_direction,
+                fire_origin,
+                target_position - fire_origin,
                 1.0f,
                 TARGET_LAYERS);
 
