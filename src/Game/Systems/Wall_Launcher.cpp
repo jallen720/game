@@ -93,6 +93,16 @@ void traverse_wall(const ivec2 & origin, const function<bool(const ivec2 &)> & c
         ivec2(-1, 0),
     };
 
+    static const vector<Tile_Types> WALL_TILE_TYPES
+    {
+        Tile_Types::DOOR,
+        Tile_Types::WALL,
+        Tile_Types::WALL_CORNER,
+        Tile_Types::WALL_CORNER_INNER,
+        Tile_Types::RIGHT_DOOR_WALL,
+        Tile_Types::LEFT_DOOR_WALL,
+    };
+
     ivec2 current_tile = origin;
     ivec2 previous_tile(-1);
     int direction_index = 0;
@@ -116,14 +126,17 @@ void traverse_wall(const ivec2 & origin, const function<bool(const ivec2 &)> & c
     {
         // Find valid next tile.
         ivec2 next_tile = current_tile + DIRECTIONS[direction_index];
+        const Tile * room_tile = &get_room_tile(next_tile.x, next_tile.y);
 
         while (next_tile.x < 0 || next_tile.x >= floor_room_tile_width ||
                next_tile.y < 0 || next_tile.y >= floor_room_tile_height ||
-               get_room_tile(next_tile.x, next_tile.y).room != room ||
-               next_tile == previous_tile)
+               room_tile->room != room ||
+               next_tile == previous_tile ||
+               !contains(WALL_TILE_TYPES, room_tile->type))
         {
             direction_index = wrap_index(direction_index + 1, DIRECTIONS.size());
             next_tile = current_tile + DIRECTIONS[direction_index];
+            room_tile = &get_room_tile(next_tile.x, next_tile.y);
         }
 
 
