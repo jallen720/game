@@ -10,6 +10,7 @@
 #include "Cpp_Utils/Collection.hpp"
 
 #include "Game/Utilities.hpp"
+#include "Game/Components.hpp"
 #include "Game/APIs/Floor_Manager.hpp"
 
 
@@ -21,6 +22,8 @@ using std::function;
 using glm::vec3;
 using glm::vec2;
 using glm::ivec2;
+using glm::distance;
+using glm::length;
 
 // Nito/Components.hpp
 using Nito::Transform;
@@ -34,6 +37,7 @@ using Nito::load_blueprint;
 
 // Cpp_Utils/Map.hpp
 using Cpp_Utils::remove;
+using Cpp_Utils::contains_key;
 
 // Cpp_Utils/Vector.hpp
 using Cpp_Utils::contains;
@@ -54,13 +58,15 @@ namespace Game
 struct Wall_Launcher_Entity_State
 {
     vec3 * position;
-    vector<vec2> path;
+    vec3 * look_direction;
+    int path_index;
+    int path_direction;
 };
 
 
 struct Wall_Segment
 {
-    vector<vec3> tile_positions;
+    vector<vec2> tile_positions;
     Entity wall_launcher;
 };
 
@@ -155,6 +161,7 @@ void wall_launcher_init()
     {
         const int floor_size = get_floor_size();
         const vec3 & room_tile_texture_scale = get_room_tile_texture_scale();
+        const vec2 tile_scale = vec2(room_tile_texture_scale.x, room_tile_texture_scale.y);
         const int room_tile_width = get_room_tile_width();
         const int room_tile_height = get_room_tile_height();
         floor_room_tile_width = room_tile_width * floor_size;
@@ -196,7 +203,7 @@ void wall_launcher_init()
             {
                 Wall_Segment wall_segment;
                 wall_segment.wall_launcher = -1;
-                vector<vec3> & tile_positions = wall_segment.tile_positions;
+                vector<vec2> & tile_positions = wall_segment.tile_positions;
 
                 traverse_wall(wall_segment_start, [&](const ivec2 & wall_tile) -> bool
                 {
@@ -215,7 +222,7 @@ void wall_launcher_init()
                     }
 
 
-                    tile_positions.push_back(vec3(wall_tile.x, wall_tile.y, 0) * room_tile_texture_scale);
+                    tile_positions.push_back(vec2(wall_tile.x, wall_tile.y) * tile_scale);
                     return true;
                 });
 
@@ -232,7 +239,9 @@ void wall_launcher_subscribe(Entity entity)
     entity_states[entity] =
     {
         &((Transform *)get_component(entity, "transform"))->position,
-        vector<vec2>(),
+        &((Orientation_Handler *)get_component(entity, "orientation_handler"))->look_direction,
+        1,
+        1,
     };
 }
 
@@ -245,7 +254,39 @@ void wall_launcher_unsubscribe(Entity entity)
 
 void wall_launcher_update()
 {
+    for_each(room_wall_segments, [&](int /*room*/, const vector<Wall_Segment> & wall_segments) -> void
+    {
+        for (const Wall_Segment & wall_segment : wall_segments)
+        {
+            if (!contains_key(entity_states, wall_segment.wall_launcher))
+            {
+                continue;
+            }
 
+            Wall_Launcher_Entity_State & entity_state = entity_states[wall_segment.wall_launcher];
+            int & path_index = entity_state.path_index;
+            int & path_direction = entity_state.path_direction;
+            vec3 * position = entity_state.position;
+            vec3 * look_direction = entity_state.look_direction;
+            const vector<vec2> & tile_positions = wall_segment.tile_positions;
+            const vec2 & tile_position = tile_positions[path_index];
+            const vec2 movement = move_entity(*position, *look_direction, tile_position);
+
+            if (distance(tile_position, (vec2)*position) < length(movement))
+            {
+                if (path_direction == 1 && path_index == tile_positions.size() - 1)
+                {
+                    path_direction = -1;
+                }
+                else if (path_direction == -1 && path_index == 0)
+                {
+                    path_direction = 1;
+                }
+
+                path_index += path_direction;
+            }
+        }
+    });
 }
 
 
@@ -262,7 +303,10 @@ vector<Entity> wall_launcher_generate(int room, int /*room_origin_x*/, int /*roo
         {
             wall_launcher = load_blueprint("wall_launcher");
             wall_launchers.push_back(wall_launcher);
-            ((Transform *)get_component(wall_launcher, "transform"))->position = wall_segment.tile_positions[0];
+            const vec2 & segment_start_tile_position = wall_segment.tile_positions[0];
+            vec3 & wall_launcher_position = ((Transform *)get_component(wall_launcher, "transform"))->position;
+            wall_launcher_position.x = segment_start_tile_position.x;
+            wall_launcher_position.y = segment_start_tile_position.y;
         }
     }
 
