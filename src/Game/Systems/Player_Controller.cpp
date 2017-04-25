@@ -140,10 +140,18 @@ static void fire()
 
 
     // Fire projectile.
-    const vec3 fire_direction =
-        player_controller->mode == Player_Controller::Modes::CONTROLLER
-        ? orientation_handler->look_direction
-        : vec3(mouse_world_position.x, mouse_world_position.y, 0) - projectile_origin;
+    vec3 fire_direction;
+    const vec2 position_2d = (vec2)transform->position;
+
+    if (player_controller->mode == Player_Controller::Modes::CONTROLLER ||
+        distance(mouse_world_position, position_2d) < distance((vec2)projectile_origin, position_2d))
+    {
+        fire_direction = orientation_handler->look_direction;
+    }
+    else
+    {
+        fire_direction = vec3(mouse_world_position.x, mouse_world_position.y, 0) - projectile_origin;
+    }
 
     fire_projectile(
         PROJECTILE_NAME,
