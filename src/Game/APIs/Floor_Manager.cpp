@@ -424,8 +424,8 @@ void generate_floor(int floor_size)
     // boss rooms being size 1, therefore not being required to be multiplied by MAX_ROOM_SIZE.
     max_room_id = (((floor_size * floor_size) - 2) / MAX_ROOM_SIZE) + 2;
 
-    const int root_room_x = 0;//random(0, floor_size);
-    const int root_room_y = 0;//random(0, floor_size);
+    const int root_room_x = random(0, floor_size);
+    const int root_room_y = random(0, floor_size);
     generate_room(current_floor, root_room_x, root_room_y, SPAWN_ROOM_ID, 1);
 
     for (int room_id = SPAWN_ROOM_ID + 1; room_id <= max_room_id; room_id++)
