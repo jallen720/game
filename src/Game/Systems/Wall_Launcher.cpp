@@ -22,12 +22,12 @@ using glm::vec3;
 using glm::vec2;
 using glm::ivec2;
 
+// Nito/Components.hpp
+using Nito::Transform;
+
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
 using Nito::get_component;
-
-// Nito/Components.hpp
-using Nito::Transform;
 
 // Nito/APIs/Scene.hpp
 using Nito::load_blueprint;
