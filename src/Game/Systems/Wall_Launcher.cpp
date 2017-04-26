@@ -272,6 +272,11 @@ void wall_launcher_update()
             const vec2 & tile_position = tile_positions[path_index];
             const vec2 movement = move_entity(*position, *look_direction, tile_position);
 
+
+            // Invert look direction if traveling backwards along wall segment.
+            *look_direction *= path_direction;
+
+
             if (distance(tile_position, (vec2)*position) < length(movement))
             {
                 if (path_direction == 1 && path_index == tile_positions.size() - 1)

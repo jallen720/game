@@ -349,16 +349,16 @@
         {
             "sprite":
             {
-                "texture_path": "resources/textures/turret_up.png"
+                "texture_path": "resources/textures/wall_launcher_up.png"
             },
             "orientation_handler":
             {
                 "texture_paths":
                 {
-                    "left": "resources/textures/turret_left.png",
-                    "up": "resources/textures/turret_up.png",
-                    "right": "resources/textures/turret_right.png",
-                    "down": "resources/textures/turret_down.png"
+                    "left": "resources/textures/wall_launcher_up.png",
+                    "up": "resources/textures/wall_launcher_right.png",
+                    "right": "resources/textures/wall_launcher_down.png",
+                    "down": "resources/textures/wall_launcher_left.png"
                 }
             },
             "circle_collider":
