@@ -4,6 +4,7 @@
 #include <functional>
 #include <glm/glm.hpp>
 #include "Nito/Components.hpp"
+#include "Nito/Engine.hpp"
 #include "Nito/APIs/Scene.hpp"
 #include "Cpp_Utils/Map.hpp"
 #include "Cpp_Utils/Vector.hpp"
@@ -27,6 +28,9 @@ using glm::length;
 
 // Nito/Components.hpp
 using Nito::Transform;
+
+// Nito/Engine.hpp
+using Nito::get_time_scale;
 
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
@@ -254,6 +258,8 @@ void wall_launcher_unsubscribe(Entity entity)
 
 void wall_launcher_update()
 {
+    const float time_scale = get_time_scale();
+
     for_each(room_wall_segments, [&](int /*room*/, const vector<Wall_Segment> & wall_segments) -> void
     {
         for (const Wall_Segment & wall_segment : wall_segments)
@@ -273,8 +279,11 @@ void wall_launcher_update()
             const vec2 movement = move_entity(*position, *look_direction, tile_position);
 
 
-            // Invert look direction if traveling backwards along wall segment.
-            *look_direction *= path_direction;
+            // If game is not paused, invert look direction when traveling backwards along wall segment.
+            if (time_scale > 0)
+            {
+                *look_direction *= path_direction;
+            }
 
 
             if (distance(tile_position, (vec2)*position) < length(movement))
