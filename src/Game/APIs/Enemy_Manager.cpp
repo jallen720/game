@@ -130,7 +130,22 @@ void generate_enemies()
 
         if (!contains_key(room_enemy_groups, room))
         {
-            room_enemy_groups[room].push_back(POSSIBLE_ENEMIES[random(0, POSSIBLE_ENEMIES.size())]);
+            vector<Enemies> & enemy_group = room_enemy_groups[room];
+
+            for (const Enemies enemy : POSSIBLE_ENEMIES)
+            {
+                if (random(0, 2) == 1)
+                {
+                    enemy_group.push_back(enemy);
+                }
+            }
+
+
+            // Ensure each enemy group has atleast 1 enemy.
+            if (enemy_group.size() == 0)
+            {
+                enemy_group.push_back(POSSIBLE_ENEMIES[random(0, POSSIBLE_ENEMIES.size())]);
+            }
         }
     });
 
