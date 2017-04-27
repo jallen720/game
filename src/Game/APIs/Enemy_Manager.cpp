@@ -6,6 +6,7 @@
 #include "Nito/Components.hpp"
 #include "Nito/APIs/ECS.hpp"
 #include "Nito/APIs/Scene.hpp"
+#include "Cpp_Utils/Map.hpp"
 
 #include "Game/Utilities.hpp"
 #include "Game/Components.hpp"
@@ -31,6 +32,9 @@ using Nito::get_component;
 // Nito/APIs/Scene.hpp
 using Nito::load_blueprint;
 
+// Cpp_Utils/Map.hpp
+using Cpp_Utils::contains_key;
+
 
 namespace Game
 {
@@ -46,15 +50,6 @@ enum class Enemies
     TURRET,
     WALL_LAUNCHER,
     NONE,
-};
-
-
-struct Room_Enemy_Group
-{
-    int room_id;
-    int room_origin_x;
-    int room_origin_y;
-    vector<Enemies> enemies;
 };
 
 
@@ -106,7 +101,7 @@ void generate_enemies()
     const int boss_room = get_max_room_id();
     int boss_room_origin_x = 0;
     int boss_room_origin_y = 0;
-    vector<Room_Enemy_Group> room_enemy_groups;
+    map<int, vector<Enemies>> room_enemy_groups;
 
     iterate_rooms([&](int x, int y, int & room) -> void
     {
@@ -133,24 +128,15 @@ void generate_enemies()
         }
 
 
-        // Create and populate room enemy group.
-        Room_Enemy_Group room_enemy_group;
-        room_enemy_group.room_id = room;
-        room_enemy_group.room_origin_x = x * room_tile_width;
-        room_enemy_group.room_origin_y = y * room_tile_height;
-        vector<Enemies> & enemies = room_enemy_group.enemies;
-
-        for (const Enemies enemy : POSSIBLE_ENEMIES)
+        if (!contains_key(room_enemy_groups, room))
         {
-            enemies.push_back(enemy);
+            room_enemy_groups[room].push_back(POSSIBLE_ENEMIES[random(0, POSSIBLE_ENEMIES.size())]);
         }
-
-        room_enemy_groups.push_back(room_enemy_group);
     });
 
 
     // Use enemy data to generate enemy entities.
-    for (const Room_Enemy_Group & room_enemy_group : room_enemy_groups)
+    iterate_rooms([&](int x, int y, int & room) -> void
     {
         static const map<Enemies, Enemy_Generator> ENEMY_GENERATORS
         {
@@ -158,23 +144,21 @@ void generate_enemies()
             { Enemies::WALL_LAUNCHER , wall_launcher_generate },
         };
 
-        for (const Enemies enemy : room_enemy_group.enemies)
+        for (const Enemies enemy : room_enemy_groups[room])
         {
-            const int room_id = room_enemy_group.room_id;
-
             const vector<Entity> generated_enemies = ENEMY_GENERATORS.at(enemy)(
-                room_id,
-                room_enemy_group.room_origin_x,
-                room_enemy_group.room_origin_y);
+                room,
+                x * room_tile_width,
+                y * room_tile_height);
 
 
             // Track enemies generated for this room.
             for (const Entity enemy_entity : generated_enemies)
             {
-                track_enemy(enemy_entity, room_id);
+                track_enemy(enemy_entity, room);
             }
         }
-    }
+    });
 
 
     // Generate boss.
