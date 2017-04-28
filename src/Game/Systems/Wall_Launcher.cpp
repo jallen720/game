@@ -336,7 +336,6 @@ void wall_launcher_update()
         const vec3 & position = *entity_state.position;
         const vec3 & target_position = *entity_state.target_position;
         const vec3 & look_direction = *entity_state.look_direction;
-        const int & path_direction = entity_state.path_direction;
         float & cooldown = entity_state.cooldown;
 
         if (cooldown > 0.0f)
