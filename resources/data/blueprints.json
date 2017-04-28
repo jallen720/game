@@ -94,6 +94,18 @@
             }
         }
     },
+    "projectile_launching_enemy":
+    {
+        "components":
+        {
+            "enemy_projectile_launcher":
+            {
+                "cooldown_time": 1,
+                "range": 3,
+                "projectile_name": "projectile_red_orb"
+            }
+        }
+    },
 
 
     "door_lock_tile":
@@ -306,7 +318,8 @@
             "renderable",
             "floor_entity",
             "static_obstacle",
-            "enemy"
+            "enemy",
+            "projectile_launching_enemy"
         ],
         "components":
         {
@@ -331,9 +344,6 @@
             "health": 100,
             "enemy_projectile_launcher":
             {
-                "cooldown_time": 1,
-                "range": 3,
-                "projectile_name": "projectile_red_orb",
                 "direction_offsets":
                 [
                     { "x": -0.3, "y": 0.1 },
@@ -356,7 +366,8 @@
             "renderable",
             "floor_entity",
             "triggerable",
-            "enemy"
+            "enemy",
+            "projectile_launching_enemy"
         ],
         "components":
         {
@@ -381,9 +392,6 @@
             "health": 100,
             "enemy_projectile_launcher":
             {
-                "cooldown_time": 1,
-                "range": 3,
-                "projectile_name": "projectile_red_orb",
                 "direction_offsets":
                 [
                     { "x": 0, "y": 0.35 },
