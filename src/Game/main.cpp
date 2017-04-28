@@ -287,16 +287,36 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
         {
             [](const JSON & data) -> Component
             {
+                const JSON & orientation_offsets_data = data["orientation_offsets"];
+                const JSON & left_orientation_offset_data = orientation_offsets_data["left"];
+                const JSON & right_orientation_offset_data = orientation_offsets_data["right"];
+                const JSON & down_orientation_offset_data = orientation_offsets_data["down"];
+                const JSON & up_orientation_offset_data = orientation_offsets_data["up"];
                 auto enemy_projectile_launcher = new Enemy_Projectile_Launcher;
                 enemy_projectile_launcher->cooldown_time = data["cooldown_time"];
                 enemy_projectile_launcher->range = data["range"];
                 enemy_projectile_launcher->projectile_name = data["projectile_name"];
-                vector<vec3> & direction_offsets = enemy_projectile_launcher->direction_offsets;
+                map<Orientation, vec3> & orientation_offsets = enemy_projectile_launcher->orientation_offsets;
 
-                for (const JSON & direction_offset : data["direction_offsets"])
-                {
-                    direction_offsets.emplace_back(direction_offset["x"], direction_offset["y"], 0);
-                }
+                orientation_offsets[Orientation::LEFT] = vec3(
+                    left_orientation_offset_data["x"],
+                    left_orientation_offset_data["y"],
+                    0);
+
+                orientation_offsets[Orientation::RIGHT] = vec3(
+                    right_orientation_offset_data["x"],
+                    right_orientation_offset_data["y"],
+                    0);
+
+                orientation_offsets[Orientation::DOWN] = vec3(
+                    down_orientation_offset_data["x"],
+                    down_orientation_offset_data["y"],
+                    0);
+
+                orientation_offsets[Orientation::UP] = vec3(
+                    up_orientation_offset_data["x"],
+                    up_orientation_offset_data["y"],
+                    0);
 
                 return enemy_projectile_launcher;
             },

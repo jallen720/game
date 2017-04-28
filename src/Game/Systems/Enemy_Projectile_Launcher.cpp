@@ -59,7 +59,7 @@ struct Enemy_Projectile_Launcher_Entity_State
 {
     Enemy_Projectile_Launcher * enemy_projectile_launcher;
     vec3 * position;
-    vec3 * look_direction;
+    Orientation * orientation;
     bool * enemy_enabled;
     const vec3 * target_position;
     float cooldown;
@@ -86,7 +86,7 @@ void enemy_projectile_launcher_subscribe(Entity entity)
     {
         (Enemy_Projectile_Launcher *)get_component(entity, "enemy_projectile_launcher"),
         &((Transform *)get_component(entity, "transform"))->position,
-        &((Orientation_Handler *)get_component(entity, "orientation_handler"))->look_direction,
+        &((Orientation_Handler *)get_component(entity, "orientation_handler"))->orientation,
         (bool *)get_component(entity, "enemy_enabled"),
         &((Transform *)get_component(get_entity("player"), "transform"))->position,
         0.0f,
@@ -114,7 +114,6 @@ void enemy_projectile_launcher_update()
         const Enemy_Projectile_Launcher * enemy_projectile_launcher = entity_state.enemy_projectile_launcher;
         const vec3 & position = *entity_state.position;
         const vec3 & target_position = *entity_state.target_position;
-        const vec3 & look_direction = *entity_state.look_direction;
         float & cooldown = entity_state.cooldown;
 
         if (cooldown > 0.0f)
@@ -123,12 +122,8 @@ void enemy_projectile_launcher_update()
         }
         else if (distance((vec2)target_position, (vec2)position) < enemy_projectile_launcher->range)
         {
-            int direction_offset_index =
-                fabsf(look_direction.x) > fabsf(look_direction.y)
-                ? (look_direction.x < 0 ? 0 : 1)
-                : (look_direction.y < 0 ? 2 : 3);
-
-            const vec3 fire_origin = position + enemy_projectile_launcher->direction_offsets[direction_offset_index];
+            const vec3 fire_origin =
+                position + enemy_projectile_launcher->orientation_offsets.at(*entity_state.orientation);
 
             fire_projectile(
                 enemy_projectile_launcher->projectile_name,

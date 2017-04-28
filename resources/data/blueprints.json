@@ -344,13 +344,13 @@
             "health": 100,
             "enemy_projectile_launcher":
             {
-                "direction_offsets":
-                [
-                    { "x": -0.3, "y": 0.1 },
-                    { "x": 0.284375, "y": 0.1 },
-                    { "x": -0.015625, "y": -0.08 },
-                    { "x": -0.015625, "y": 0.3 }
-                ]
+                "orientation_offsets":
+                {
+                    "left": { "x": -0.3, "y": 0.1 },
+                    "right": { "x": 0.284375, "y": 0.1 },
+                    "down": { "x": -0.015625, "y": -0.08 },
+                    "up": { "x": -0.015625, "y": 0.3 }
+                }
             }
         },
         "systems":
@@ -392,13 +392,13 @@
             "health": 100,
             "enemy_projectile_launcher":
             {
-                "direction_offsets":
-                [
-                    { "x": 0, "y": 0.35 },
-                    { "x": 0, "y": -0.35 },
-                    { "x": -0.35, "y": 0 },
-                    { "x": 0.35, "y": 0 }
-                ]
+                "orientation_offsets":
+                {
+                    "left": { "x": 0, "y": 0.35 },
+                    "right": { "x": 0, "y": -0.35 },
+                    "down": { "x": -0.35, "y": 0 },
+                    "up": { "x": 0.35, "y": 0 }
+                }
             }
         },
         "systems":

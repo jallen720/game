@@ -98,7 +98,7 @@ struct Enemy_Projectile_Launcher
     float cooldown_time;
     float range;
     std::string projectile_name;
-    std::vector<glm::vec3> direction_offsets;
+    std::map<Orientation, glm::vec3> orientation_offsets;
 };
 
 
