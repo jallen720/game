@@ -93,4 +93,13 @@ struct Room_Exit
 };
 
 
+struct Enemy_Projectile_Launcher
+{
+    float cooldown_time;
+    float range;
+    std::string projectile_name;
+    std::vector<glm::vec3> direction_offsets;
+};
+
+
 } // namespace Game

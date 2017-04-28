@@ -328,7 +328,20 @@
             {
                 "radius": 0.2
             },
-            "health": 100
+            "health": 100,
+            "enemy_projectile_launcher":
+            {
+                "cooldown_time": 1,
+                "range": 3,
+                "projectile_name": "projectile_red_orb",
+                "direction_offsets":
+                [
+                    { "x": -0.3, "y": 0.1 },
+                    { "x": 0.284375, "y": 0.1 },
+                    { "x": -0.015625, "y": -0.08 },
+                    { "x": -0.015625, "y": 0.3 }
+                ]
+            }
         },
         "systems":
         [
@@ -365,7 +378,20 @@
             {
                 "radius": 0.32
             },
-            "health": 100
+            "health": 100,
+            "enemy_projectile_launcher":
+            {
+                "cooldown_time": 1,
+                "range": 3,
+                "projectile_name": "projectile_red_orb",
+                "direction_offsets":
+                [
+                    { "x": 0, "y": 0.35 },
+                    { "x": 0, "y": -0.35 },
+                    { "x": -0.35, "y": 0 },
+                    { "x": 0.35, "y": 0 }
+                ]
+            }
         },
         "systems":
         [

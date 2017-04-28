@@ -26,5 +26,9 @@
     "room_exit":
     [
         "room_exit_handler"
+    ],
+    "enemy_projectile_launcher":
+    [
+        "enemy_projectile_launcher"
     ]
 }

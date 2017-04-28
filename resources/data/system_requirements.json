@@ -82,5 +82,12 @@
         "transform",
         "orientation_handler",
         "destination"
+    ],
+    "enemy_projectile_launcher":
+    [
+        "transform",
+        "orientation_handler",
+        "enemy_enabled",
+        "enemy_projectile_launcher"
     ]
 }

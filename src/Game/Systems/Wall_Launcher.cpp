@@ -1,14 +1,11 @@
 #include "Game/Systems/Wall_Launcher.hpp"
 
 #include <map>
-#include <string>
 #include <functional>
 #include <glm/glm.hpp>
-#include <cmath>
 #include "Nito/Components.hpp"
 #include "Nito/Engine.hpp"
 #include "Nito/APIs/Scene.hpp"
-#include "Nito/APIs/Window.hpp"
 #include "Cpp_Utils/Map.hpp"
 #include "Cpp_Utils/Vector.hpp"
 #include "Cpp_Utils/Collection.hpp"
@@ -20,7 +17,6 @@
 
 using std::vector;
 using std::map;
-using std::string;
 using std::function;
 
 // glm/glm.hpp
@@ -38,14 +34,10 @@ using Nito::get_time_scale;
 
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
-using Nito::get_entity;
 using Nito::get_component;
 
 // Nito/APIs/Scene.hpp
 using Nito::load_blueprint;
-
-// Nito/APIs/Window.hpp
-using Nito::get_delta_time;
 
 // Cpp_Utils/Map.hpp
 using Cpp_Utils::remove;
@@ -71,11 +63,8 @@ struct Wall_Launcher_Entity_State
 {
     vec3 * position;
     vec3 * look_direction;
-    bool * enemy_enabled;
-    const vec3 * target_position;
     int path_index;
     int path_direction;
-    float cooldown;
 };
 
 
@@ -91,8 +80,6 @@ struct Wall_Segment
 // Data
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static const float FIRE_COOLDOWN = 1.0f;
-static const vector<string> TARGET_LAYERS { "player" };
 static map<Entity, Wall_Launcher_Entity_State> entity_states;
 static map<int, vector<Wall_Segment>> room_wall_segments;
 static int floor_room_tile_width;
@@ -197,7 +184,7 @@ void wall_launcher_init()
             vector<Wall_Segment> & wall_segments = room_wall_segments[room];
 
 
-            // Find startring point for generating wall segments for room.
+            // Find starting point for generating wall segments for room.
             const ivec2 room_origin(x * room_tile_width, y * room_tile_height);
             ivec2 wall_segments_origin;
 
@@ -257,11 +244,8 @@ void wall_launcher_subscribe(Entity entity)
     {
         &((Transform *)get_component(entity, "transform"))->position,
         &((Orientation_Handler *)get_component(entity, "orientation_handler"))->look_direction,
-        (bool *)get_component(entity, "enemy_enabled"),
-        &((Transform *)get_component(get_entity("player"), "transform"))->position,
         1,
         1,
-        0.0f,
     };
 }
 
@@ -274,11 +258,7 @@ void wall_launcher_unsubscribe(Entity entity)
 
 void wall_launcher_update()
 {
-    static const float WALL_LAUNCHER_RANGE = 3.0f;
-    static const string PROJECTILE_NAME("projectile_red_orb");
-
     const float time_scale = get_time_scale();
-    const float delta_time = get_delta_time() * time_scale;
 
 
     // Handle movement.
@@ -321,52 +301,6 @@ void wall_launcher_update()
 
                 path_index += path_direction;
             }
-        }
-    });
-
-
-    // Handle firing.
-    for_each(entity_states, [&](Entity /*entity*/, Wall_Launcher_Entity_State & entity_state) -> void
-    {
-        if (!*entity_state.enemy_enabled)
-        {
-            return;
-        }
-
-        const vec3 & position = *entity_state.position;
-        const vec3 & target_position = *entity_state.target_position;
-        const vec3 & look_direction = *entity_state.look_direction;
-        float & cooldown = entity_state.cooldown;
-
-        if (cooldown > 0.0f)
-        {
-            cooldown -= delta_time;
-        }
-        else if (distance((vec2)target_position, (vec2)position) < WALL_LAUNCHER_RANGE)
-        {
-            static const vector<vec3> FIRE_POSITION_OFFSETS
-            {
-                vec3( 0     , 0.35f , 0), // Up
-                vec3( 0     ,-0.35f , 0), // Down
-                vec3(-0.35f , 0     , 0), // Left
-                vec3( 0.35f , 0     , 0), // Right
-            };
-
-            int fire_position_offset_index =
-                fabsf(look_direction.x) > fabsf(look_direction.y)
-                ? (look_direction.x < 0 ? 0 : 1)
-                : (look_direction.y < 0 ? 2 : 3);
-
-            const vec3 fire_origin = position + FIRE_POSITION_OFFSETS[fire_position_offset_index];
-
-            fire_projectile(
-                PROJECTILE_NAME,
-                fire_origin,
-                target_position - fire_origin,
-                1.0f,
-                TARGET_LAYERS);
-
-            cooldown = FIRE_COOLDOWN;
         }
     });
 }

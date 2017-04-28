@@ -33,6 +33,7 @@
 #include "Game/Systems/Boss.hpp"
 #include "Game/Systems/Boss_Segment.hpp"
 #include "Game/Systems/Wall_Launcher.hpp"
+#include "Game/Systems/Enemy_Projectile_Launcher.hpp"
 
 
 using std::string;
@@ -87,6 +88,7 @@ static const vector<Update_Handler> GAME_UPDATE_HANDLERS
     boss_update,
     boss_segment_update,
     wall_launcher_update,
+    enemy_projectile_launcher_update,
 };
 
 
@@ -113,6 +115,7 @@ static const map<string, const System_Entity_Handlers> GAME_SYSTEM_ENTITY_HANDLE
     NITO_SYSTEM_ENTITY_HANDLERS(boss),
     NITO_SYSTEM_ENTITY_HANDLERS(boss_segment),
     NITO_SYSTEM_ENTITY_HANDLERS(wall_launcher),
+    NITO_SYSTEM_ENTITY_HANDLERS(enemy_projectile_launcher),
 };
 
 
@@ -277,6 +280,27 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
         {
             get_component_allocator<bool>(),
             get_component_deallocator<bool>(),
+        }
+    },
+    {
+        "enemy_projectile_launcher",
+        {
+            [](const JSON & data) -> Component
+            {
+                auto enemy_projectile_launcher = new Enemy_Projectile_Launcher;
+                enemy_projectile_launcher->cooldown_time = data["cooldown_time"];
+                enemy_projectile_launcher->range = data["range"];
+                enemy_projectile_launcher->projectile_name = data["projectile_name"];
+                vector<vec3> & direction_offsets = enemy_projectile_launcher->direction_offsets;
+
+                for (const JSON & direction_offset : data["direction_offsets"])
+                {
+                    direction_offsets.emplace_back(direction_offset["x"], direction_offset["y"], 0);
+                }
+
+                return enemy_projectile_launcher;
+            },
+            get_component_deallocator<Enemy_Projectile_Launcher>(),
         }
     },
 };
