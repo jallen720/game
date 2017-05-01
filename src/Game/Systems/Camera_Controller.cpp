@@ -63,7 +63,7 @@ static map<Entity, Entity_State> entity_states;
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void camera_controller_subscribe(const Entity entity)
+void camera_controller_subscribe(Entity entity)
 {
     const auto target_id = (string *)get_component(entity, "target_id");
 
@@ -75,7 +75,7 @@ void camera_controller_subscribe(const Entity entity)
 }
 
 
-void camera_controller_unsubscribe(const Entity entity)
+void camera_controller_unsubscribe(Entity entity)
 {
     remove(entity_states, entity);
 }
@@ -83,7 +83,7 @@ void camera_controller_unsubscribe(const Entity entity)
 
 void camera_controller_update()
 {
-    for_each(entity_states, [](const Entity /*entity*/, Entity_State & entity_state) -> void
+    for_each(entity_states, [](Entity /*entity*/, Entity_State & entity_state) -> void
     {
         vec3 & position = entity_state.transform->position;
         const vec3 & target_position = entity_state.target_transform->position;
