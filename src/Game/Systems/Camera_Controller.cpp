@@ -85,43 +85,44 @@ void camera_controller_update()
 {
     for_each(entity_states, [](Entity /*entity*/, Entity_State & entity_state) -> void
     {
-        vec3 & position = entity_state.transform->position;
-        const vec3 & target_position = entity_state.target_transform->position;
-        float & position_x = position.x;
-        float & position_y = position.y;
-        int target_room = get_room(target_position);
+        entity_state.transform->position = entity_state.target_transform->position;
+        // vec3 & position = entity_state.transform->position;
+        // const vec3 & target_position = entity_state.target_transform->position;
+        // float & position_x = position.x;
+        // float & position_y = position.y;
+        // int target_room = get_room(target_position);
 
-        if (target_room <= 0)
-        {
-            throw runtime_error("ERROR: camera cannot follow target as target is out-of-bounds!");
-        }
+        // if (target_room <= 0)
+        // {
+        //     throw runtime_error("ERROR: camera cannot follow target as target is out-of-bounds!");
+        // }
 
-        const Room_Data & target_room_data = get_room_data(target_room);
-        const vec2 & target_room_origin = target_room_data.origin;
-        const vec2 & target_room_bounds = target_room_data.bounds;
-        const float target_room_origin_x = target_room_origin.x;
-        const float target_room_origin_y = target_room_origin.y;
-        const float target_room_bounds_x = target_room_bounds.x;
-        const float target_room_bounds_y = target_room_bounds.y;
-        position = target_position;
+        // const Room_Data & target_room_data = get_room_data(target_room);
+        // const vec2 & target_room_origin = target_room_data.origin;
+        // const vec2 & target_room_bounds = target_room_data.bounds;
+        // const float target_room_origin_x = target_room_origin.x;
+        // const float target_room_origin_y = target_room_origin.y;
+        // const float target_room_bounds_x = target_room_bounds.x;
+        // const float target_room_bounds_y = target_room_bounds.y;
+        // position = target_position;
 
-        if (position_x < target_room_origin_x)
-        {
-            position_x = target_room_origin_x;
-        }
-        else if (position_x > target_room_bounds_x)
-        {
-            position_x = target_room_bounds_x;
-        }
+        // if (position_x < target_room_origin_x)
+        // {
+        //     position_x = target_room_origin_x;
+        // }
+        // else if (position_x > target_room_bounds_x)
+        // {
+        //     position_x = target_room_bounds_x;
+        // }
 
-        if (position_y < target_room_origin_y)
-        {
-            position_y = target_room_origin_y;
-        }
-        else if (position_y > target_room_bounds_y)
-        {
-            position_y = target_room_bounds_y;
-        }
+        // if (position_y < target_room_origin_y)
+        // {
+        //     position_y = target_room_origin_y;
+        // }
+        // else if (position_y > target_room_bounds_y)
+        // {
+        //     position_y = target_room_bounds_y;
+        // }
     });
 }
 
