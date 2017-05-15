@@ -293,6 +293,7 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
                 const JSON & down_orientation_offset_data = orientation_offsets_data["down"];
                 const JSON & up_orientation_offset_data = orientation_offsets_data["up"];
                 auto enemy_projectile_launcher = new Enemy_Projectile_Launcher;
+                enemy_projectile_launcher->enabled = contains_key(data, "enabled") ? data["enabled"].get<bool>() : true;
                 enemy_projectile_launcher->cooldown_time = data["cooldown_time"];
                 enemy_projectile_launcher->range = data["range"];
                 enemy_projectile_launcher->projectile_name = data["projectile_name"];

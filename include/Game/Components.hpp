@@ -95,6 +95,7 @@ struct Room_Exit
 
 struct Enemy_Projectile_Launcher
 {
+    bool enabled;
     float cooldown_time;
     float range;
     std::string projectile_name;

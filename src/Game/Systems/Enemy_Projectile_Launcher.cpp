@@ -106,12 +106,16 @@ void enemy_projectile_launcher_update()
 
     for_each(entity_states, [&](Entity /*entity*/, Enemy_Projectile_Launcher_State & entity_state) -> void
     {
-        if (!*entity_state.enemy_enabled)
+        const Enemy_Projectile_Launcher * enemy_projectile_launcher = entity_state.enemy_projectile_launcher;
+
+
+        // Don't fire projectile if disabled.
+        if (!enemy_projectile_launcher->enabled || !*entity_state.enemy_enabled)
         {
             return;
         }
 
-        const Enemy_Projectile_Launcher * enemy_projectile_launcher = entity_state.enemy_projectile_launcher;
+
         const vec3 & position = *entity_state.position;
         const vec3 & target_position = *entity_state.target_position;
         float & cooldown = entity_state.cooldown;
