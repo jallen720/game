@@ -115,7 +115,7 @@ vector<Entity> turret_generate(int /*room*/, int room_origin_x, int room_origin_
 {
     vector<Entity> turrets;
     const vector<JSON> & enemy_layout = enemy_layouts[random(0, enemy_layouts.size())];
-    const vec3 & room_tile_texture_scale = get_room_tile_texture_scale();
+    const vec3 & room_tile_unit_size = get_room_tile_unit_size();
 
     for (const JSON & enemy_position : enemy_layout)
     {
@@ -126,7 +126,7 @@ vector<Entity> turret_generate(int /*room*/, int room_origin_x, int room_origin_
         {
             const Entity turret = load_blueprint("turret");
             turrets.push_back(turret);
-            *entity_states[turret].position = vec3(enemy_position_x, enemy_position_y, 0) * room_tile_texture_scale;
+            *entity_states[turret].position = vec3(enemy_position_x, enemy_position_y, 0) * room_tile_unit_size;
         }
     }
 

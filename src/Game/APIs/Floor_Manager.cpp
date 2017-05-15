@@ -694,7 +694,7 @@ int get_room_tile_height()
 }
 
 
-const glm::vec3 & get_room_tile_texture_scale()
+const glm::vec3 & get_room_tile_unit_size()
 {
     return room_tile_unit_size;
 }

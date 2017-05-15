@@ -164,8 +164,8 @@ void wall_launcher_init()
     add_floor_generated_handler("wall_launcher", [&]() -> void
     {
         const int floor_size = get_floor_size();
-        const vec3 & room_tile_texture_scale = get_room_tile_texture_scale();
-        const vec2 tile_scale = vec2(room_tile_texture_scale.x, room_tile_texture_scale.y);
+        const vec3 & room_tile_unit_size = get_room_tile_unit_size();
+        const vec2 tile_scale = vec2(room_tile_unit_size.x, room_tile_unit_size.y);
         const int room_tile_width = get_room_tile_width();
         const int room_tile_height = get_room_tile_height();
         floor_room_tile_width = room_tile_width * floor_size;

@@ -91,7 +91,7 @@ void set_random_position(Tile_Turret_State & entity_state)
 {
     const vector<ivec2> & tiles = room_floor_tiles.at(entity_state.room);
     const ivec2 & tile = tiles[random(0, tiles.size())];
-    *entity_state.position = vec3(tile.x, tile.y, 0) * get_room_tile_texture_scale();
+    *entity_state.position = vec3(tile.x, tile.y, 0) * get_room_tile_unit_size();
 }
 
 
