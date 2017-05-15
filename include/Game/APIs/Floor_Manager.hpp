@@ -58,6 +58,7 @@ int get_room(const glm::vec3 & position);
 const Room_Data & get_room_data(int room);
 const Tile & get_room_tile(int x, int y);
 void iterate_rooms(const std::function<void(int, int, int &)> & callback);
+void iterate_room_tiles(const std::function<void(int, int, Tile &)> & callback);
 int get_floor_size();
 int get_room_tile_width();
 int get_room_tile_height();

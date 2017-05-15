@@ -103,16 +103,6 @@ static map<string, function<void()>> floor_generated_handlers;
 // Utilities
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-static void iterate_room_tiles(const function<void(int, int, Tile &)> & callback)
-{
-    iterate_array_2d(
-        current_floor.room_tiles,
-        current_floor.size * ROOM_TILE_WIDTH,
-        current_floor.size * ROOM_TILE_HEIGHT,
-        callback);
-}
-
-
 static void iterate_room_tiles(
     int room_x,
     int room_y,
@@ -673,6 +663,16 @@ const Tile & get_room_tile(int x, int y)
 void iterate_rooms(const function<void(int, int, int &)> & callback)
 {
     iterate_array_2d(current_floor.rooms, current_floor.size, current_floor.size, callback);
+}
+
+
+void iterate_room_tiles(const function<void(int, int, Tile &)> & callback)
+{
+    iterate_array_2d(
+        current_floor.room_tiles,
+        current_floor.size * ROOM_TILE_WIDTH,
+        current_floor.size * ROOM_TILE_HEIGHT,
+        callback);
 }
 
 
