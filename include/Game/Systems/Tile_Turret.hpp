@@ -1,0 +1,24 @@
+#pragma once
+
+
+#include <vector>
+#include "Nito/APIs/ECS.hpp"
+
+
+namespace Game
+{
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Interface
+//
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void tile_turret_init();
+void tile_turret_subscribe(Nito::Entity entity);
+void tile_turret_unsubscribe(Nito::Entity entity);
+void tile_turret_update();
+std::vector<Nito::Entity> tile_turret_generate(int room, int room_origin_x, int room_origin_y);
+
+
+} // namespace Game

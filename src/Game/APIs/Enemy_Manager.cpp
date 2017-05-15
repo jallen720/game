@@ -14,6 +14,7 @@
 #include "Game/Systems/Game_Manager.hpp"
 #include "Game/Systems/Boss.hpp"
 #include "Game/Systems/Turret.hpp"
+#include "Game/Systems/Tile_Turret.hpp"
 #include "Game/Systems/Wall_Launcher.hpp"
 
 
@@ -48,6 +49,7 @@ namespace Game
 enum class Enemies
 {
     TURRET,
+    TILE_TURRET,
     WALL_LAUNCHER,
     NONE,
 };
@@ -108,6 +110,7 @@ void generate_enemies()
         static const vector<Enemies> POSSIBLE_ENEMIES
         {
             Enemies::TURRET,
+            Enemies::TILE_TURRET,
             Enemies::WALL_LAUNCHER,
         };
 
@@ -156,6 +159,7 @@ void generate_enemies()
         static const map<Enemies, Enemy_Generator> ENEMY_GENERATORS
         {
             { Enemies::TURRET        , turret_generate        },
+            { Enemies::TILE_TURRET   , tile_turret_generate   },
             { Enemies::WALL_LAUNCHER , wall_launcher_generate },
         };
 
