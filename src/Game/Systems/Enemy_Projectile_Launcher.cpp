@@ -55,7 +55,7 @@ namespace Game
 // Data Structures
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-struct Enemy_Projectile_Launcher_Entity_State
+struct Enemy_Projectile_Launcher_State
 {
     Enemy_Projectile_Launcher * enemy_projectile_launcher;
     vec3 * position;
@@ -72,7 +72,7 @@ struct Enemy_Projectile_Launcher_Entity_State
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static const vector<string> TARGET_LAYERS { "player" };
-static map<Entity, Enemy_Projectile_Launcher_Entity_State> entity_states;
+static map<Entity, Enemy_Projectile_Launcher_State> entity_states;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -104,7 +104,7 @@ void enemy_projectile_launcher_update()
 {
     const float delta_time = get_delta_time() * get_time_scale();
 
-    for_each(entity_states, [&](Entity /*entity*/, Enemy_Projectile_Launcher_Entity_State & entity_state) -> void
+    for_each(entity_states, [&](Entity /*entity*/, Enemy_Projectile_Launcher_State & entity_state) -> void
     {
         if (!*entity_state.enemy_enabled)
         {
