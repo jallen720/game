@@ -727,15 +727,15 @@ void remove_enemy(int room_id)
 }
 
 
-vec2 get_room_tile_coordinates(const vec2 & position)
+ivec2 get_room_tile_coordinates(const vec2 & position)
 {
-    return vec2(
+    return ivec2(
         get_room_tile_position_coordinate(position.x, room_tile_unit_size.x),
         get_room_tile_position_coordinate(position.y, room_tile_unit_size.y));
 }
 
 
-vec2 get_room_tile_position(const vec2 & coordinates)
+vec2 get_room_tile_position(const ivec2 & coordinates)
 {
     return vec2(
         get_room_tile_coordinate_position(coordinates.x, room_tile_unit_size.x),

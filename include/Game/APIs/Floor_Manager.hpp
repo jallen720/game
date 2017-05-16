@@ -67,8 +67,8 @@ int get_max_room_id();
 int get_spawn_room_id();
 void add_enemy(int room_id);
 void remove_enemy(int room_id);
-glm::vec2 get_room_tile_coordinates(const glm::vec2 & position);
-glm::vec2 get_room_tile_position(const glm::vec2 & coordinates);
+glm::ivec2 get_room_tile_coordinates(const glm::vec2 & position);
+glm::vec2 get_room_tile_position(const glm::ivec2 & coordinates);
 void add_floor_generated_handler(const std::string & id, const std::function<void()> & handler);
 void remove_floor_generated_handler(const std::string & id);
 

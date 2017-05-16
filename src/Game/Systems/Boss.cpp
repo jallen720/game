@@ -28,6 +28,7 @@ using std::fill;
 // glm/glm.hpp
 using glm::vec3;
 using glm::vec2;
+using glm::ivec2;
 using glm::distance;
 using glm::length;
 using glm::degrees;
@@ -226,13 +227,15 @@ void boss_unsubscribe(Entity /*entity*/)
 
 void boss_update()
 {
-    static const vector<vec2> DIRECTIONS
+    static const vector<ivec2> DIRECTIONS
     {
-        vec2( 1, 0),
-        vec2( 0, 1),
-        vec2(-1, 0),
-        vec2( 0,-1),
+        ivec2( 1, 0),
+        ivec2( 0, 1),
+        ivec2(-1, 0),
+        ivec2( 0,-1),
     };
+
+    static const size_t DIRECTION_COUNT = DIRECTIONS.size();
 
 
     // No entity subscribed.
@@ -256,21 +259,21 @@ void boss_update()
     // If destination is unset, search neighboring tiles for a new destination.
     if (destination.x == -1)
     {
-        const vec2 current_tile_coordinates = get_room_tile_coordinates(*position);
+        const ivec2 current_tile_coordinates = get_room_tile_coordinates(*position);
 
 
         // Give 1:2 chance to randomly change direction.
         if (random(0, 3) == 0)
         {
-            direction_index = wrap_index(direction_index + (random(0, 2) == 0 ? 1 : -1), DIRECTIONS.size());
+            direction_index = wrap_index(direction_index + (random(0, 2) == 0 ? 1 : -1), DIRECTION_COUNT);
         }
 
 
-        for (size_t count = 0; count < DIRECTIONS.size(); count++)
+        for (size_t count = 0; count < DIRECTION_COUNT; count++)
         {
-            const vec2 & direction = DIRECTIONS[direction_index];
+            const ivec2 & direction = DIRECTIONS[direction_index];
 
-            const vec2 destination_tile_coordinates(
+            const ivec2 destination_tile_coordinates(
                 current_tile_coordinates.x + direction.x,
                 current_tile_coordinates.y + direction.y);
 
@@ -281,7 +284,7 @@ void boss_update()
             if (destination_tile_type != Tile_Types::FLOOR &&
                 destination_tile_type != Tile_Types::NEXT_FLOOR)
             {
-                direction_index = wrap_index(direction_index + 1, DIRECTIONS.size());
+                direction_index = wrap_index(direction_index + 1, DIRECTION_COUNT);
                 continue;
             }
 
