@@ -1,7 +1,6 @@
 #include "Game/Systems/Turret.hpp"
 
 #include <map>
-#include <glm/glm.hpp>
 #include "Nito/Components.hpp"
 #include "Nito/APIs/Scene.hpp"
 #include "Cpp_Utils/Map.hpp"
@@ -18,6 +17,7 @@ using std::vector;
 
 // glm/glm.hpp
 using glm::vec3;
+using glm::ivec2;
 
 // Nito/APIs/ECS.hpp
 using Nito::Entity;
@@ -66,6 +66,7 @@ struct Turret_State
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 static map<Entity, Turret_State> entity_states;
 static vector<vector<JSON>> enemy_layouts;
+static map<int, map<Entity, ivec2>> room_tiles;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,6 +95,22 @@ void turret_subscribe(Entity entity)
 void turret_unsubscribe(Entity entity)
 {
     remove(entity_states, entity);
+
+
+    // Remove room tile coordinates for entity.
+    for (auto & room_tile_data : room_tiles)
+    {
+        auto & room_tile_coordinates_data = room_tile_data.second;
+
+        for (const auto & room_tile_coordinates : room_tile_coordinates_data)
+        {
+            if (room_tile_coordinates.first == entity)
+            {
+                remove(room_tile_coordinates_data, entity);
+                return;
+            }
+        }
+    }
 }
 
 
@@ -111,7 +128,7 @@ void turret_update()
 }
 
 
-vector<Entity> turret_generate(int /*room*/, int room_origin_x, int room_origin_y)
+vector<Entity> turret_generate(int room, int room_origin_x, int room_origin_y)
 {
     vector<Entity> turrets;
     const vector<JSON> & enemy_layout = enemy_layouts[random(0, enemy_layouts.size())];
@@ -126,11 +143,19 @@ vector<Entity> turret_generate(int /*room*/, int room_origin_x, int room_origin_
         {
             const Entity turret = load_blueprint("turret");
             turrets.push_back(turret);
-            *entity_states[turret].position = vec3(enemy_position_x, enemy_position_y, 0) * room_tile_unit_size;
+            vec3 * position = entity_states[turret].position;
+            *position = vec3(enemy_position_x, enemy_position_y, 0) * room_tile_unit_size;
+            room_tiles[room][turret] = get_room_tile_coordinates(*position);
         }
     }
 
     return turrets;
+}
+
+
+const map<int, map<Entity, ivec2>> & get_turret_room_tiles()
+{
+    return room_tiles;
 }
 
 

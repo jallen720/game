@@ -9,11 +9,13 @@
 #include "Nito/APIs/Scene.hpp"
 #include "Nito/APIs/Window.hpp"
 #include "Cpp_Utils/Map.hpp"
+#include "Cpp_Utils/Vector.hpp"
 #include "Cpp_Utils/Collection.hpp"
 
 #include "Game/Utilities.hpp"
 #include "Game/Components.hpp"
 #include "Game/APIs/Floor_Manager.hpp"
+#include "Game/Systems/Turret.hpp"
 
 
 using std::map;
@@ -45,7 +47,11 @@ using Nito::Sprite;
 using Nito::Collider;
 
 // Cpp_Utils/Map.hpp
+using Cpp_Utils::contains_key;
 using Cpp_Utils::remove;
+
+// Cpp_Utils/Vector.hpp
+using Cpp_Utils::contains;
 
 // Cpp_Utils/Collection.hpp
 using Cpp_Utils::for_each;
@@ -89,9 +95,31 @@ static map<int, vector<ivec2>> room_floor_tiles;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void set_random_position(Tile_Turret_State & entity_state)
 {
+    const int room = entity_state.room;
+    vector<ivec2> turret_tiles;
+    const map<int, map<Entity, ivec2>> & turret_room_tiles = get_turret_room_tiles();
+
+    if (contains_key(turret_room_tiles, room))
+    {
+        for_each(turret_room_tiles.at(room), [&](Entity /*turret*/, const ivec2 & turret_tile) -> void
+        {
+            turret_tiles.emplace_back(turret_tile.x, turret_tile.y);
+        });
+    }
+
     const vector<ivec2> & tiles = room_floor_tiles.at(entity_state.room);
-    const ivec2 & tile = tiles[random(0, tiles.size())];
-    *entity_state.position = vec3(tile.x, tile.y, 0) * get_room_tile_unit_size();
+    const ivec2 * tile;
+
+
+    // Ensure tile turret does not overlap a turret.
+    do
+    {
+        tile = &tiles[random(0, tiles.size())];
+    }
+    while (contains(turret_tiles, *tile));
+
+
+    *entity_state.position = vec3(tile->x, tile->y, 0) * get_room_tile_unit_size();
 }
 
 
@@ -104,6 +132,8 @@ void tile_turret_init()
 {
     add_floor_generated_handler("tile_turret", [&]() -> void
     {
+        room_floor_tiles.clear();
+
         iterate_room_tiles([&](int x, int y, const Tile & tile) -> void
         {
             if (tile.type == Tile_Types::FLOOR)
