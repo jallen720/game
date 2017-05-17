@@ -89,5 +89,14 @@
         "orientation_handler",
         "enemy_enabled",
         "enemy_projectile_launcher"
+    ],
+    "tile_turret":
+    [
+        "transform",
+        "orientation_handler",
+        "enemy_enabled",
+        "sprite",
+        "collider",
+        "enemy_projectile_launcher"
     ]
 }
