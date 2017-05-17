@@ -84,7 +84,6 @@ static const vector<Update_Handler> GAME_UPDATE_HANDLERS
     turret_update,
     orientation_handler_update,
     health_bar_update,
-    menu_buttons_handler_update,
     camera_controller_update,
     boss_update,
     boss_segment_update,

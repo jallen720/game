@@ -489,7 +489,7 @@
             "render_layer": "ui",
             "button":
             {
-                "hover_texture_path": "resources/textures/ui/button_hover.png",
+                "hover_texture_path": "resources/textures/ui/button.png",
                 "pressed_texture_path": "resources/textures/ui/button_pressed.png"
             },
             "sprite":
