@@ -152,8 +152,7 @@ void menu_buttons_handler_subscribe(Entity entity)
         Entity button_entity = generate_button(entity, button_name, *menu_id, i, button_count);
         auto button = (Button *)get_component(button_entity, "button");
         auto ui_mouse_event_handlers = (UI_Mouse_Event_Handlers *)get_component(button_entity, "ui_mouse_event_handlers");
-        auto id = (string *)get_component(button_entity, "id");
-        button_ids.push_back(id);
+        button_ids.push_back((string *)get_component(button_entity, "id"));
 
         button->click_handler = [&]() -> void
         {
