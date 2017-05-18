@@ -36,6 +36,8 @@
 #include "Game/Systems/Enemy_Projectile_Launcher.hpp"
 #include "Game/Systems/Tile_Turret.hpp"
 #include "Game/Systems/Reticle.hpp"
+#include "Game/Systems/Item.hpp"
+#include "Game/Systems/Health_Item.hpp"
 
 
 using std::string;
@@ -121,6 +123,8 @@ static const map<string, const System_Entity_Handlers> GAME_SYSTEM_ENTITY_HANDLE
     NITO_SYSTEM_ENTITY_HANDLERS(enemy_projectile_launcher),
     NITO_SYSTEM_ENTITY_HANDLERS(tile_turret),
     NITO_SYSTEM_ENTITY_HANDLERS(reticle),
+    NITO_SYSTEM_ENTITY_HANDLERS(item),
+    NITO_SYSTEM_ENTITY_HANDLERS(health_item),
 };
 
 
@@ -318,6 +322,29 @@ static const map<string, const Component_Handlers> GAME_COMPONENT_HANDLERS
                 return enemy_projectile_launcher;
             },
             get_component_deallocator<Enemy_Projectile_Launcher>(),
+        }
+    },
+    {
+        "item",
+        {
+            [](const JSON & /*data*/) -> Component
+            {
+                return new Item;
+            },
+            get_component_deallocator<Item>(),
+        }
+    },
+    {
+        "health_item",
+        {
+            [](const JSON & data) -> Component
+            {
+                return new Health_Item
+                {
+                    data["health_restored"],
+                };
+            },
+            get_component_deallocator<Health_Item>(),
         }
     },
 };

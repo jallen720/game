@@ -103,4 +103,16 @@ struct Enemy_Projectile_Launcher
 };
 
 
+struct Item
+{
+    std::function<bool(Nito::Entity)> pick_up_handler;
+};
+
+
+struct Health_Item
+{
+    float health_restored;
+};
+
+
 } // namespace Game

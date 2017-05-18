@@ -102,5 +102,15 @@
     "reticle":
     [
         "ui_transform"
+    ],
+    "item":
+    [
+        "item",
+        "collider"
+    ],
+    "health_item":
+    [
+        "health_item",
+        "item"
     ]
 }

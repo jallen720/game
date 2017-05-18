@@ -30,5 +30,13 @@
     "enemy_projectile_launcher":
     [
         "enemy_projectile_launcher"
+    ],
+    "item":
+    [
+        "item"
+    ],
+    "health_item":
+    [
+        "health_item"
     ]
 }
