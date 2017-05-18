@@ -78,4 +78,18 @@ void damage_entity(Entity entity, float amount)
 }
 
 
+void heal_entity(Entity entity, float amount)
+{
+    Health * entity_health = entity_healths[entity];
+    float & current_health = entity_health->current;
+    const float max_health = entity_health->max;
+    current_health += amount;
+
+    if (current_health > max_health)
+    {
+        current_health = max_health;
+    }
+}
+
+
 } // namespace Game
