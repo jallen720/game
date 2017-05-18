@@ -48,9 +48,8 @@ using Nito::get_controller_axis;
 using Nito::get_key_button_action;
 using Nito::get_mouse_position;
 using Nito::set_controller_button_handler;
-using Nito::set_mouse_button_handler;
+using Nito::get_mouse_button_action;
 using Nito::remove_controller_button_handler;
-using Nito::remove_mouse_button_handler;
 using Nito::DS4_Axes;
 using Nito::DS4_Buttons;
 using Nito::Mouse_Buttons;
@@ -58,6 +57,7 @@ using Nito::Keys;
 using Nito::Button_Actions;
 
 // Nito/Window.hpp
+using Nito::get_time;
 using Nito::get_delta_time;
 using Nito::get_window_size;
 
@@ -186,23 +186,12 @@ void player_controller_subscribe(Entity entity)
 
     // Set player fire handler to controller button 5.
     set_controller_button_handler(FIRE_HANDLER_ID, DS4_Buttons::R1, Button_Actions::PRESS, fire);
-
-
-    // Set player fire handler to left click.
-    set_mouse_button_handler(FIRE_HANDLER_ID, [](Mouse_Buttons mouse_button, Button_Actions button_action) -> void
-    {
-        if (mouse_button == Mouse_Buttons::LEFT && button_action == Button_Actions::PRESS)
-        {
-            fire();
-        }
-    });
 }
 
 
 void player_controller_unsubscribe(Entity /*entity*/)
 {
     remove_controller_button_handler(FIRE_HANDLER_ID);
-    remove_mouse_button_handler(FIRE_HANDLER_ID);
     transform = nullptr;
     dimensions = nullptr;
     orientation_handler = nullptr;
@@ -296,6 +285,24 @@ void player_controller_update()
     if (look_direction.x != 0.0f || look_direction.y != 0.0f)
     {
         orientation_handler->look_direction = look_direction;
+    }
+
+
+    // Handle firing.
+    static const float FIRE_COOLDOWN = 0.4f;
+    static float last_fire_time = -FIRE_COOLDOWN;
+
+    float time = get_time();
+
+    if (time >= last_fire_time + FIRE_COOLDOWN)
+    {
+        Button_Actions fire_button_action = get_mouse_button_action(Mouse_Buttons::LEFT);
+
+        if (fire_button_action == Button_Actions::PRESS)
+        {
+            fire();
+            last_fire_time = time;
+        }
     }
 }
 
