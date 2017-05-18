@@ -53,6 +53,7 @@ void reticle_subscribe(Entity entity)
 
     ui_position = &((UI_Transform *)get_component(entity, "ui_transform"))->position;
     mouse_position = &get_mouse_position();
+    ui_position->z = -10;
 }
 
 
