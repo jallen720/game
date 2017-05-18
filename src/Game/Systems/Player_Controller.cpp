@@ -158,8 +158,7 @@ static void fire()
         projectile_origin,
         fire_direction,
         1.0f,
-        TARGET_LAYERS,
-        10.0f);
+        TARGET_LAYERS);
 }
 
 

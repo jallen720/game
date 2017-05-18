@@ -341,7 +341,7 @@
             {
                 "radius": 0.2
             },
-            "health": 100,
+            "health": 40,
             "enemy_projectile_launcher":
             {
                 "orientation_offsets":
@@ -389,7 +389,7 @@
                     "down": "resources/textures/tile_turret_down.png"
                 }
             },
-            "health": 100,
+            "health": 30,
             "enemy_projectile_launcher":
             {
                 "orientation_offsets":
@@ -437,7 +437,7 @@
             {
                 "radius": 0.32
             },
-            "health": 100,
+            "health": 20,
             "enemy_projectile_launcher":
             {
                 "orientation_offsets":
@@ -556,7 +556,7 @@
                     "down": "resources/textures/bosses/boss_down.png"
                 }
             },
-            "health": 500,
+            "health": 250,
             "transform":
             {
                 "scale": { "x": 1.2, "y": 1.2 }
@@ -661,7 +661,7 @@
         {
             "projectile":
             {
-                "damage": 0,
+                "damage": 5,
                 "speed": 3,
                 "ignore_layers": [ "enemy" ]
             },
@@ -684,7 +684,7 @@
         {
             "projectile":
             {
-                "damage": 0,
+                "damage": 10,
                 "speed": 2,
                 "ignore_layers": [ "boss_segment" ]
             },
