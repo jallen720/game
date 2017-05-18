@@ -98,5 +98,9 @@
         "sprite",
         "collider",
         "enemy_projectile_launcher"
+    ],
+    "reticle":
+    [
+        "ui_transform"
     ]
 }

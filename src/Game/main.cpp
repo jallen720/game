@@ -35,6 +35,7 @@
 #include "Game/Systems/Wall_Launcher.hpp"
 #include "Game/Systems/Enemy_Projectile_Launcher.hpp"
 #include "Game/Systems/Tile_Turret.hpp"
+#include "Game/Systems/Reticle.hpp"
 
 
 using std::string;
@@ -90,6 +91,7 @@ static const vector<Update_Handler> GAME_UPDATE_HANDLERS
     wall_launcher_update,
     enemy_projectile_launcher_update,
     tile_turret_update,
+    reticle_update,
 };
 
 
@@ -118,6 +120,7 @@ static const map<string, const System_Entity_Handlers> GAME_SYSTEM_ENTITY_HANDLE
     NITO_SYSTEM_ENTITY_HANDLERS(wall_launcher),
     NITO_SYSTEM_ENTITY_HANDLERS(enemy_projectile_launcher),
     NITO_SYSTEM_ENTITY_HANDLERS(tile_turret),
+    NITO_SYSTEM_ENTITY_HANDLERS(reticle),
 };
 
 
