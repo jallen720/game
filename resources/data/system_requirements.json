@@ -68,7 +68,8 @@
     ],
     "enemy":
     [
-        "health"
+        "health",
+        "transform"
     ],
     "boss":
     [
