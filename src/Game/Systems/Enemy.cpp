@@ -35,7 +35,7 @@ void enemy_subscribe(Entity entity)
 {
     const vec3 * position = &((Transform *)get_component(entity, "transform"))->position;
 
-    ((Health *)get_component(entity, "health"))->death_handlers["flag_entity_for_deletion"] = [=]() -> void
+    ((Health *)get_component(entity, "health"))->death_handlers["enemy"] = [=]() -> void
     {
         // Spawn item.
         Entity item = load_blueprint("mini_health");
