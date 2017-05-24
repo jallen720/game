@@ -748,6 +748,23 @@ void remove_enemy(int room_id, Entity enemy)
 }
 
 
+int get_enemy_room(Entity enemy)
+{
+    for (const auto & room_enemy_data : room_enemies)
+    {
+        for (const Entity room_enemy : room_enemy_data.second)
+        {
+            if (room_enemy == enemy)
+            {
+                return room_enemy_data.first;
+            }
+        }
+    }
+
+    throw runtime_error("ERROR: enemy not associated with any room!");
+}
+
+
 ivec2 get_room_tile_coordinates(const vec2 & position)
 {
     return ivec2(

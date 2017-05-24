@@ -68,6 +68,7 @@ int get_max_room_id();
 int get_spawn_room_id();
 void add_enemy(int room_id, Nito::Entity enemy);
 void remove_enemy(int room_id, Nito::Entity enemy);
+int get_enemy_room(Nito::Entity enemy);
 glm::ivec2 get_room_tile_coordinates(const glm::vec2 & position);
 glm::vec2 get_room_tile_position(const glm::ivec2 & coordinates);
 void add_floor_generated_handler(const std::string & id, const std::function<void()> & handler);
