@@ -77,14 +77,14 @@ static void track_enemy(Entity enemy_entity, int room)
     ((Health *)get_component(enemy_entity, "health"))->death_handlers["enemy_manager enemy death"] = [=]() -> void
     {
         // Remove enemy from its associated room's enemy count.
-        remove_enemy(room);
+        remove_enemy(room, enemy_entity);
 
         game_manager_untrack_render_flag(room, enemy_entity);
         game_manager_untrack_collider_enabled_flag(room, enemy_entity);
         game_manager_untrack_enemy_enabled_flag(room, enemy_entity);
     };
 
-    add_enemy(room);
+    add_enemy(room, enemy_entity);
     game_manager_track_render_flag(room, enemy_entity);
     game_manager_track_collider_enabled_flag(room, enemy_entity);
     game_manager_track_enemy_enabled_flag(room, enemy_entity);

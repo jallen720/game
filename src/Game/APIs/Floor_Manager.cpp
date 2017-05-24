@@ -5,10 +5,10 @@
 #include <stdexcept>
 #include "Nito/Components.hpp"
 #include "Nito/Collider_Component.hpp"
-#include "Nito/APIs/ECS.hpp"
 #include "Nito/APIs/Scene.hpp"
 #include "Nito/APIs/Graphics.hpp"
 #include "Cpp_Utils/Map.hpp"
+#include "Cpp_Utils/Vector.hpp"
 #include "Cpp_Utils/Collection.hpp"
 
 #include "Game/Utilities.hpp"
@@ -47,8 +47,13 @@ using Nito::get_pixels_per_unit;
 
 // Cpp_Utils/Map.hpp
 using Cpp_Utils::contains_key;
-using Cpp_Utils::remove;
 using Cpp_Utils::at_index;
+
+// Cpp_Utils/Vector.hpp
+using Cpp_Utils::contains;
+
+// Cpp_Utils/Map.hpp & Cpp_Utils/Vector.hpp
+using Cpp_Utils::remove;
 
 // Cpp_Utils/Collection.hpp
 using Cpp_Utils::for_each;
@@ -92,7 +97,7 @@ static vec3 room_tile_unit_size;
 static Floor current_floor;
 static vec2 spawn_position;
 static map<int, Room_Data> room_datas;
-static map<int, int> room_enemy_counts;
+static map<int, vector<Entity>> room_enemies;
 static map<int, vector<Entity>> room_exits;
 static int max_room_id;
 static map<string, function<void()>> floor_generated_handlers;
@@ -590,7 +595,7 @@ void generate_floor(int floor_size)
     // Lock current room if its enemy count is > 0.
     game_manager_add_room_change_handler(ROOM_CHANGE_HANDLER_ID, [](int /*last_room*/, int current_room) -> void
     {
-        if (room_enemy_counts[current_room] > 0)
+        if (room_enemies[current_room].size() > 0)
         {
             set_room_locked(current_room, true);
         }
@@ -617,7 +622,7 @@ void destroy_floor()
 
     // Cleanup room data.
     room_datas.clear();
-    room_enemy_counts.clear();
+    room_enemies.clear();
     room_exits.clear();
     game_manager_remove_room_change_handler(ROOM_CHANGE_HANDLER_ID);
 }
@@ -712,15 +717,31 @@ int get_spawn_room_id()
 }
 
 
-void add_enemy(int room_id)
+void add_enemy(int room_id, Entity enemy)
 {
-    room_enemy_counts[room_id]++;
+    vector<Entity> & enemies = room_enemies[room_id];
+
+    if (contains(enemies, enemy))
+    {
+        throw runtime_error("ERROR: trying to add enemy to room that already contains it!");
+    }
+
+    enemies.push_back(enemy);
 }
 
 
-void remove_enemy(int room_id)
+void remove_enemy(int room_id, Entity enemy)
 {
-    if (--room_enemy_counts[room_id] == 0)
+    vector<Entity> & enemies = room_enemies[room_id];
+
+    if (!contains(enemies, enemy))
+    {
+        throw runtime_error("ERROR: trying to remove enemy from room that doesn't contain it!");
+    }
+
+    remove(enemies, enemy);
+
+    if (enemies.size() == 0)
     {
         set_room_locked(room_id, false);
     }

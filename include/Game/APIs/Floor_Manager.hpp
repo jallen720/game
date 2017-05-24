@@ -4,6 +4,7 @@
 #include <string>
 #include <functional>
 #include <glm/glm.hpp>
+#include "Nito/APIs/ECS.hpp"
 
 
 namespace Game
@@ -65,8 +66,8 @@ int get_room_tile_height();
 const glm::vec3 & get_room_tile_unit_size();
 int get_max_room_id();
 int get_spawn_room_id();
-void add_enemy(int room_id);
-void remove_enemy(int room_id);
+void add_enemy(int room_id, Nito::Entity enemy);
+void remove_enemy(int room_id, Nito::Entity enemy);
 glm::ivec2 get_room_tile_coordinates(const glm::vec2 & position);
 glm::vec2 get_room_tile_position(const glm::ivec2 & coordinates);
 void add_floor_generated_handler(const std::string & id, const std::function<void()> & handler);
