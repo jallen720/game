@@ -13,9 +13,10 @@ namespace Game
 // Interface
 //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void item_init();
 void item_subscribe(Nito::Entity entity);
 void item_unsubscribe(Nito::Entity entity);
-void spawn_item(Nito::Entity entity);
+void check_spawn_item(Nito::Entity entity);
 
 
 } // namespace Game

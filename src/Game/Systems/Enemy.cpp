@@ -23,7 +23,7 @@ void enemy_subscribe(Entity entity)
 {
     ((Health *)get_component(entity, "health"))->death_handlers["enemy"] = [=]() -> void
     {
-        spawn_item(entity);
+        check_spawn_item(entity);
         flag_entity_for_deletion(entity);
     };
 }

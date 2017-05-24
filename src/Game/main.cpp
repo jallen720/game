@@ -375,6 +375,7 @@ int run()
     turret_init();
     tile_turret_init();
     wall_launcher_init();
+    item_init();
     return run_engine();
 }
 

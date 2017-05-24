@@ -759,5 +759,25 @@
                 "health_restored": 20
             }
         }
+    },
+    "mega_health":
+    {
+        "inherits":
+        [
+            "renderable",
+            "triggerable",
+            "item"
+        ],
+        "components":
+        {
+            "sprite":
+            {
+                "texture_path": "resources/textures/items/mega_health.png"
+            },
+            "health_item":
+            {
+                "health_restored": 60
+            }
+        }
     }
 }
