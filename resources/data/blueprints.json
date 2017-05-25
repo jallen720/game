@@ -33,6 +33,27 @@
             }
         }
     },
+    "floor_opening":
+    {
+        "components":
+        {
+            "collider":
+            {
+                "send_collision": true
+            },
+            "polygon_collider":
+            {
+                "wrap": true,
+                "points":
+                [
+                    { "x": -0.25, "y": -0.1  },
+                    { "x": -0.25, "y":  0.25 },
+                    { "x":  0.25, "y":  0.25 },
+                    { "x":  0.25, "y": -0.1  }
+                ]
+            }
+        }
+    },
     "corner_wall_tile":
     {
         "components":
@@ -143,6 +164,38 @@
             "sprite":
             {
                 "texture_path": "resources/textures/tiles/floor.png"
+            }
+        }
+    },
+    "floor_ledge_tile":
+    {
+        "inherits":
+        [
+            "renderable",
+            "floor_entity",
+            "floor_opening"
+        ],
+        "components":
+        {
+            "sprite":
+            {
+                "texture_path": "resources/textures/tiles/floor_ledge.png"
+            }
+        }
+    },
+    "floor_hole_tile":
+    {
+        "inherits":
+        [
+            "renderable",
+            "floor_entity",
+            "floor_opening"
+        ],
+        "components":
+        {
+            "sprite":
+            {
+                "texture_path": "resources/textures/tiles/floor_hole.png"
             }
         }
     },

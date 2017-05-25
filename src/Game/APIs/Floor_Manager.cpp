@@ -10,6 +10,7 @@
 #include "Cpp_Utils/Map.hpp"
 #include "Cpp_Utils/Vector.hpp"
 #include "Cpp_Utils/Collection.hpp"
+#include "Cpp_Utils/JSON.hpp"
 
 #include "Game/Utilities.hpp"
 #include "Game/Components.hpp"
@@ -58,6 +59,9 @@ using Cpp_Utils::remove;
 // Cpp_Utils/Collection.hpp
 using Cpp_Utils::for_each;
 
+// Cpp_Utils/JSON.hpp
+using Cpp_Utils::read_json_file;
+
 
 namespace Game
 {
@@ -101,6 +105,7 @@ static map<int, vector<Entity>> room_enemies;
 static map<int, vector<Entity>> room_exits;
 static int max_room_id;
 static map<string, function<void()>> floor_generated_handlers;
+static vector<vector<int>> obstacle_layouts;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -388,6 +393,7 @@ void floor_manager_api_init()
 {
     room_tile_unit_size = vec3(1) * (float)(ROOM_TILE_TEXTURE_SIZE / get_pixels_per_unit());
     room_tile_unit_size.z = 1;
+    obstacle_layouts = read_json_file("resources/data/obstacle_layouts.json").get<vector<vector<int>>>();
 }
 
 
@@ -453,10 +459,12 @@ void generate_floor(int floor_size)
         }
 
 
+        const vector<int> & obstacle_layout =
+            obstacle_layouts[room == SPAWN_ROOM_ID ? 0 : random(0, obstacle_layouts.size())];
+
         iterate_room_tiles(room_x, room_y, true, [&](int x, int y, Tile & tile) -> void
         {
             tile.room = room;
-
 
             // Floor
             if (x > 0 && x < ROOM_TILE_WIDTH - 1 &&
@@ -470,7 +478,15 @@ void generate_floor(int floor_size)
                 }
                 else
                 {
-                    tile.type = Tile_Types::FLOOR;
+                    static const map<int, Tile_Types> OBSTACLE_LAYOUT_TILE_TYPES
+                    {
+                        { 0, Tile_Types::FLOOR       },
+                        { 1, Tile_Types::FLOOR_LEDGE },
+                        { 2, Tile_Types::FLOOR_HOLE  },
+                    };
+
+                    tile.type = OBSTACLE_LAYOUT_TILE_TYPES.at(
+                        obstacle_layout[((ROOM_TILE_HEIGHT - y - 1) * ROOM_TILE_WIDTH) + x]);
                 }
 
                 tile.rotation = 0.0f;
@@ -530,6 +546,8 @@ void generate_floor(int floor_size)
                 { Tile_Types::WALL_CORNER_INNER , "wall_corner_inner_tile" },
                 { Tile_Types::DOOR              , "door_tile"              },
                 { Tile_Types::FLOOR             , "floor_tile"             },
+                { Tile_Types::FLOOR_LEDGE       , "floor_ledge_tile"       },
+                { Tile_Types::FLOOR_HOLE        , "floor_hole_tile"        },
                 { Tile_Types::LEFT_DOOR_WALL    , "left_door_wall_tile"    },
                 { Tile_Types::RIGHT_DOOR_WALL   , "right_door_wall_tile"   },
                 { Tile_Types::NEXT_FLOOR        , "next_floor_tile"        },

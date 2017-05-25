@@ -32,6 +32,8 @@ enum class Tile_Types
     RIGHT_DOOR_WALL,
     DOOR,
     FLOOR,
+    FLOOR_LEDGE,
+    FLOOR_HOLE,
     NEXT_FLOOR,
     NONE,
 };
