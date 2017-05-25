@@ -86,10 +86,11 @@ void item_init()
     for (const string & item_name : item_names)
     {
         const int spawn_ratio = item_spawn_ratios.at(item_name);
+        const string * item_name_ptr = &item_name;
 
         for (int i = 0; i < spawn_ratio; i++)
         {
-            item_spawn_index.push_back(&item_name);
+            item_spawn_index.push_back(item_name_ptr);
         }
     }
 }
@@ -127,7 +128,7 @@ void item_unsubscribe(Entity entity)
 
 void check_spawn_item(Entity enemy)
 {
-    if (random(0, 5) < 1)
+    if (random(0, 17) == 0)
     {
         // Spawn random item.
         const Entity item = load_blueprint(*item_spawn_index[random(0, item_spawn_index.size())]);
