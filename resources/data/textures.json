@@ -30,6 +30,8 @@
             "resources/textures/tiles/door.png",
             "resources/textures/tiles/door_locked.png",
             "resources/textures/tiles/floor.png",
+            "resources/textures/tiles/floor_ledge.png",
+            "resources/textures/tiles/floor_hole.png",
             "resources/textures/tiles/wall.png",
             "resources/textures/tiles/wall_corner.png",
             "resources/textures/tiles/wall_corner_inner.png",
