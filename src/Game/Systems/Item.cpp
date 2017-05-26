@@ -128,7 +128,7 @@ void item_unsubscribe(Entity entity)
 
 void check_spawn_item(Entity enemy)
 {
-    if (random(0, 17) == 0)
+    if (random(0, 5) == 0)
     {
         // Spawn random item.
         const Entity item = load_blueprint(*item_spawn_index[random(0, item_spawn_index.size())]);
