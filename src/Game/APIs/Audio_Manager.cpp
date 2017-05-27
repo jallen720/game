@@ -54,7 +54,6 @@ struct Scene_Music
 static const string SCENE_CHANGE_HANDLER_ID("audio_manager_api");
 static const float GLOBAL_VOLUME = 0.1f;
 static string current_music_id;
-static bool engine_started = false;
 static vector<string> sound_audio_source_pool;
 
 
@@ -82,39 +81,16 @@ static void play_music(const string & music_id)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void audio_manager_api_init()
 {
-    static const map<string, const Scene_Music> SCENE_MUSICS
+    static bool music_started = false;
+
+    set_scene_load_handler(SCENE_CHANGE_HANDLER_ID, [&](const string & /*scene_name*/) -> void
     {
+        if (!music_started)
         {
-            "default",
-            {
-                "main menu music",
-                "resources/audio/loading_loop.wav"
-            }
-        },
-        {
-            "game",
-            {
-                "game music",
-                "resources/audio/androids.wav"
-            }
-        },
-    };
-
-
-    // Handle playing different music for each scene.
-    set_scene_load_handler(SCENE_CHANGE_HANDLER_ID, [&](const string & scene_name) -> void
-    {
-        if (!engine_started)
-        {
-            for_each(SCENE_MUSICS, [](const string & /*scene_name*/, const Scene_Music & scene_music) -> void
-            {
-                create_audio_source(scene_music.id, scene_music.path, true, GLOBAL_VOLUME);
-            });
-
-            engine_started = true;
+            create_audio_source("music", "resources/audio/androids.wav", true, GLOBAL_VOLUME);
+            play_music("music");
+            music_started = true;
         }
-
-        play_music(SCENE_MUSICS.at(scene_name).id);
     });
 }
 
