@@ -97,6 +97,7 @@ void audio_manager_api_init()
 
 void play_sound(const string & path, float volume = GLOBAL_VOLUME)
 {
+#if __gnu_linux__
     string sound_audio_source_id;
 
 
@@ -124,6 +125,7 @@ void play_sound(const string & path, float volume = GLOBAL_VOLUME)
     set_audio_source_buffer(sound_audio_source_id, path);
     set_audio_source_volume(sound_audio_source_id, volume);
     play_audio_source(sound_audio_source_id);
+#endif
 }
 
 
