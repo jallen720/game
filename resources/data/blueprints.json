@@ -846,6 +846,12 @@
             "health_item":
             {
                 "health_restored": 20
+            },
+            "light_source":
+            {
+                "intensity": 0.0175,
+                "range": 0.4,
+                "color": { "r": 0.1289, "g": 0.8789, "b": 0.8789 }
             }
         }
     },
@@ -866,6 +872,12 @@
             "health_item":
             {
                 "health_restored": 60
+            },
+            "light_source":
+            {
+                "intensity": 0.01,
+                "range": 0.5,
+                "color": { "r": 0.1406, "g": 0.7617, "b": 0.1406 }
             }
         }
     }

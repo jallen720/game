@@ -114,6 +114,11 @@ void item_subscribe(Entity entity)
                 flag_entity_for_deletion(entity);
                 game_manager_untrack_render_flag(room, entity);
                 game_manager_untrack_collider_enabled_flag(room, entity);
+
+                if (has_component(entity, "light_source"))
+                {
+                    game_manager_untrack_light_source_enabled_flag(room, entity);
+                }
             }
         }
     };
@@ -142,6 +147,11 @@ void check_spawn_item(Entity enemy)
         item_rooms[item] = room;
         game_manager_track_render_flag(room, item);
         game_manager_track_collider_enabled_flag(room, item);
+
+        if (has_component(item, "light_source"))
+        {
+            game_manager_track_light_source_enabled_flag(room, item);
+        }
     }
 }
 
