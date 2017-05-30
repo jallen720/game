@@ -113,5 +113,10 @@
     [
         "health_item",
         "item"
+    ],
+    "light_source":
+    [
+        "light_source",
+        "transform"
     ]
 }

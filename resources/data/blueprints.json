@@ -6,7 +6,23 @@
             "render_layer": "world",
             "sprite":
             {
-                "shader_pipeline_name": "texture"
+                "shader_pipeline_name": "lit_texture"
+            },
+            "dimensions":
+            {
+                "origin": { "x": 0.5, "y": 0.5 }
+            },
+            "transform": {}
+        }
+    },
+    "ui_renderable":
+    {
+        "components":
+        {
+            "render_layer": "ui",
+            "sprite":
+            {
+                "shader_pipeline_name": "unlit_texture"
             },
             "dimensions":
             {
@@ -141,6 +157,18 @@
         [
             "depth_handler"
         ]
+    },
+    "lit_tile":
+    {
+        "components":
+        {
+            "light_source":
+            {
+                "intensity": 0.002,
+                "range": 4,
+                "color": { "r": 1, "g": 1, "b": 1 }
+            }
+        }
     },
 
 
@@ -326,7 +354,8 @@
         "inherits":
         [
             "renderable",
-            "floor_entity"
+            "floor_entity",
+            "lit_tile"
         ],
         "components":
         {
@@ -343,7 +372,8 @@
             "renderable",
             "static_obstacle",
             "corner_wall_tile",
-            "floor_entity"
+            "floor_entity",
+            "lit_tile"
         ],
         "components":
         {
@@ -370,6 +400,11 @@
             "circle_collider":
             {
                 "radius": 0.065
+            },
+            "light_source":
+            {
+                "intensity": 0.015,
+                "range": 0.4
             }
         },
         "systems":
@@ -527,21 +562,15 @@
     {
         "inherits":
         [
+            "ui_renderable",
             "floor_entity"
         ],
         "components":
         {
-            "render_layer": "ui",
             "sprite":
             {
-                "texture_path": "resources/textures/ui/minimap_room.png",
-                "shader_pipeline_name": "texture"
+                "texture_path": "resources/textures/ui/minimap_room.png"
             },
-            "dimensions":
-            {
-                "origin": { "x": 0.5, "y": 0.5 }
-            },
-            "transform": {},
             "ui_transform":
             {
                 "anchor": { "x": 1, "y": 1 }
@@ -550,11 +579,14 @@
     },
     "button":
     {
+        "inherits":
+        [
+            "ui_renderable"
+        ],
         "components":
         {
             "id": "",
             "parent_id": "",
-            "render_layer": "ui",
             "button":
             {
                 "hover_texture_path": "resources/textures/ui/button.png",
@@ -562,13 +594,7 @@
             },
             "sprite":
             {
-                "texture_path": "resources/textures/ui/button.png",
-                "shader_pipeline_name": "texture"
-            },
-            "transform": {},
-            "dimensions":
-            {
-                "origin": { "x": 0.5, "y": 0.5 }
+                "texture_path": "resources/textures/ui/button.png"
             },
             "local_transform": {},
             "ui_mouse_event_handlers": {}
@@ -576,21 +602,18 @@
     },
     "selection_sprite":
     {
+        "inherits":
+        [
+            "ui_renderable"
+        ],
         "components":
         {
             "id": "",
             "parent_id": "",
-            "render_layer": "ui",
             "sprite":
             {
-                "texture_path": "resources/textures/ui/selection.png",
-                "shader_pipeline_name": "texture"
+                "texture_path": "resources/textures/ui/selection.png"
             },
-            "dimensions":
-            {
-                "origin": { "x": 0.5, "y": 0.5 }
-            },
-            "transform": {},
             "local_transform":
             {
                 "position": { "z": -1 }
@@ -713,6 +736,10 @@
             "sprite":
             {
                 "texture_path": "resources/textures/projectiles/blue_orb.png"
+            },
+            "light_source":
+            {
+                "color": { "r": 0.3086, "g": 0.6367, "b": 0.8867 }
             }
         }
     },
@@ -736,6 +763,10 @@
             "sprite":
             {
                 "texture_path": "resources/textures/projectiles/red_orb.png"
+            },
+            "light_source":
+            {
+                "color": { "r": 0.8555, "g": 0.2891, "b": 0.2891 }
             }
         }
     },
@@ -759,29 +790,35 @@
             "sprite":
             {
                 "texture_path": "resources/textures/projectiles/purple_orb.png"
+            },
+            "light_source":
+            {
+                "color": { "r": 0.7929, "g": 0.3906, "b": 0.7929 }
             }
         }
     },
     "boss_health_bar":
     {
+        "inherits":
+        [
+            "ui_renderable",
+            "floor_entity"
+        ],
         "components":
         {
             "id": "boss_health_bar",
             "target_id": "boss",
-            "render_layer": "ui",
             "parent_id": "boss_health_bar_container",
             "sprite":
             {
-                "texture_path": "resources/textures/ui/boss_health_bar_foreground.png",
-                "shader_pipeline_name": "texture"
+                "texture_path": "resources/textures/ui/boss_health_bar_foreground.png"
             },
             "dimensions":
             {
                 "width": 600,
                 "height": 10,
-                "origin": { "x": 0.5, "y": 0 }
+                "origin": { "x": 0.5, "y": 0.0 }
             },
-            "transform": {},
             "local_transform":
             {
                 "position": { "z": -1 }
@@ -789,8 +826,7 @@
         },
         "systems":
         [
-            "health_bar",
-            "floor_entity"
+            "health_bar"
         ]
     },
     "mini_health":

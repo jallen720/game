@@ -32,6 +32,7 @@ using Nito::get_entity;
 // Nito/Components.hpp
 using Nito::Transform;
 using Nito::Sprite;
+using Nito::Light_Source;
 
 // Nito/Collider_Component.hpp
 using Nito::Collider;
@@ -72,6 +73,7 @@ static int spawn_room_id;
 static Room_Flags render_flags;
 static Room_Flags collider_enabled_flags;
 static Room_Flags enemy_enabled_flags;
+static Room_Flags light_source_enabled_flags;
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -99,7 +101,7 @@ static void start_floor()
     player_position->y = spawn_position->y;
 
 
-    // Initialize render and collider flags.
+    // Initialize flags.
     for_each(render_flags, [](int room, const map<Entity, bool *> & /*render_flags*/) -> void
     {
         set_room_flags(render_flags, room, false);
@@ -110,9 +112,20 @@ static void start_floor()
         set_room_flags(collider_enabled_flags, room, false);
     });
 
+    for_each(enemy_enabled_flags, [](int room, const map<Entity, bool *> & /*enemy_enabled_flags*/) -> void
+    {
+        set_room_flags(enemy_enabled_flags, room, false);
+    });
+
+    for_each(light_source_enabled_flags, [](int room, const map<Entity, bool *> & /*light_source_enabled_flags*/) -> void
+    {
+        set_room_flags(light_source_enabled_flags, room, false);
+    });
+
     set_room_flags(render_flags, spawn_room_id, true);
     set_room_flags(collider_enabled_flags, spawn_room_id, true);
     set_room_flags(enemy_enabled_flags, spawn_room_id, true);
+    set_room_flags(light_source_enabled_flags, spawn_room_id, true);
 }
 
 
@@ -123,6 +136,7 @@ static void cleanup_floor()
     render_flags.clear();
     collider_enabled_flags.clear();
     enemy_enabled_flags.clear();
+    light_source_enabled_flags.clear();
 }
 
 
@@ -197,6 +211,8 @@ void game_manager_change_rooms(float door_rotation)
     set_room_flags(collider_enabled_flags, current_room, true);
     set_room_flags(enemy_enabled_flags, last_room, false);
     set_room_flags(enemy_enabled_flags, current_room, true);
+    set_room_flags(light_source_enabled_flags, last_room, false);
+    set_room_flags(light_source_enabled_flags, current_room, true);
 }
 
 
@@ -253,6 +269,18 @@ void game_manager_track_enemy_enabled_flag(int room, Entity entity)
 void game_manager_untrack_enemy_enabled_flag(int room, Entity entity)
 {
     remove(enemy_enabled_flags[room], entity);
+}
+
+
+void game_manager_track_light_source_enabled_flag(int room, Entity entity)
+{
+    light_source_enabled_flags[room][entity] = &((Light_Source *)get_component(entity, "light_source"))->enabled;
+}
+
+
+void game_manager_untrack_light_source_enabled_flag(int room, Entity entity)
+{
+    remove(light_source_enabled_flags[room], entity);
 }
 
 

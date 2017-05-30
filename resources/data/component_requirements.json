@@ -38,5 +38,9 @@
     "health_item":
     [
         "health_item"
+    ],
+    "light_source":
+    [
+        "light_source"
     ]
 }

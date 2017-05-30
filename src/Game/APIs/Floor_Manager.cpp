@@ -576,6 +576,11 @@ void generate_floor(int floor_size)
                 game_manager_track_collider_enabled_flag(room_id, tile);
             }
 
+            if (has_component(tile, "light_source"))
+            {
+                game_manager_track_light_source_enabled_flag(room_id, tile);
+            }
+
 
             // Set collision handlers for tiles that need them.
             if (tile_type == Tile_Types::DOOR ||

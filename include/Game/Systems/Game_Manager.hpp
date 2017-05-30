@@ -31,6 +31,8 @@ void game_manager_track_collider_enabled_flag(int room, Nito::Entity entity);
 void game_manager_untrack_collider_enabled_flag(int room, Nito::Entity entity);
 void game_manager_track_enemy_enabled_flag(int room, Nito::Entity entity);
 void game_manager_untrack_enemy_enabled_flag(int room, Nito::Entity entity);
+void game_manager_track_light_source_enabled_flag(int room, Nito::Entity entity);
+void game_manager_untrack_light_source_enabled_flag(int room, Nito::Entity entity);
 
 
 } // namespace Game

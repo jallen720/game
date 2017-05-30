@@ -83,7 +83,7 @@
             "sprite":
             {
                 "texture_path": "resources/textures/player_down.png",
-                "shader_pipeline_name": "texture"
+                "shader_pipeline_name": "lit_texture"
             },
             "dimensions":
             {
@@ -146,7 +146,7 @@
             "sprite":
             {
                 "texture_path": "resources/textures/ui/health_bar_background.png",
-                "shader_pipeline_name": "texture"
+                "shader_pipeline_name": "unlit_texture"
             },
             "dimensions":
             {
@@ -167,7 +167,7 @@
             "sprite":
             {
                 "texture_path": "resources/textures/ui/health_bar_foreground.png",
-                "shader_pipeline_name": "texture"
+                "shader_pipeline_name": "unlit_texture"
             },
             "dimensions":
             {
@@ -208,7 +208,7 @@
             {
                 "render": false,
                 "texture_path": "resources/textures/ui/health_bar_background.png",
-                "shader_pipeline_name": "texture"
+                "shader_pipeline_name": "unlit_texture"
             },
             "dimensions":
             {
@@ -227,7 +227,7 @@
             "sprite":
             {
                 "texture_path": "resources/textures/ui/reticle.png",
-                "shader_pipeline_name": "texture"
+                "shader_pipeline_name": "unlit_texture"
             },
             "dimensions":
             {
